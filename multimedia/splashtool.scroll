@@ -1,0 +1,72 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'splashtool'
+pkgver = '1368501465'
+pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
+upstream = 'https://github.com/GNU-Pony/splashtool'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['java-runtime: 1 source file is written in Java',
+           'python3: 2 source files are written in Python 3',
+           'sh: 1 source file is written in shell script',
+           'kbd: default font',
+           'nefa: read font files',
+           'gzip: decompress fonts']
+makedepends = ['make', 'coreutils', 'java-environment']
+if i_use_info:
+    makedepends.append('texinfo')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['1CF0B24DD9C1ACE01BED2DD81E2BD61523EDA2B737E9B5EDECA5A1115EFA1D7BC4CD0BEC46C8AF1C5504DDE726DE6D484AA36935E58C3AB71D70151549B453DA2DB03C2E0B8397AA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+_info_dir = lambda private : '%s/share/info' % _prefix(private)
+
+
+def ride(private):
+    execute(['info', 'splashtool', 'Invoking'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/splashtool-%s' % (srcdir, pkgver))
+    make('classes')
+    if i_use_info:
+        make('info')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/splashtool-%s' % (srcdir, pkgver))
+    make('PKGNAME=' + pkgname, 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    rm('%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
+    ln('/usr/share/licenses/common/GPL3', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if i_use_info:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if not i_use_info:
+        if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+            uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+    else:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def post_uninstall(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+

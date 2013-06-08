@@ -25,6 +25,7 @@ depends = ['java-runtime: 1 source file is written in Java',
 makedepends = ['make', 'coreutils', 'java-environment']
 if i_use_info:
     makedepends.append('texinfo')
+    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
 
@@ -41,6 +42,8 @@ def build(startdir, srcdir, pkgdir, private):
     make('classes')
     if i_use_info:
         make('info')
+    else:
+        sed([sed_script(' splashtool\\.info\\.gz', '', '^install:'), sed_script(' install -m644 splashtool\\.info\\.gz', '\\t', '&#')], 'Makefile')
 
 
 def package(startdir, srcdir, pkgdir, private):

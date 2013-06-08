@@ -1,0 +1,7 @@
+File archives and compression packages.
+
+This are packages that are used for creating
+and extracting file archives and compress and
+decompress files, such as .tar and .gzip
+support software.
+

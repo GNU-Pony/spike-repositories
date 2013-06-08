@@ -1,0 +1,5 @@
+Non-kernel system packages.
+
+System packages that are not kernel related,
+such as cron, hwclock, ntpd.
+

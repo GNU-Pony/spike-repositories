@@ -1,0 +1,6 @@
+Font packages.
+
+Fonts, both for X, other display servers, and
+for kernels. But not font editors, those fall
+under ‘miscellaneous’.
+

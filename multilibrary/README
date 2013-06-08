@@ -1,0 +1,7 @@
+Multilib library package.
+
+This is just like ‘library’, except, they are
+compiled and installed for machine architecture
+emulation such as IA-32 when you are using a
+x86_64 machine.
+

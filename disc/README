@@ -1,0 +1,10 @@
+Filesystems, partitions, hard disc, &c packages.
+
+This are packages that lets you modify your
+partition tables, format and tweet partitions,
+tweet your hard disc performance, and similar
+actions. Encrypted partition stack layes such
+as LUKS via cryptsetup does not fall under
+this category, rather, they are located in
+‘security’.
+

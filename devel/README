@@ -1,0 +1,7 @@
+Software development and package building packages.
+
+This does not include Emacs and similar software,
+that falls under ‘editors’. But software such as
+Eclipse does fall under this category, as well
+has debuggers, valgrind and compilers.
+

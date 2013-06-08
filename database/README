@@ -1,0 +1,6 @@
+Database software packages.
+
+These are packages that handles, creates,
+inspects, and so on, databases. This includes
+software such as postgres and mariadb.
+

@@ -1,7 +1,0 @@
-Distributed job packages.
-
-These are packages that lets you utilise
-additional computers to make your job
-complete faster, such as distcc and
-distributed rendering support for Blender.
-

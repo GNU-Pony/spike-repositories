@@ -9,7 +9,7 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'splashtool'
-pkgver = '1368501465'
+pkgver = '1370691210'
 pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
 upstream = 'https://github.com/GNU-Pony/splashtool'
 arch = ['any']
@@ -26,7 +26,7 @@ makedepends = ['make', 'coreutils', 'java-environment']
 if i_use_info:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1CF0B24DD9C1ACE01BED2DD81E2BD61523EDA2B737E9B5EDECA5A1115EFA1D7BC4CD0BEC46C8AF1C5504DDE726DE6D484AA36935E58C3AB71D70151549B453DA2DB03C2E0B8397AA']
+sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 _info_dir = lambda private : '%s/share/info' % _prefix(private)

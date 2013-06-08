@@ -25,8 +25,7 @@ if i_use_info:
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C7442FF9ED89169D8016EC2CBC75061DFD1E869C8A575F6777546C06A0E3226ED19A3F6535FA59643DDF6D5DBD3B5E7DA4CF3A579443BD0EDDDEDF43BB53865CF26B8F27591DBB46']
 
-p = get('PINPAL')
-_prefix = lambda private : p + ('/usr' if not private else path('~/.local'))
+_prefix = lambda private : '/usr' if not private else path('~/.local')
 _info_dir = lambda private : '%s/share/info' % _prefix(private)
 
 
@@ -56,19 +55,22 @@ def package(startdir, srcdir, pkgdir, private):
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
     if i_use_info:
-        install_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+        install_info('%s/filesystem.info.gz' % _dir, _dir)
 
 
 def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
     if not i_use_info:
-        if ('%s/filesystem.info.gz' % _info_dir(private) in installedfiles) and os.path.exists('%s/dir' % _info_dir(private)):
-            uninstall_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+        if ('%s/filesystem.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
+            uninstall_info('%s/filesystem.info.gz' % _dir, _dir)
     else:
-        install_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+        install_info('%s/filesystem.info.gz' % _dir, _dir)
 
 
 def post_uninstall(tmpdir, rootdir, installedfiles, private):
-    if ('%s/filesystem.info.gz' % _info_dir(private) in installedfiles) and os.path.exists('%s/dir' % _info_dir(private)):
-        uninstall_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+    _dir = rootdir + _info_dir(private)
+    if ('%s/filesystem.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info('%s/filesystem.info.gz' % _dir, _dir)
 

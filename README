@@ -1,12 +1,4 @@
-This branch is just an information branch; for the
-actual packages, checkout one of the following branches:
+Dead packages.
 
-
-BRANCH    DESCRIPTION             SUPPORT PRIORITY
-
-core      Essential packages      High
-extra     Recommended packages    Medium
-more      Additional packages     Low
-limbo     Dead packages           None
-spool     Spooled pacakges        (not applicable)
+For legal information checkout the branch ‘master’.
 

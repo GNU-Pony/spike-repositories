@@ -1,0 +1,33 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'filesystem-minimal'
+pkgver = '1.0'
+pkgdesc = 'Filesystem hierarchy maximal simplification layer'
+upstream = 'https://github.com/GNU-Pony/filesystem'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+extension = 'filesystem'
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['552336F8459ACCD83D7A432A2D79A1F3E9531C9B22286D63F9E6A9D7038910914ABA76ABCE2E2D650F20808B6C205DEA66C4B9E7D4C84F584584CFBAD7D9141959E6A0C80C1B7B17']
+
+
+def ride(private):
+    execute(['info', 'filesystem', 'Further simplified hierarchy'])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/filesystem-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install-slim-extension')
+    _dir = '%s/usr/share/licenses' % pkgdir
+    mkdir_p(_dir)
+    ln(extension, '%s/%s' % (_dir, pkgname))
+

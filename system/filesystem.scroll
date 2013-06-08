@@ -34,6 +34,7 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
+    cd('%s/filesystem-%s' % (srcdir, pkgver))
     if i_use_info:
         make('DESTDIR=%s' % pkgdir, 'info')
 
@@ -47,7 +48,7 @@ def package(startdir, srcdir, pkgdir, private):
         if i_use_skel:
             make('BOOT=%s' % i_use_bootdir, 'DESTDIR=%s' % pkgdir, 'install-skel')
     if i_use_info:
-        install('filesystem.info.gz', '%s%s/filesystem.info.gz' % (pkgdir, _info_dir(private)))
+        install('filesystem.info.gz', '%s%s/%s.info.gz' % (pkgdir, _info_dir(private), pkgname))
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     mkdir_p(_dir)
     install('COPYING', '%s/COPYING' % _dir)
@@ -57,20 +58,20 @@ def package(startdir, srcdir, pkgdir, private):
 def post_install(tmpdir, rootdir, installedfiles, private):
     _dir = rootdir + _info_dir(private)
     if i_use_info:
-        install_info('%s/filesystem.info.gz' % _dir, _dir)
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
 
 
 def pre_upgrade(tmpdir, rootdir, installedfiles, private):
     _dir = rootdir + _info_dir(private)
     if not i_use_info:
-        if ('%s/filesystem.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
-            uninstall_info('%s/filesystem.info.gz' % _dir, _dir)
+        if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+            uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
     else:
-        install_info('%s/filesystem.info.gz' % _dir, _dir)
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
 
 
 def post_uninstall(tmpdir, rootdir, installedfiles, private):
     _dir = rootdir + _info_dir(private)
-    if ('%s/filesystem.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
-        uninstall_info('%s/filesystem.info.gz' % _dir, _dir)
+    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
 

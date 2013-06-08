@@ -1,0 +1,34 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'licenses'
+pkgver = '1370680541'
+pkgdesc = 'Common license collection project for GNU systems'
+upstream = 'https://github.com/GNU-Pony/licenses'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = UNSUPPORTED
+groups = ['base']
+depends = ['filesystem']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['B7375B73BC848FFC6F2DC900ECEA601B2556EF7F8467535A49BA77EA6D00B19E1CF21DC27D6E11823F7C33CA7C0B2D369C717BA42E2C3EEDC626A1AEAA5D57516C3873B81000AE7F']
+
+
+_licensesdir = '/usr/share/licenses'
+_dir = '%s/common' % _licensesdir
+
+
+def ride(private):
+    echo('This project is not excuteable, it just a collection of licenses stored in %s/.' % _dir)
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/licenses-%s' % (srcdir, pkgver))
+    make('DIR=%s' % _dir, 'DESTDIR=%s' % pkgdir, 'install')
+    install('COPYING', '%s/%s/COPYING' % (_licensesdir, pkgname), mode = 0o644)
+

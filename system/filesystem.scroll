@@ -1,0 +1,73 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_skel = get('I_USE_SKEL', 'y').lower().startswith('y')
+i_use_bootdir = get('I_USE_BOOTDIR', 'normal')
+
+pkgname = 'filesystem'
+pkgver = '1.0'
+pkgdesc = 'Filesystem hierarchy implementation for GNU/Pony'
+upstream = 'https://github.com/GNU-Pony/filesystem'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+groups = ['base']
+makedepends = ['make', 'coreutils']
+if i_use_info:
+    makedepends.append('texinfo')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['552336F8459ACCD83D7A432A2D79A1F3E9531C9B22286D63F9E6A9D7038910914ABA76ABCE2E2D650F20808B6C205DEA66C4B9E7D4C84F584584CFBAD7D9141959E6A0C80C1B7B17']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+_info_dir = lambda private : '%s/share/info' % _prefix(private)
+
+
+def ride(private):
+    execute(['info', 'filesystem'] if not private else ['info', 'filesystem', 'User hierarchy'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    if i_use_info:
+        make('DESTDIR=%s' % pkgdir, 'info')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/filesystem-%s' % (srcdir, pkgver))
+    if private:
+        make('BOOT=%s' % i_use_bootdir, 'DESTDIR=%s' % pkgdir, 'install-private')
+    else:
+        make('BOOT=%s' % i_use_bootdir, 'DESTDIR=%s' % pkgdir, 'install')
+        if i_use_skel:
+            make('BOOT=%s' % i_use_bootdir, 'DESTDIR=%s' % pkgdir, 'install-skel')
+    if i_use_info:
+        install('filesystem.info.gz', '%s%s/filesystem.info.gz' % (pkgdir, _info_dir(private)))
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    if i_use_info:
+        install_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    if not i_use_info:
+        if ('%s/filesystem.info.gz' % _info_dir(private) in installedfiles) and os.path.exists('%s/dir' % _info_dir(private)):
+            uninstall_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+    else:
+        install_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+
+
+def post_uninstall(tmpdir, rootdir, installedfiles, private):
+    if ('%s/filesystem.info.gz' % _info_dir(private) in installedfiles) and os.path.exists('%s/dir' % _info_dir(private)):
+        uninstall_info('%s/filesystem.info.gz' % _info_dir(private), _info_dir(private))
+

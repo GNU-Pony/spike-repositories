@@ -5,7 +5,7 @@ actual packages, checkout one of the following branches:
 BRANCH    DESCRIPTION             SUPPORT PRIORITY
 
 core      Essential packages      High
-extra     Recommended packages    Medum
+extra     Recommended packages    Medium
 more      Additional packages     Low
 limbo     Dead packages           None
 spool     Spooled pacakges        (not applicable)

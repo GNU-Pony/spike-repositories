@@ -1,0 +1,70 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'applebloom'
+pkgver = '1368590840'
+pkgdesc = 'Apple Bloom the pony dictionary'
+upstream = 'https://github.com/GNU-Pony/applebloom'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['bash', 'coreutils']
+makedepends = ['make', 'coreutils', 'sed']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['C0533CE357339861B2A81FFF4D9F4E3DE77FFDF819CC37DBA165DE2ADF073AE120D384A597B65F550D6359C57A039B72DA0F824CF4C33C6CF5C4F9A9D947E0F80680DDB1889817B8']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+_info_dir = lambda private : '%s/share/info' % _prefix(private)
+
+
+def ride(private):
+    execute(['info', 'filesystem'] if not private else ['info', 'filesystem', 'User hierarchy'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/applebloom-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'applebloom')
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    else:
+        sed([sed_script(' appleblooom\\.info\\.gz', '', '^install:'), sed_script(' install -m644 applebloom\\.info\\.gz', '\\t', '&#')], 'Makefile')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/applebloom-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if i_use_info:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if not i_use_info:
+        if ('%s/%s.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
+            uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+    else:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def post_uninstall(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+

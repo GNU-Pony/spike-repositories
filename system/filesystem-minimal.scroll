@@ -4,10 +4,9 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 pkgname = 'filesystem-minimal'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Filesystem hierarchy maximal simplification layer'
 upstream = 'https://github.com/GNU-Pony/filesystem'
 arch = ['any']
@@ -17,7 +16,7 @@ private = UNSUPPORTED
 extension = 'filesystem'
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['552336F8459ACCD83D7A432A2D79A1F3E9531C9B22286D63F9E6A9D7038910914ABA76ABCE2E2D650F20808B6C205DEA66C4B9E7D4C84F584584CFBAD7D9141959E6A0C80C1B7B17']
+sha3sums = ['C44F1BAAFBE89E207BD27E0310FB20F31C9B934B1FCBDD228EEE2469B20023E0E3A73FF17D3570096F0B07B5FC08E39522559F5EFC54FF2477AD6292760F0C7C7FCD0F1F409CF90D']
 
 
 def ride(private):

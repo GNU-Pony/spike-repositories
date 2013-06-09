@@ -19,7 +19,7 @@ private = UNSUPPORTED
 groups = ['base']
 depends = ['bash', 'grep', 'coreutils', 'dhcpcd', 'net-tools', 'inetutils', 'dhclient', 'psmisc', 'findutils', 'util-linux']
 optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog', 'python3']
-makedepends = ['make', 'coreutils']
+makedepends = ['make', 'coreutils', 'pandoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['58FA180FAAE6D16DDF4B7E34949C1A86DB094F6E66640EE8177F234AB7CA127DE64A195E832A21B243E20E8B34DAADA4D2E40AB4672CD35E531F1D8573082F25EFB2B774B4A898C7']
 
@@ -27,11 +27,15 @@ sha3sums = ['58FA180FAAE6D16DDF4B7E34949C1A86DB094F6E66640EE8177F234AB7CA127DE64
 def ride(private):
     execute('man', '8', 'netcfg')
 
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/netfg-%s' % (srcdir, pkgver))
+    make('docs')
+
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/netfg-%s' % (srcdir, pkgver))
     if not i_use_man:
         sed(sed_script('^\\t', '\\t#', '/usr/share/man/'), 'Makefile')
-    make('DESTDIR=%s' % pkgdir, 'install', 'install-contrib')
+    make('DESTDIR=%s' % pkgdir, 'install', 'install-wireless', 'install-docs')
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     install('LICENSE', '%s/LICENSE' % _dir)
 

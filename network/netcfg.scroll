@@ -10,6 +10,7 @@ i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
 pkgver = '2.1.0_B2'
+_pkgver = '2.0.1_B2'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -20,7 +21,7 @@ groups = ['base']
 depends = ['bash', 'grep', 'coreutils', 'dhcpcd', 'net-tools', 'inetutils', 'dhclient', 'psmisc', 'findutils', 'util-linux']
 optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog']
 makedepends = ['make', 'coreutils']
-source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+source = ['%s/archive/%s.tar.gz' % (upstream, _pkgver)]
 sha3sums = ['95E4E5461E81CCAB95A83C6051726893BC4005796D646B2A5C66386472DFAD7FA4E68CA2DF68611CD24E71BF4EDEBE837F4DC3DAD9147293C1F0722D55D5D23C5B1EA8F3C26BBB52']
 
 
@@ -28,7 +29,7 @@ def ride(private):
     execute('man', '8', 'netcfg')
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/netfg-%s' % (srcdir, pkgver))
+    cd('%s/netfg-%s' % (srcdir, _pkgver))
     if i_use_man:
         sed(sed_script('/usr/man/', '/usr/share/man/'), 'Makefile')
     else

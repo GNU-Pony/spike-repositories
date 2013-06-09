@@ -1,0 +1,108 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
+i_use_pdf_info = get('I_USE_PDF_INFO', 'y').lower().startswith('y')
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_man_es   = get('I_USE_MAN_ES',   'y').lower().startswith('y')
+i_use_bash     = get('I_USE_BASH',     'y').lower().startswith('y')
+i_use_zsh      = get('I_USE_ZSH',      'y').lower().startswith('y')
+i_use_fish     = get('I_USE_FISH',     'y').lower().startswith('y')
+i_use_tty      = get('I_USE_TTY',      'y').lower().startswith('y')
+
+pkgname = 'ponysay'
+pkgver = '3.0'
+pkgdesc = 'Cowsay reimplementation for ponies'
+upstream = 'https://github.com/erkin/ponysay'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'FDL1.3']
+private = SUPPORTED
+depends = ['python3', 'coreutils']
+optdepends = ['util-say>=3: Improved TTY support with KMS and PNG files']
+makedepends = ['python3', 'zip']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['ACB1935EFEE8232FC806E2D901B849CD96555305B3696657458055F1BF456B28B105F2635D2E171D94A62A787DE349E97958D39ACE79BD23648D13CB5155E19453D5FA9820DDF0F7']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+_info_dir = lambda private : '%s/share/info' % _prefix(private)
+
+
+def __params(startdir, srcdir, pkgdir, private):
+    rc = ['./setup.py']
+    rc.append('--with-ponysay')
+    rc.append('--with-ponythink')
+    rc.append('--with-ponysay-tool')
+    rc.append('--with-shared-cache' if not private else '--without-shared-cache')
+    rc.append('--with-bash' if i_use_bash else '--without-bash')
+    rc.append('--with-fish' if i_use_fish else '--without-fish')
+    rc.append('--with-zsh'  if i_use_zsh  else '--without-zsh')
+    rc.append('--with-pdf' if i_use_pdf_info else '--without-pdf')
+    rc.append('--with-pdf-compression=gz')
+    rc.append('--with-info' if i_use_info else '--without-info')
+    rc.append('--without-info-install') # such things are only for use without package managers
+    rc.append('--with-info-compression=gz')
+    rc.append('--with-man-en' if i_use_man    else '--without-man-en')
+    rc.append('--with-man-es' if i_use_man_es else '--without-man-es')
+    rc.append('--with-man-manual-compression=gz')
+    rc.append('--ponysay-manpage-section=6')
+    rc.append('--cowsay-manpage-section=6')
+    rc.append('--fortune-manpage-section=6')
+    rc.append('--with-ponies')
+    rc.append('--with-ttyponies' if i_use_tty else '--without-ttyponies')
+    rc.append('--with-extraponies')
+    rc.append('--with-extrattyponies' if i_use_tty else '--without-extrattyponies')
+    rc.append('--with-quotes')
+    rc.append('--with-balloons')
+    rc.append('--with-ucs')
+    rc.append('--with-custom-env-python=python3')
+    if private:
+        rc.append('--private')
+    rc.append('--dest-dir=%s' % pkgdir)
+    rc.append('--linking=symbolic')
+    rc.append('--freedom=yes')
+    return rc
+
+
+def ride(private):
+    execute('ponysay', '--q')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ponysay-%s' % (srcdir, pkgver))
+    execute(__params(startdir, srcdir, pkgdir, private) + ['built'])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ponysay-%s' % (srcdir, pkgver))
+    execute(__params(startdir, srcdir, pkgdir, private) + ['prebuilt'])
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if i_use_info:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if not i_use_info:
+        if ('%s/%s.info.gz' % _dir in installedfiles) and os.path.exists('%s/dir' % _dir):
+            uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+    else:
+        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+
+
+def post_uninstall(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+

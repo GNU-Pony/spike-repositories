@@ -9,7 +9,7 @@ import os
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.2.0b3'
+pkgver = '2.2.0'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -21,7 +21,7 @@ depends = ['bash', 'grep', 'coreutils', 'dhcpcd', 'net-tools', 'inetutils', 'dhc
 optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog', 'python3']
 makedepends = ['make', 'coreutils', 'pandoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C779401FA15BB042369963AFA872F52F2FAFEA290187F73D71DF089680280EE20823FADCE9B44C36B13D366F673F703AF40B96F21C1054C0124E7BA1F00FD814B5478CD5E61D0D73']
+sha3sums = ['44FCAD810396DA9FAF475D9FC44C164035CF686C3C131EBEE8F5678F8D2DC813672535BA86112C9D863D841A0B92A988A86DFAC7F66171E9BFEFA626957DDC8325927FCEE1D2501B']
 
 
 def ride(private):

@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'netcfg'
+pkgver = '2.0.0'
+pkgdesc = 'Network configuration and profile scripts'
+upstream = 'https://github.com/GNU-Pony/netcfg'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD']
+private = UNSUPPORTED
+groups = ['base']
+depends = ['bash', 'grep', 'coreutils', 'dhcpcd', 'net-tools', 'inetutils', 'dhclient', 'psmisc', 'findutils', 'util-linux']
+optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['59CF2F6BFD2F5A7A03A27E3D60E565BDB7CA500085F3CA0DC7355627D4E92EF26E5D14C50459F02E653EEEBA8B28896611B2360F9063738042BBC6CBAA6F7387B8938F7B7909F2D2']
+
+
+def ride(private):
+    execute('man', '8', 'netcfg')
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/netfg-%s' % (srcdir, pkgver))
+    if i_use_man:
+        sed(sed_script('/usr/man/', '/usr/share/man/'), 'Makefile')
+    else
+        sed(sed_script('^\\t', '\\t#', '/usr/man/'), 'Makefile')
+    make('DESTDIR=%s' % pkgdir, 'install', 'install-contrib')
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    install('LICENSE', '%s/LICENSE' % _dir)
+

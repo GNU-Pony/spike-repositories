@@ -1,0 +1,88 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
+
+pkgname = 'pony-initialisation'
+pkgver = '1368172760'
+pkgdesc = 'System bootup scripts for sysvinit'
+upstream = 'https://github.com/GNU-Pony/pony-initialisation'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+groups = ['base']
+depends = ['glibc', 'bash', 'coreutils', 'systemd', 'iproute2', 'ncurses', 'kbd', 'findutils']
+optdepends = ['net-tools: Legacy networking support',
+              'bridge-utils: Network bridging support',
+              'dhcpcd: DHCP network configuration',
+              'wireless_tools: Wireless networking',
+              'sysvinit: Legacy init support']
+makedepends = ['make', 'coreutils', 'grep', 'sed']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['48840932C2275FA5475D94137F69A1DF7334D12143895044137847AE2C346A552D5A2ACABF32027DBFCA80F34B33179253887C6F14CF04699C8E2C1C024688861BF73E7112C3D73C']
+
+
+def ride(private):
+    execute(['info', 'rc.conf'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pony-initialisation-%s' % (srcdir, pkgver))
+    sed(sed_script('^\\(install_completion:\\) .*', '\\1'), 'Makefile')
+    rules = []
+    if i_use_info:
+        rules.append('info')
+    else:
+        sed(sed_script(' install_doc', '', '^install: '), 'Makefile')
+    if i_use_bash:
+        rules.append('completion/bash-completion.install')
+    else:
+        sed(sed_script('\\t', '&#', 'completion/bash-completion.install'), 'Makefile')
+    if i_use_zsh:
+        rules.append('completion/zsh-completion.install')
+    else:
+        sed(sed_script('\\t', '&#', 'completion/zsh-completion.install'), 'Makefile')
+    if len(rules) > 0:
+        make(['DESTDIR=%s', 'PREFIX=', 'DATA=/usr/share'] + rules)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pony-initialisation-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s', 'DATA=', 'SHARE=/usr/share', 'install')
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('../common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if i_use_info:
+        install_info(['%s/%s.info.gz' % (_dir, info) for info in ['rc.conf', 'rc.d']], _dir)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if not i_use_info:
+        for info in ['rc.conf', 'rc.d']:
+            if ('%s/%s.info.gz' % (_dir, info) in installedfiles) and os.path.exists('%s/dir' % _dir):
+                uninstall_info('%s/%s.info.gz' % (_dir, info), _dir)
+    else:
+        install_info(['%s/%s.info.gz' % (_dir, info) for info in ['rc.conf', 'rc.d']], _dir)
+
+
+def post_uninstall(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _info_dir(private)
+    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
+        uninstall_info(['%s/%s.info.gz' % (_dir, info) for info in ['rc.conf', 'rc.d']], _dir)
+

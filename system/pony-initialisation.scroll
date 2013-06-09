@@ -66,13 +66,13 @@ def package(startdir, srcdir, pkgdir, private):
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
+    _dir = rootdir + '/usr/share/info'
     if i_use_info:
         install_info(['%s/%s.info.gz' % (_dir, info) for info in ['rc.conf', 'rc.d']], _dir)
 
 
 def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
+    _dir = rootdir + '/usr/share/info'
     if not i_use_info:
         for info in ['rc.conf', 'rc.d']:
             if ('%s/%s.info.gz' % (_dir, info) in installedfiles) and os.path.exists('%s/dir' % _dir):
@@ -82,7 +82,7 @@ def pre_upgrade(tmpdir, rootdir, installedfiles, private):
 
 
 def post_uninstall(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
+    _dir = rootdir + '/usr/share/info'
     if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
         uninstall_info(['%s/%s.info.gz' % (_dir, info) for info in ['rc.conf', 'rc.d']], _dir)
 

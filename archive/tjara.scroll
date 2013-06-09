@@ -22,7 +22,7 @@ sha3sums = ['EE96BD9EFE4F3D7AE2CBE082C58CC71FEEB3DDEB996AE1D5303C9C75C41F472AC55
 
 
 def ride(private):
-    execute('posixtime')
+    echo('Execute: tjära [other tar options that --extract] < [file]')
 
 
 def package(startdir, srcdir, pkgdir, private):

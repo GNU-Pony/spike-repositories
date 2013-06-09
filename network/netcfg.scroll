@@ -9,7 +9,7 @@ import os
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.2.1'
+pkgver = '2.5.0rc1'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -17,11 +17,11 @@ freedom = SOFTWARE | MEDIA
 license = ['nBSD']
 private = UNSUPPORTED
 groups = ['base']
-depends = ['bash', 'grep', 'coreutils', 'dhcpcd', 'net-tools', 'inetutils', 'dhclient', 'psmisc', 'findutils', 'util-linux', 'iproute2']
-optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog', 'python3']
-makedepends = ['make', 'coreutils', 'pandoc']
+depends = ['bash', 'coreutils', 'dhcpcd', 'net-tools', 'psmisc', 'grep', 'findutils', 'util-linux', 'iproute2']
+optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog']
+makedepends = ['make', 'bash', 'coreutils', 'pandoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['84C3F985BAAF140A0E801BF1500F4E86EBD10D59FBAE07C91E6D98CBAEDE1D7FA3CA1EB5960B681C8443831818E0004B990E9352AED9F9130D4DC3572A67B11B90AFCF33E65363F2']
+sha3sums = ['093109F27BB07ED8CD08DE5F6908762532259C79EF3FD62FEAE59869648E95EF3538793D4DF8CF6CAFF2E3623D3494FFA527DCF157AF42F2A5026CFE64296675B1EFD38A6C3201E2']
 
 
 def ride(private):
@@ -33,9 +33,9 @@ def build(startdir, srcdir, pkgdir, private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/netfg-%s' % (srcdir, pkgver))
-    if not i_use_man:
-        sed(sed_script('^\\t', '\\t#', '/usr/share/man/'), 'Makefile')
     make('DESTDIR=%s' % pkgdir, 'install', 'install-wireless', 'install-docs')
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     install('LICENSE', '%s/LICENSE' % _dir)
+    if not i_use_man:
+        rm_r('%s/usr/share/man' & pkgdir)
 

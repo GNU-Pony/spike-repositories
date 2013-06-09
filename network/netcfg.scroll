@@ -11,7 +11,7 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.6.1'
+pkgver = '2.6.2'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -29,7 +29,7 @@ optdepends = ['dialog: for the menu based profile and wifi selectors ',
               'dhclient: for DHCPv6 support']
 makedepends = ['make', 'bash', 'coreutils', 'pandoc', 'python-markdown']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F3039DF4C8857EE6198A518EAE28D732DAD14F5D8C528ACA2CFE3727421DC81F61BDD86B7E2DB587331629527756883A0BB0E58124F0025A8B79095F874DB50FC582BD415DAA6FF4']
+sha3sums = ['B06500B7BA8133EBDB8B1EF66B613712C5284E35464813EADF9F37DCC02B602FE91525B80795C72757E350619E3DE00977AC907680615921605D7D0D584741F78DE7A087B2601667']
 
 
 def ride(private):

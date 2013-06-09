@@ -11,7 +11,7 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.7'
+pkgver = '2.7.1'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -19,7 +19,7 @@ freedom = SOFTWARE | MEDIA
 license = ['nBSD']
 private = UNSUPPORTED
 groups = ['base']
-depends = ['bash>=4', 'coreutils', 'iproute2', 'grep']
+depends = ['bash>=4', 'coreutils', 'iproute2', 'grep', 'procps-ng']
 optdepends = ['dialog: for the menu based profile and wifi selectors ',
               'wpa_supplicant: for wireless networking support',
               'wireless_tools: for wireless networking support',
@@ -31,7 +31,7 @@ optdepends = ['dialog: for the menu based profile and wifi selectors ',
               'bridge-utils: for bridge support']
 makedepends = ['make', 'bash', 'coreutils', 'asciidoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['EB1C0DD13D5260CA89EEFF57D02C55E145ED4B898C9156AB2DF8AE1B368302309D6C7FDBE80C137E47094B49478B321BE4889AEFEBAE9D39993062D4EB76DAB5B66F01D5B859E5EB']
+sha3sums = ['E79D04842D7456DE6E0D2D0208F12F2FB88D33647D825FE78333A1241CD7163709A79D44B20FA6DACBA11FFC32CA9849A2D4BE8DA51623C56BBD8305F4C9C262C3A424B8E6D0500E']
 
 
 def ride(private):

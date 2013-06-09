@@ -1,0 +1,52 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'spike'
+pkgver = '0.1'
+pkgdesc = 'The package manager for GNU/Pony'
+upstream = 'https://github.com/GNU-Pony/spike'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED if not get('SPIKE_PATH').startswith(path('~/').replace('//', '/')) else MANIDTORY
+groups = ['base']
+depends = ['python3: Spike and its scrolls are written in Python 3',
+           'git: for bootstrapping and -git scrolls',
+           'wget: wget is included as a standard command for scrolls and is used internally for file downloading',
+           'make: make is included as a standard command for scrolls',
+           'util-linux: rename is included as a standard command for scrolls',
+           'strip: strip is included as a standard command for scrolls and is used internally for space saving',
+           'sed: sed is included as a standard command for scrolls',
+           'patch: patch is included as a standard command for scrolls',
+           'bash: bass is included as a standard command for scrolls',
+           'gzip: for decompression of downloaded files',
+           'bzip2: for decompression of downloaded files',
+           'xz: for decompression of downloaded files',
+           'tar: for extraction of downloaded archives',
+           ''] # '' is the actual Spike itself
+optdepends =  ['coreutils: shred is used for secure removal of files',
+               'upx: for compression of binaries']
+source = []
+sha3sums = []
+
+
+def ride(private):
+    echo('You have now successfully ridden Spike.')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    _share = '%s%s/share' % (pkgdir, '/usr' if not private else path('~/.local'))
+    _prefix = pkgdir if not private else (pkgdir + path('~/.local')))
+    mkdir_p('%s/licenses/%s' % (_share, pkgname))
+    mkdir_p('%s/doc' % _share)
+    mkdir_p('%s/sbin' % _prefix)
+    ln('/usr/share/licenses/common/GPL3', '%s/licenses/%s/LICENSE' % (_share, pkgname))
+    ln('%s/COPYING' % get('SPIKE_PATH'), '%s/licenses/%s/COPYING' % (_share, pkgname))
+    ln('%s/doc' % get('SPIKE_PATH'), '%s/doc/%s' % (_share, pkgname))
+    for cmd in ['owlowiscious', 'spike', 'spikeless']:
+        ln('%s/%s' % (get('SPIKE_PATH'), cmd), '%s/sbin/%s' % (_prefix, cmd))
+

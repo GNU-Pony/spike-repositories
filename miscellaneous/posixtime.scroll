@@ -1,0 +1,35 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/bfd252e80cb2abd21b05030c2239a48edc7f5ca9'
+
+pkgname = 'posixtime'
+pkgver = '2013.06.04'
+pkgdesc = 'A command that displays the current POSIX time'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['python3']
+source = ['%s/scripts/posixtime' % _source, '%s/COPYING' % _source]
+sha3sums = ['1115E476FA510401B9E2A92F283F8EA0DFA937EA5E8CE06F627071F901A64F320FE04254AD6DBD966627BBBDB29C56C05440FEAA3F72D54A0DEFC3EE7E13C8E4E98E17E06B551385',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute('posixtime')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('posixtime', '%s/bin/posixtime' % _prefix, mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

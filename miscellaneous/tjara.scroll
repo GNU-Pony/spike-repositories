@@ -1,0 +1,35 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/86eba0b3ac3e5f329e3f09a4c09b3998d396f85d'
+
+pkgname = 'tjara'
+pkgver = '2013.06.05'
+pkgdesc = 'A tar --extract wrapper that preserves symlink directories'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['bash', 'tar', 'coreutils', 'findutils', 'sed', 'util-linux']
+source = ['%s/scripts/tjära' % _source, '%s/COPYING' % _source]
+sha3sums = ['EE96BD9EFE4F3D7AE2CBE082C58CC71FEEB3DDEB996AE1D5303C9C75C41F472AC55C9C401128F6EDE1FF13ADC0F5A0D245D00D88D9FA734E79E5F812D5A16A6192F0C1CF077D869F',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute('posixtime')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('tjära', '%s/bin/tjära' % _prefix, mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

@@ -11,7 +11,7 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.8.5'
+pkgver = '2.8.6rc1'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -31,7 +31,7 @@ optdepends = ['dialog: for the menu based profile and wifi selectors ',
               'bridge-utils: for bridge support']
 makedepends = ['make', 'coreutils', 'asciidoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['414355EE4BC6006C018D9D3653619AB6A51409B106BE1C09BC88D32DE556E809137E170492F8D01C577A0AE86AF36B13E969B1C47D52826D02BD784BEE52B6AECC480565FAE99E90']
+sha3sums = ['46B83B26C07B957ECABE5B8562409F7C13B3A21B300D0B2F3ADEF5DDD7B37F674FDBE787488599C1D7A9816E5E97A8CEDF997EDE71370EEE6AE16F9A216A88F03F76ED993FCE4E54']
 
 
 def ride(private):

@@ -7,9 +7,11 @@ from dragonsuite import *
 import os
 
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'netcfg'
-pkgver = '2.5.0rc1'
+pkgver = '2.5.0rc2'
 pkgdesc = 'Network configuration and profile scripts'
 upstream = 'https://github.com/GNU-Pony/netcfg'
 arch = ['any']
@@ -21,7 +23,7 @@ depends = ['bash', 'coreutils', 'dhcpcd', 'net-tools', 'psmisc', 'grep', 'findut
 optdepends = ['wireless_tools', 'ppp', 'wpa_supplicant', 'dialog']
 makedepends = ['make', 'bash', 'coreutils', 'pandoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['093109F27BB07ED8CD08DE5F6908762532259C79EF3FD62FEAE59869648E95EF3538793D4DF8CF6CAFF2E3623D3494FFA527DCF157AF42F2A5026CFE64296675B1EFD38A6C3201E2']
+sha3sums = ['B9C419904C134E1D03D8C7DE46D4AA91338F1123C8AFADB6EDC26A5FD6FBC6F2D25E91DE8D81F5899F80540835EBC0562DA5442F186DB517B958026ED200F81F3A37BB65E94E2731']
 
 
 def ride(private):
@@ -29,6 +31,10 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/netfg-%s' % (srcdir, pkgver))
+    if not i_use_bash:
+        sed(sed_script('^\\t', '&#', 'bash-completion'), 'Makefile')
+    if not i_use_zsh:
+        sed(sed_script('^\\t', '&#', 'zsh-completion'), 'Makefile')
     make('docs')
 
 def package(startdir, srcdir, pkgdir, private):

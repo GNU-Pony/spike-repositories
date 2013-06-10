@@ -26,6 +26,8 @@ optdepends = ['net-tools: Legacy networking support',
               'wireless_tools: Wireless networking',
               'sysvinit: Legacy init support']
 makedepends = ['make', 'coreutils', 'grep', 'sed']
+provides = ['initscripts', 'initscripts-fork']
+conflicts = ['initscripts', 'initscripts-fork']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')

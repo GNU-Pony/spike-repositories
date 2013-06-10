@@ -7,9 +7,9 @@ from dragonsuite import *
 import os
 
 i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
-i_use_pdf_info = get('I_USE_PDF_INFO', 'y').lower().startswith('y')
+i_use_pdf_info = get('I_USE_PDF_INFO', 'n').lower().startswith('y')
 i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
-i_use_man_es   = get('I_USE_MAN_ES',   'y').lower().startswith('y')
+i_use_man_es   = get('I_USE_MAN_ES',   'n').lower().startswith('y')
 i_use_bash     = get('I_USE_BASH',     'y').lower().startswith('y')
 i_use_zsh      = get('I_USE_ZSH',      'y').lower().startswith('y')
 i_use_fish     = get('I_USE_FISH',     'y').lower().startswith('y')

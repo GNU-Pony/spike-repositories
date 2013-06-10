@@ -19,17 +19,7 @@ makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C7442FF9ED89169D8016EC2CBC75061DFD1E869C8A575F6777546C06A0E3226ED19A3F6535FA59643DDF6D5DBD3B5E7DA4CF3A579443BD0EDDDEDF43BB53865CF26B8F27591DBB46']
 
-p = get('PINPAL')
-
-
-def _same(a, b, root):
-    a = os.path.realpath(root + a)
-    b = os.path.realpath(root + b)
-    if a.startswith(root):
-        a = a[len(root):]
-    if b.startswith(root):
-        b = b[len(root):]
-    return a == b
+_params = []
 
 
 def ride(private):
@@ -38,18 +28,31 @@ def ride(private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/filesystem-%s' % (srcdir, pkgver))
-    with_libraries64 = os.path.exists('%s/lib64' % p) and not _same('/lib64', '/lib', p)
-    with_usr_games   = os.path.exists('%s/usr/games' % p) and not _same('/usr/games', '/usr', p)
-    with_local_games = os.path.exists('%s/usr/local/games' % p) and not _same('/usr/local/games', '/usr/local', p)
-    with_multilib    = os.path.exists('%s/usr/libmulti' % p)
-    with_extended    = os.path.exists('%s/info' % p) and os.path.exists('%s/share' % p)
+    make(_params + ['DESTDIR=%s' % pkgdir, 'install-extension'])
+    _dir = '%s/usr/share/licenses' % pkgdir
+    mkdir_p(_dir)
+    ln(extension, '%s/%s' % (_dir, pkgname))
+
+
+def pre_install(tmpdir, rootdir, private):
+    def _same(a, b, root):
+        a = os.path.realpath(root + a)
+        b = os.path.realpath(root + b)
+        if a.startswith(root):
+            a = a[len(root):]
+        if b.startswith(root):
+            b = b[len(root):]
+        return a == b
+    with_libraries64 = os.path.lexists('%s/lib64' % rootdir) and not _same('/lib64', '/lib', rootdir)
+    with_usr_games   = os.path.lexists('%s/usr/games' % rootdir) and not _same('/usr/games', '/usr', rootdir)
+    with_local_games = os.path.lexists('%s/usr/local/games' % rootdir) and not _same('/usr/local/games', '/usr/local', rootdir)
+    with_multilib    = os.path.lexists('%s/usr/libmulti' % rootdir)
+    with_extended    = os.path.lexists('%s/info' % rootdir) and os.path.exists('%s/share' % rootdir)
     with_libraries64 = 'with_libraries64=' + ('yes' if with_libraries64 else 'no')
     with_usr_games   = 'with_usr_games='   + ('yes' if with_usr_games   else 'no')
     with_local_games = 'with_local_games=' + ('yes' if with_local_games else 'no')
     with_multilib    = 'with_multilib='    + ('yes' if with_multilib    else 'no')
     with_extended    = 'with_extended='    + ('yes' if with_extended    else 'no')
-    make(with_libraries64, with_usr_games, with_local_games, with_multilib, with_extended, 'DESTDIR=%s' % pkgdir, 'install-extension')
-    _dir = '%s/usr/share/licenses' % pkgdir
-    mkdir_p(_dir)
-    ln(extension, '%s/%s' % (_dir, pkgname))
+    for p in (with_libraries64, with_usr_games, with_local_games, with_multilib, with_extended):
+        _params.append(p)
 

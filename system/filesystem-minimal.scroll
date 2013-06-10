@@ -18,6 +18,8 @@ makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C7442FF9ED89169D8016EC2CBC75061DFD1E869C8A575F6777546C06A0E3226ED19A3F6535FA59643DDF6D5DBD3B5E7DA4CF3A579443BD0EDDDEDF43BB53865CF26B8F27591DBB46']
 
+_params = []
+
 
 def ride(private):
     execute(['info', 'filesystem', 'Further simplified hierarchy'])
@@ -25,10 +27,14 @@ def ride(private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/filesystem-%s' % (srcdir, pkgver))
-    with_extended = os.path.exists(get('PINPAL') + '/share')
-    with_extended = 'with_extended=' + ('yes' if with_extended else 'no')
-    make(with_extended, 'DESTDIR=%s' % pkgdir, 'install-slim-extension')
+    make(_params + ['DESTDIR=%s' % pkgdir, 'install-slim-extension'])
     _dir = '%s/usr/share/licenses' % pkgdir
     mkdir_p(_dir)
     ln(extension, '%s/%s' % (_dir, pkgname))
+
+
+def pre_install(tmpdir, rootdir, private):
+    with_extended = os.path.lexists('%s/share' % rootdir)
+    with_extended = 'with_extended=' + ('yes' if with_extended else 'no')
+    _params.append(with_extended)
 

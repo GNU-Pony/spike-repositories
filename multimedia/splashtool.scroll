@@ -30,7 +30,6 @@ source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
-_info_dir = lambda private : '%s/share/info' % _prefix(private)
 
 
 def ride(private):

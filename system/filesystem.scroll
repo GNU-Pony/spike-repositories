@@ -56,22 +56,17 @@ def package(startdir, srcdir, pkgdir, private):
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
-    if i_use_info:
-        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+    post_install_info(rootdir, installedfiles, private, i_use_info)
 
 
 def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
-    if not i_use_info:
-        if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
-            uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
-    else:
-        install_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+    pre_upgrade_info(rootdir, installedfiles, private)
 
 
-def post_uninstall(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _info_dir(private)
-    if ('%s/%s.info.gz' % (_dir, pkgname) in installedfiles) and os.path.exists('%s/dir' % _dir):
-        uninstall_info('%s/%s.info.gz' % (_dir, pkgname), _dir)
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

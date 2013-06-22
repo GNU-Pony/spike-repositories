@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+
+pkgname = 'encrypt'
+pkgver = '2013.06.15'
+pkgdesc = 'Encryption and decryption commands for encryption to yourself'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['bash', 'gpg']
+source = ['%s/scripts/%s' % (_source, 'encrypt'), '%s/scripts/%s' % (_source, 'encrypt-nosign'), '%s/scripts/%s' % (_source, 'decrypt'), '%s/COPYING' % _source]
+sha3sums = ['A4846DB8AD152B2C3FFFAE1FB283B59AB9F488C0D942C85E17DD118C16C771E4D310F1B70B9E32CD06D8A1D67785699D394C314FAF4ED85A870B6A69297A08A70B9597333640D2B1',
+            'AB14F4789CC8E8C58E129151F5D6E45AE508AC03BBF1A41AF15491A7AFD37A599C91D7F71CABF5175A5358A1F54CE81ED5CBDB57C0ECD4DEA9BF8185F27E892AAD0399527E677FDE',
+            '4A53B3A9D05C857339A64F184B93A926D1D1DC59C47B12285E48BBD77587EAA5168F3E6EB7FA6D9C5A36471C09CCAB2716680C3F1857F1399B089E910F337200C33FF19A448FC656',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    echo('Type encrypt, encrypt-nosign or decrypt followed by the files you want to encrypt or descript')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('encrypt', '%s/bin/%s' % (_prefix, 'encrypt'), mode = 0o755)
+    install('encrypt-nosign', '%s/bin/%s' % (_prefix, 'encrypt-nosign'), mode = 0o755)
+    install('decrypt', '%s/bin/%s' % (_prefix, 'decrypt'), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

@@ -1,0 +1,40 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'bash-d'
+pkgver = '1371914432'
+pkgdesc = 'Subscripts for GNU Bash shells'
+upstream = 'https://github.com/GNU-Pony/bash.d'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+extension = 'bash'
+depends = ['bash', 'coreutils']
+makedepends = ['make', 'coreutils', 'sed']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['3673C8EAAD9E012EAE49370E2D857EFA244EB4ACE910A013F6C9CC1104CDD6C8686DD0E782661E984D0FF6EC0ABE2A29B8EE71F61122FB0C0C61002308618468928EEF22936A55A5']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['cat', '%s/share/doc/%s' % (_prefix(private), pkgname)])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/bash.d-%s' % (srcdir, pkgver))
+    _dir = '%s%s/share/bash.d' % (pkgdir, _prefix(private))
+    install(path('src/*.bash'), _dir, mode = 0o644)
+    _dir = '%s%s/share/doc' % (pkgdir, _prefix(private))
+    install('README', '%s/%s' % (_dir, pkgname), mode = 0o644)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    install('COPYING', '%s/COPYING' % _dir, mode = 0o644)
+

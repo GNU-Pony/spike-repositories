@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_script = 'purge'
+
+pkgname = _script
+pkgver = '2013.06.16'
+pkgdesc = 'Scripts to remove backup and autosave files'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['bash', 'coreutils', 'findutils']
+source = ['%s/scripts/%s' % (_source, 'purge'), '%s/scripts/%s' % (_source, 'purger'), '%s/COPYING' % _source]
+sha3sums = ['0484D07AEED8665BBEB13F7340C5F561D216415CC387615E7C0EA5B7EDDF0EDC7A5FF8C25FE252D871EA54F56DCD03E37395A8BA294105B499406A8D4BAC74E7B8539140C494AE62',
+            'C499A7BA9B4B06C71B75D0C708B85A26B0D76143D001405ACA82FB69C2B34F048CE207B976AD9E8F8BDE1D31E541F86EE98AF47E858CC05261597D01BB40BB490B14AA25037D66DF',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute('purge')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('purge', '%s/bin/%s' % (_prefix, 'purge'), mode = 0o755)
+    install('purger', '%s/bin/%s' % (_prefix, 'purger'), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

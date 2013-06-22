@@ -16,7 +16,10 @@ license = ['GPL3']
 private = SUPPORTED
 extension = 'bash'
 depends = ['bash', 'coreutils']
-makedepends = ['make', 'coreutils', 'sed']
+optdepends = ['libnotify: for alert.bash',
+              'sed: for palette.bash',
+              'git: for git branch in prompt.bash',
+              'acpi: for battery status in prompt.bash']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['3673C8EAAD9E012EAE49370E2D857EFA244EB4ACE910A013F6C9CC1104CDD6C8686DD0E782661E984D0FF6EC0ABE2A29B8EE71F61122FB0C0C61002308618468928EEF22936A55A5']
 

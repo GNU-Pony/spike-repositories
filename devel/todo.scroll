@@ -23,7 +23,7 @@ sha3sums = ['D62E204DDBCE734AF1BCCF1E898D5E3477D533E80581634AF5887131F68C76602BB
 
 
 def ride(private):
-    echo('Type blackcat followed by the files you want to print with invisible text')
+    execute('todo')
 
 
 def package(startdir, srcdir, pkgdir, private):

@@ -17,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GNUAllPermissive']
 private = SUPPORTED
 depends = ['sh', 'python3', 'coreutils']
-makedepends = ['make', 'coreutils']
+makedepends = ['make', 'coreutils', 'sed']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')

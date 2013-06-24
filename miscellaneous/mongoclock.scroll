@@ -1,0 +1,62 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'mongoclock'
+pkgver = '1'
+pkgdesc = 'Just a humongous clock for the terminal'
+upstream = 'https://github.com/maandree/mongoclock'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+depends = ['sh', 'python3', 'coreutils']
+makedepends = ['make', 'coreutils']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['1527DCD422FF44A1814DF3AC2F98C19A44F62794778A029019B00556B29B55C4C02D72E7E66FDBCFF576C180D381656A1A8492A6EEE75AB4C2F911C1F30913860B77A060C15B2567']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('mongoclock')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/mongoclock-%s' % (srcdir, pkgver))
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/mongoclock-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

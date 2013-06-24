@@ -33,6 +33,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/mongoclock-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'mongoclock.install')
     if i_use_info:
         make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
 
@@ -42,7 +43,6 @@ def package(startdir, srcdir, pkgdir, private):
     make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
     if i_use_info:
         make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

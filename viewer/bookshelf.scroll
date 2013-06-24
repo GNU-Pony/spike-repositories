@@ -20,6 +20,7 @@ depends = ['bash', 'coreutils', 'grep']
 makedepends = ['make', 'coreutils']
 if i_use_info:
     makedepends.append('texinfo')
+    makedepends.append('gzip')
 optdepends = ['xpdf: default document viewer in a graphical environment',
               'jfbview: default document viewer in Linux VT']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]

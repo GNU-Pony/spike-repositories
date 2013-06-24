@@ -79,6 +79,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/ponysay-%s' % (srcdir, pkgver))
+    sed(sed_script('@dircategory Miscellaneous', '@dircategory Candy'), 'manuals/ponysay.texinfo')
     execute(__params(startdir, srcdir, pkgdir, private) + ['built'])
 
 

@@ -8,7 +8,7 @@ from dragonsuite import *
 _source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
 _script = 'gif.burst'
 
-pkgname = _script.replace('.', '-')
+pkgname = _script
 pkgver = '2013.06.15'
 pkgdesc = 'Scripts for creating a GIF per frame in a GIF'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'

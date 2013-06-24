@@ -6,24 +6,24 @@
 from dragonsuite import *
 
 _source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
-_script = 'pdf.unpage'
+_script = 'pdf.cut'
 
-pkgname = _script.replace('.', '-')
+pkgname = _script
 pkgver = '2013.06.15'
-pkgdesc = 'Script for removing pages from PDF:s'
+pkgdesc = 'Script for keeping only some pages in a PDF'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['WTFPL2']
 private = SUPPORTED
-depends = ['bash', 'ghostscript', 'coreutils']
+depends = ['bash', 'ghostscript']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['D0FB7E20F9988DC4482430EC9A48D3090EA2A17CBDAD9CE11C524617319574467D411FADA83C4984D417FB2BF7550F0F22EE13465DC9C25EB1963A6F1662B0232ED049C9A2D8B095',
+sha3sums = ['E8F662FC7E4BC5DD1B08FA48322F9B87D7A0026910C8277F96158AF37E1761273576668C7CD94B5426E9DE5EB88818B2FAA3AE01A2AEF145D01DAD0620AE7CDDB8D7CF5D05CDE908',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 
 def ride(private):
-    execute('pdf.unpage')
+    execute('pdf.cut')
 
 
 def package(startdir, srcdir, pkgdir, private):

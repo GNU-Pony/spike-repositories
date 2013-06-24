@@ -6,7 +6,7 @@
 from dragonsuite import *
 import os
 
-pkgname = 'bash-d'
+pkgname = 'bash.d'
 pkgver = '1371922664'
 pkgdesc = 'Subscripts for GNU Bash shells'
 upstream = 'https://github.com/GNU-Pony/bash.d'

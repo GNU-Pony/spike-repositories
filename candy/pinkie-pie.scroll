@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'pinkie-pie'
+pkgver = '1.0.2'
+pkgdesc = 'Madam Pinkie Pie: ponified fortune cookies'
+upstream = 'https://github.com/maandree/pinkie-pie'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['public']
+private = SUPPORTED
+depends = ['sh', 'fortune-mod', 'ponypipe']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BA7844B94EA8BCAE43888E17D4F241E1DDDA5B4F4B64C2BFDE7A14840AD089C7EF0A723A69E2686617E5F2C806B07E0682C8F3A7B2281CB4F6AF2D8E627E2426F4CBD2858D23A0CE']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('pinkie-pie')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+

@@ -1,0 +1,67 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+
+pkgname = 'correctpony'
+pkgver = '1.3'
+pkgdesc = 'Passphrase generator based on http://xkcd.com/936/'
+upstream = 'https://github.com/maandree/correctpony'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['make', 'coreutils', 'gcc']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+optdepends = ['bash: for using the correctpony-security script',
+              'bc: for using the correctpony-security script',
+              'sh: for using the correctpony-security script',
+              'coreutils: for using the correctpony-security script']
+source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['241150CDD03B504A000C19B071A5DABBE8905B00B1EFDFD610232665770DFB801F11C77C49ADE6B25BF2066D654930086B7E274D3CD1FDB6E0E12FBE7DC936C041B327790BB8C659']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('correctpony')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/correctpony-v%s' % (srcdir, pkgver))
+    if not i_use_info:
+        sed([sed_script(' info$', '', '^all : '), sed_script('^', '#', 'info manual'), sed_script('^', '#', '/info')], 'Makefile')
+    if not i_use_bash:
+        sed(sed_script('^\\t', '#&', 'bash-completion'), 'Makefile')
+    make('-B', 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/correctpony-v%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -24,7 +24,7 @@ if i_use_info:
 optdepends = ['imagemagick: allows imgsrcrecovery to read frames in GIF files',
               'perl: required for cowsay import support']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
+sha3sums = ['99D170F26C841402EE75A39481E572B1C61BF15DB8678DF1D9FB6C25E4C897DAF47AD65B718488203EB833E0A3EED149658D0450A46FBC1245B83E85B8B81584CD68475D7631E50A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

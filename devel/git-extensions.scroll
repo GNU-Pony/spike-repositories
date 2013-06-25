@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'git-extensions'
+pkgver = '3'
+pkgdesc = 'Simple handy extensions for git'
+upstream = 'https://github.com/maandree/git-extensions'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+extension = 'git'
+depends = ['bash']
+makedepends = ['make', 'coreutils', 'sed', 'findutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['C7E9B477497F28E6D5C55527A7A1805873AF23EBEE329785C4CB1A51D21ABEE34902FA49F012067EA5A76EB6C7A8A6069C3D414E502D899A059AEEA25536E931D07E7D1F64C4B6BB']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('You can look into the individual commands at %s/tree/master/src' % upstream)
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/git-extensions-%s' % (srcdir, pkgver))
+    make('-B', 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/git-extensions-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+

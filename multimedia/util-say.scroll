@@ -1,0 +1,64 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'util-say'
+pkgver = '3.2'
+pkgdesc = 'Tools for creating ponies for cowsay and cowsay-like programs'
+upstream = 'https://github.com/maandree/util-say'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['java-runtime>=6', 'bash']
+makedepends = ['make', 'coreutils', 'findutils', 'grep', 'sed', 'java-environment>=6']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+optdepends = ['imagemagick: allows imgsrcrecovery to read frames in GIF files',
+              'perl: required for cowsay import support']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['info', 'util-say'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/util-say-%s' % (srcdir, pkgver))
+    if not i_use_info:
+        sed(sed_script('^', '#', '/info'), 'Makefile')
+    make('-B', 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/util-say-%s' % (srcdir, pkgver))
+    make('PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    rm('%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
+    ln('/usr/share/licenses/common/GPL3', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

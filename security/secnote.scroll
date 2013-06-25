@@ -1,0 +1,63 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'secnote'
+pkgver = '1.2'
+pkgdesc = 'Encrypted note taking'
+upstream = 'https://github.com/maandree/secnote'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+depends = ['gnupg', 'coreutils', 'findutils', 'grep', 'sh']
+makedepends = ['make', 'coreutils']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BBCE38D42638B906AE222BAF3890D0565522472E147F6BAF1C10F3BFB54F2B28F8579859B923DB7F4A2A5125BFB2C905BB925ED390316570472DD45B2AFCE15B6035F52790B4AABA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['info', 'secnote'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/secnote-%s' % (srcdir, pkgver))
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    else:
+        sed(sed_script('^', '#', '/info/'), 'Makefile')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/secnote-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    ln('/usr/share/licenses/common/GNUAllPermissive', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

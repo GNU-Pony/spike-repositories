@@ -1,0 +1,62 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'rmixer'
+pkgver = '1.2'
+pkgdesc = 'Simple remote interface for the ALSA mixer'
+upstream = 'https://github.com/maandree/rmixer'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['sh', 'java-runtime>=7', 'alsa-utils']
+makedepends = ['make', 'coreutils', 'java-environment>=7']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['5A74CA8E64F2FCD00BAED00813FB94FAE9D92B5A7E519A575572F02A4C5234BC0198AEB6BEE9F6BACF0DC0E4C2464AF1BD8A1281BEE223EF3281570BB4FF73743AC8A232FF88F0C1']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['info', 'rmixer', 'invoking'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/rmixer-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'code')
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/rmixer-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

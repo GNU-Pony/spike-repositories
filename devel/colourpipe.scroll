@@ -1,0 +1,43 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'colourpipe'
+pkgver = '1.0.2'
+pkgdesc = 'Collection of programs used to colour the output of other programs'
+upstream = 'https://github.com/maandree/colourpipe'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['java-runtime']
+makedepends = ['make', 'coreutils', 'java-environment']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['9003AAECC09DC1AAC9DD79CE8D2A653F229CBD4301EC6E286C554D08BBBCBF417AE880A671DFB9C6A774A05A8293C77F10C4B8D32030E270B037CBF5AEDB507671649A9D004C6631']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('The commands javac-colour and ecj-colour exists')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/colourpipe-%s' % (srcdir, pkgver))
+    export('MAKEFILE', '')
+    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/colourpipe-%s' % (srcdir, pkgver))
+    export('MAKEFILE', '')
+    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    cp('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

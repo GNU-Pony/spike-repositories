@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
 _script = 'pdf.cut'
 
 pkgname = _script
-pkgver = '2013.06.15'
+pkgver = '2013.06.26'
 pkgdesc = 'Script for keeping only some pages in a PDF'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -18,7 +18,7 @@ license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'ghostscript']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['E8F662FC7E4BC5DD1B08FA48322F9B87D7A0026910C8277F96158AF37E1761273576668C7CD94B5426E9DE5EB88818B2FAA3AE01A2AEF145D01DAD0620AE7CDDB8D7CF5D05CDE908',
+sha3sums = ['6704039C1CF4840E402244435B0D6628D631C0F253D6FE535F6A2127F14B5D2ABC15800A59047E3B8F5A338B56E856F28EC09CB17D88A803F751898AE92787CC774DCF5F68EA923D',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 

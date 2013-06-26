@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
 _script = 'pdf.unpage'
 
 pkgname = _script
-pkgver = '2013.06.15'
+pkgver = '2013.06.26'
 pkgdesc = 'Script for removing pages from PDF:s'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -18,7 +18,7 @@ license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'ghostscript', 'coreutils']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['D0FB7E20F9988DC4482430EC9A48D3090EA2A17CBDAD9CE11C524617319574467D411FADA83C4984D417FB2BF7550F0F22EE13465DC9C25EB1963A6F1662B0232ED049C9A2D8B095',
+sha3sums = ['DC585A8C7CADA4F10EC9C56E1C99DB9C9F9237470C03A469B4836E55136AD14C4997E7AB17DCEEB88C2B0B8737D2282B3FF945FF993E48A4DF981E39EC6C6BE154E0A98F0DD71474',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 

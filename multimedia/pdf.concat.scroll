@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
 _script = 'pdf.concat'
 
 pkgname = _script
-pkgver = '2013.06.15'
+pkgver = '2013.06.26'
 pkgdesc = 'Script for concatenating PDF files'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -18,7 +18,7 @@ license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'ghostscript']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['B547CCC4BEB9B4C2E9C1F2E058B2C0D685A572C32E65D7E47099F9E335BE42FA50AF2414F09ECDF712D1058BC25C2737360BA422694C69D178539DAF286D16E14EDF282B3B8DD798',
+sha3sums = ['FB6EFC963037B664F3E823B318FA8F13FA82BDD54CE775C0C4A2DE0A5159084FC267D5C38676ADEAB826B608D588C0BE5E8200B825857B966FFE4B21493D1E2ADB8F1B54118C3955',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 

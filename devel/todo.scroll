@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
 _script = 'todo'
 
 pkgname = _script
-pkgver = '2013.06.15'
+pkgver = '2013.06.26'
 pkgdesc = 'Script that finds all todo:s in a project'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -18,7 +18,7 @@ license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'coreutils', 'grep']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['D62E204DDBCE734AF1BCCF1E898D5E3477D533E80581634AF5887131F68C76602BB7393FB71F7AE1A6D6495B646FB7BB551FD8303AEB2D33A2B33E0E9A41AFA6C196302D4AC60B85',
+sha3sums = ['1AD3F002EAF6021ED6720B4E8E216C036B0B3C17AB85F0DA4B59976A6C1BCD61EDF3F5F103841BC2DA59F1334E3D00E98D04022C30C398EE4780E895E3039890D3D2EC63FC367EE2',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 

@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/2b9401662a4fb81c7e9e0f8bbe38447bbee57c1b'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
 _script = 'blackcat'
 
 pkgname = _script
-pkgver = '2013.06.15'
+pkgver = '2013.06.26'
 pkgdesc = 'cat with invisible output for password masking'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -18,7 +18,7 @@ license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'coreutils']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['7DC843CB1A92A7FB68F71ACE9DAFB308C7DC489AB1E1976FA5ECEC2E821D9D905A5DFCB08DDBCB7188A29820D86E10878F1C780DAEB28117207F6963BD8C7961914AB9F9E4E46589',
+sha3sums = ['B3699BCFB4C552C6D5ED33149835F9136FC0BF49B47F00E583BDA5759C93058A864299054BB367D7A3323C44DD380031C63C524C4D0C52616B235CA26149C1019C4E71B5EE681FE7',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 

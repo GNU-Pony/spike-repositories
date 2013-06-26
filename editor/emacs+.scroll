@@ -5,10 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-_source = 'https://raw.github.com/GNU-Pony/miscellaneous/d8a9ee0d401308931fe284a862cc1a4ca2c789d6'
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/f627b2a5f2875a7af47a12b8e933d9548705996d'
+_script = 'emacs+'
 
-pkgname = 'emacs+'
-pkgver = '2013.06.04'
+pkgname = _script
+pkgver = '2013.06.26'
 pkgdesc = 'Emacs wrapper for enhanced terminal experience'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
@@ -16,8 +17,8 @@ freedom = SOFTWARE | MEDIA
 license = ['WTFPL2']
 private = SUPPORTED
 depends = ['bash', 'emacs']
-source = ['%s/scripts/emacs+' % _source, '%s/COPYING' % _source]
-sha3sums = ['950E170A3361784288C104378ED972EB0C6AC64A9B4D2B1D647B72FC297AE010FB0ADE990389DCAB0CB897171447F5AFDD8386B88800584395200A1D5E8D22A3BC189C3B9229D0AF',
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['306F2F2C731903A337B406D412B743476C91ABA9C3BFC5399BD7A4C409DA7A8DD8D626FD6A5D4B21D06FFC683538FB75AF3ED227D25398F662B084B4E0C8ED2B3E0B1162CA9C9A22',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 
@@ -29,7 +30,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd(srcdir)
     _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
     _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
-    install('emacs+', '%s/bin/emacs+' % _prefix, mode = 0o755)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
     install('COPYING', '%s/COPYING' % _dir)
     ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
 

@@ -2,11 +2,10 @@ This branch is just an information branch; for the
 actual packages, checkout one of the following branches:
 
 
-BRANCH    DESCRIPTION             SUPPORT PRIORITY
+BRANCH    DESCRIPTION             SUPPORT PRIORITY	MAY DEPEND ON
 
-core      Essential packages      High
-extra     Recommended packages    Medium
-more      Additional packages     Low
-limbo     Dead packages           None
-spool     Spooled packages        (not applicable)
-
+core      Essential packages      High	  		core
+extra     Recommended packages    Medium		core, extra
+more      Additional packages     Low			core, extra, more
+limbo     Dead packages           None			Any branch
+spool     Spooled packages        (not applicable)	Any branch

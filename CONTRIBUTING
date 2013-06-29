@@ -1,0 +1,44 @@
+It is preferable if you GPG-sign your commits and request a pull
+to https://github.com/GNU-Pony/info/tree/master/openpgp-keys for
+inclusion of your key.
+
+
+How to create a GPG-key:
+Open your terminal and run:
+    gpg --gen-key
+Export your key by running:
+    gpg --armour --export (your key*) > (your username).asc
+
+* something that uniquely identifies your key, it can be
+  its ID, your name, your e-mail, et c.
+
+
+To do a git commit with GPG-signing and off signing you use to
+command:  git commit --gpg-sign=(your GPG key ID) --signoff
+
+
+A suggestion on how to remember to sign your commit:
+
+In my bashrc I have a function named ‘gitcom’ with
+is:  git commit --signoff -m "$*"
+If signs off the commit and I just need to have
+the message after ‘gitcom’ and id can be multiple
+arguments.
+
+But when I am in this repository it is instead:
+git commit --gpg-sign=(my GPG key) --signoff -m "$*"
+
+This modification is done automatically be cause my
+‘gitcom’ function actually looks like this:
+
+function gitcom
+{
+    local d="$(pwd)" sd="(THE PATH TO THIS REPOSITORY)"
+    if [ "${d}" = "${sd}" ] || [ "${d::(LENGTH OF sd)}" = "${sd}/" ]
+    then
+        git commit --gpg-sign=(MY GPG KEY) --signoff -m "$*"
+    else
+        git commit --signoff -m "$*"
+    fi
+}
+

@@ -9,3 +9,6 @@ extra     Recommended packages    Medium		core, extra
 more      Additional packages     Low			core, extra, more
 limbo     Dead packages           None			Any branch
 spool     Spooled packages        (not applicable)	Any branch
+
+
+Please read CONTRIBUTING before adding scrolls.

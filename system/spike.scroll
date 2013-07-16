@@ -29,7 +29,9 @@ depends = ['python3: Spike and its scrolls are written in Python 3',
            'tar: for extraction of downloaded archives',
            ''] # '' is the actual Spike itself
 optdepends =  ['coreutils: shred is used for secure removal of files',
-               'upx: for compression of binaries']
+               'upx: for compression of binaries',
+               'xloadimage: default example shot viewer in graphical environments',
+               'jfbview: default example shot viewer in non-graphical environments']
 source = []
 sha3sums = []
 

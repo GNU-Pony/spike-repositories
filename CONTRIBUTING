@@ -13,7 +13,7 @@ Export your key by running:
   its ID, your name, your e-mail, et c.
 
 
-To do a git commit with GPG-signing and off signing you use to
+To do a git commit with GPG-signing and off signing you use the
 command:  git commit --gpg-sign=(your GPG key ID) --signoff
 
 

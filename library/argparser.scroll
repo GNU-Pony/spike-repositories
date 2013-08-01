@@ -1,0 +1,77 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'argparser'
+pkgver = '1.0'
+pkgdesc = 'Command line argument parser library, like getopt, except better.'
+upstream = 'https://github.com/maandree/argparser'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+makedepends = ['coreutils', 'sed', 'make']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+optdepends = ['argparser-bash: Bash version'
+              'argparser-c: Native version written in C'
+              'argparser-java: Java version'
+              'argparser-python: Python 3 version']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['3892C4FD9691CBA772FA4A2833C5A55141614FF1F3061F0DDD1F595BFAB91A29276BD19E553C6A0DA985B8268B6F884AD73894271E68C9706105EAE4E31A149D7F34B109F5EDD98B']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+makeparams = ['PREFIX=%s' % _prefix(private),
+              'PKGNAME=%s' % pkgname,
+              'PY3VERSION=%s' % 3.3,
+              'DESTDIR=%s' % pkgdir]
+
+globals()['scroll_argparser_build'] = []
+globals()['scroll_argparser_package'] = []
+
+
+def ride(private):
+    execute(['info', pkgname])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/argparser-%s' % (srcdir, pkgver))
+    buildparams = globals()['scroll_argparser_build']
+    if i_use_info:
+        buildparams.append('info')
+    make(makeparams + buildparams)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/argparser-%s' % (srcdir, pkgver))
+    packageparams = globals()['scroll_argparser_package']
+    packageparams.append('install-license')
+    if i_use_info:
+        packageparams.append('install-info')
+    make(makeparams + packageparams)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

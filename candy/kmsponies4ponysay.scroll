@@ -7,7 +7,7 @@ from dragonsuite import *
 
 pkgname = 'kmsponies4ponysay'
 pkgver = '0.1'
-pkgdesc = 'Apple Bloom the pony dictionary'
+pkgdesc = 'Improving TTY support under KMS support for ponysay<2'
 upstream = 'https://github.com/maandree/kmsponies4ponysay'
 arch = ['any']
 freedom = SOFTWARE | MEDIA

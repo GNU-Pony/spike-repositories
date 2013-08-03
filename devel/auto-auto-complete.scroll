@@ -4,7 +4,6 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
@@ -17,7 +16,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['python3']
-makedepends = []
+makedepends = ['make', 'sed', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['6660AB79D2A1C9BC4BBAD14BFC35AA66A1346F8394AFE243645527BDAE8C9AB20AA2BB8D343ED0DC84C947D574030F65636E4E2903BC0E1B74957CE1E25AB3A7974BB78EA96BDA19']
 

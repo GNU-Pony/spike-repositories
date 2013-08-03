@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'ponyquotes4ponysay'
-pkgver = '0.2'
+pkgver = '1.0'
 pkgdesc = 'Pony quotes for ponysay<2'
 upstream = 'https://github.com/maandree/ponyquotes4ponysay'
 arch = ['any']
@@ -17,7 +17,7 @@ reason = 'Built in to ponysay>=2'
 depends = ['bash', 'coreutils', 'perl', 'ponysay<2']
 makedepends = ['git', 'bash', 'make', 'coreutils']
 source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['886A17E2397C46A49BB9BD77789A64CD4D31C1DE62968668E0CF34C93743585987E7E4C670B5C8B2597E52395E7D3E547C2E9E81627262293F146F50449F299868414AA4FCB0F159']
+sha3sums = ['E6E403FB2C2023C1549D6C95F42E3E150D5664373868BBEC27A124C75427F96C5D175DC3F5F875C4113D0B7E3D3C57B8CF91789A9E7BC0A6710CAABFDB0E46D1F4BDE14F4E0085AB']
 
 
 def ride(private):

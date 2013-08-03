@@ -1,0 +1,49 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'texman'
+pkgver = '1.0'
+pkgdesc = 'Texinfo-like syntax for manpages'
+upstream = 'https://github.com/maandree/texman'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['perl']
+makedepends = ['sed' 'coreutils' 'make']
+if i_use_man:
+    makedepends.append('perl')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['F6385FDD28DFC7601D9A927AD4AA39E3254ABCA4AAD8C1A48391D16113A320500D5DD3512DD2BD071B7349197499B3F8C12DB9995B5309B81B5207CC8E69B924A3512EA9AA90EFC8']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['man', 'texman'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/texman-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'texman')
+    if i_use_man:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'man')
+    else:
+        sed(sed_script(' texman.$(TEXMAN_SECTION).gz', '', '^install:'), 'Makefile')
+        sed(sed_script('^', '#', 'man/man$(TEXMAN_SECTION)'), 'Makefile')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/texman-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

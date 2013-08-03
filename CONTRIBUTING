@@ -42,3 +42,20 @@ function gitcom
     fi
 }
 
+
+
+Pull requests can be set to maandree@member.fsf.org if you
+do not have a github account that can use GitHub's facility
+for requesting pulls. If so, please format the subject line
+like this: `Spike %repo: %scroll`. Urgent patches, such as
+security patches, should be sent with highest priority and
+wthe the subject line formated `[URGENT] Spike: %scroll (%repo)`
+so that I quikly see that it is important. Please also send
+I message with the subjectly formated like that if you have
+made an urgent pull request on GitHub.
+
+If you find yourself making many pull requests or if you
+are maintaining a package that is often patch for security,
+request collaboration access to Spike-repositories (especially
+in the latter case.)
+

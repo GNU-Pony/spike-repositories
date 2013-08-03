@@ -1,0 +1,35 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'ponyquotes4ponysay'
+pkgver = '0.1'
+pkgdesc = 'Pony quotes for ponysay<2'
+upstream = 'https://github.com/maandree/ponyquotes4ponysay'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['public']
+private = UNSUPPORTED
+reason = 'Built in to ponysay>=2'
+depends = ['bash', 'coreutils', 'perl', 'ponysay<2']
+makedepends = ['git', 'bash', 'make', 'coreutils']
+source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['7BA6FE05FB63130C27FA77DEFA06AC8E584C9A7BEFDB99B9C940AD885F8AA1042311A43A2F9632B794479BDC90BF3511353309AE40B0E04BF0C0076B4CA43E96ADBEFFD3DE3E5570']
+
+
+def ride(private):
+    echo('You should really upgrade to a new ponysay...')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ponyquotes4ponysay-v%s' % (srcdir, pkgver))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ponyquotes4ponysay-v%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+

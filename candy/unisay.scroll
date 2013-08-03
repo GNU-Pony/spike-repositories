@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'unisay'
-pkgver = '0.7.1'
+pkgver = '0.7.1.1'
 pkgdesc = 'cowsay+ponysay rewritten in Java, with added features such as pony quotes and full Unicode support'
 upstream = 'https://github.com/maandree/unisay'
 arch = ['any']
@@ -17,7 +17,7 @@ reason = 'Deprecated in favour of ponysay'
 depends = ['java-runtime>=1.5']
 makedepends = ['coreutils', 'java-environment>=1.5', 'bash', 'make', 'util-say', 'sed']
 source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['44602E935C13C2656A21150BD80BA97C5F5D814D6DA389ED6629AEA73A9845B70EB183B3C57F32024D8D800F569513D546133E1C6080C04613A2A21AF2B070CC1CAD19A745A66E0C']
+sha3sums = ['8581B5FBAEE89E4F3D42D888D1C17868521159152FDB8831E6C9418116BB460E2CA7BEC844F110F35F1A222F184442AA008E74BF9CF422B0C2196AA2915F92487D56C1E5EEAB790F']
 
 
 def ride(private):

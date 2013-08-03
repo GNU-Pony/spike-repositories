@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'kmsponies4ponysay'
-pkgver = '0.1'
+pkgver = '0.2'
 pkgdesc = 'Improving TTY support under KMS support for ponysay<2'
 upstream = 'https://github.com/maandree/kmsponies4ponysay'
 arch = ['any']
@@ -17,7 +17,7 @@ reason = 'Built in to ponysay>=2'
 depends = ['bash', 'coreutils', 'sed', 'util-say<2' 'ponysay<2']
 makedepends = ['coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['59E126503381B9D83360A70D59E4490877951E11E0889F415B8CF582C2FEF5F8DF6929261E35C29A29FCA8C0755B03E363867C963DDC7920F1D093C5F2C52243C8F3D93EB22D9747']
+sha3sums = ['4CF779E28AAE16566F7B41256180CE22D69303681CF555FE946CB9CBB6D53E6E621234A9C8FFFA1C68C27B5C4C671421219F9A37196170576A50E3B56AE74B71AC8ADD6ED784C151']
 
 
 def ride(private):

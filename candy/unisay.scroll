@@ -1,0 +1,37 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'unisay'
+pkgver = '0.7.0'
+pkgdesc = 'cowsay+ponysay rewritten in Java, with added features such as pony quotes and full Unicode support'
+upstream = 'https://github.com/maandree/unisay'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+reason = 'Deprecated in favour of ponysay'
+depends = ['java-runtime>=1.5']
+makedepends = ['coreutils', 'java-environment>=1.5', 'bash', 'make', 'util-say-git', 'sed']
+source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['A121403E28BA4C3E00B03DA232B9B110522802ACF75952F85461BA8FC361AC8ACB0F30210D37673EF7B1DCF12F655DAE0C2D82C5D088A1EB36DF20CC2BB3D9D4A2E']
+
+
+def ride(private):
+    execute('unisay')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/unisay-v%s' % (srcdir, pkgver))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/unisay-v%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

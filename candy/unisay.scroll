@@ -15,7 +15,7 @@ license = ['GPL3']
 private = UNSUPPORTED
 reason = 'Deprecated in favour of ponysay'
 depends = ['java-runtime>=1.5']
-makedepends = ['coreutils', 'java-environment>=1.5', 'bash', 'make', 'util-say-git', 'sed']
+makedepends = ['coreutils', 'java-environment>=1.5', 'bash', 'make', 'util-say', 'sed']
 source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['44602E935C13C2656A21150BD80BA97C5F5D814D6DA389ED6629AEA73A9845B70EB183B3C57F32024D8D800F569513D546133E1C6080C04613A2A21AF2B070CC1CAD19A745A66E0C']
 

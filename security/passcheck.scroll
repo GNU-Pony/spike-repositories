@@ -4,13 +4,12 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'passcheck'
 pkgver = '1'
-pkgdesc = 'Passphrase strenght evaluater'
+pkgdesc = 'Passphrase strength evaluater'
 upstream = 'https://github.com/maandree/passcheck'
 arch = ['any']
 freedom = SOFTWARE | MEDIA

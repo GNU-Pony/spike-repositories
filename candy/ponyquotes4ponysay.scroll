@@ -14,7 +14,8 @@ freedom = SOFTWARE | MEDIA
 license = ['public']
 private = UNSUPPORTED
 reason = 'Built in to ponysay>=2'
-depends = ['bash', 'coreutils', 'perl', 'ponysay<2']
+extension = 'ponysay<2'
+depends = ['bash', 'coreutils', 'perl']
 makedepends = ['git', 'bash', 'make', 'coreutils']
 source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['E6E403FB2C2023C1549D6C95F42E3E150D5664373868BBEC27A124C75427F96C5D175DC3F5F875C4113D0B7E3D3C57B8CF91789A9E7BC0A6710CAABFDB0E46D1F4BDE14F4E0085AB']

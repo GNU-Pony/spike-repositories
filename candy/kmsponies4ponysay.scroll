@@ -14,7 +14,8 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
 reason = 'Built in to ponysay>=2'
-depends = ['bash', 'coreutils', 'sed', 'util-say<2' 'ponysay<2']
+extension = 'ponysay<2'
+depends = ['bash', 'coreutils', 'sed', 'util-say<2']
 makedepends = ['coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['9CAF115285FD7E483B1A98CD2D62E9EAD3E68B624BCE7D3B0F1F0417C3129ED1197B10A7FF9325473F5BB726CA51D4C69C0AFE8421D4D9C4E4C0F543CD356D28691892C3367535A3']

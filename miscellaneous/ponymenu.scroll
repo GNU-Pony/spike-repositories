@@ -9,7 +9,7 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'ponymenu'
-pkgver = '1.2'
+pkgver = '1.2.1'
 pkgdesc = 'Quick terminal based application menu'
 upstream = 'https://github.com/maandree/ponymenu'
 arch = ['any']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['48AA1D3F420374875F49A6E5070082116B6C31802EF005B1577BAA838E4FB695419C5A56327F09D29E6D40816C0267E45EE509CA9EEF5C2D895CB69284F22662D6E0A48BACDD0F54']
+sha3sums = ['61D0122669BA5A437C8A6E82E9DAF87DE5D83C14EE3EDBC8C33209A39624283D5226F02344F5B69FF1F50FCC689164D2654E044D293DDF2D23C73B5A5CB081B716F4F0FE9D00261B']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 _conf = lambda private : '/etc' if not private else path('~/.config/ponymenu/')

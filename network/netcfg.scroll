@@ -31,7 +31,7 @@ optdepends = ['dialog: for the menu based profile and wifi selectors ',
               'bridge-utils: for bridge support']
 makedepends = ['make', 'coreutils', 'asciidoc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2EC0B356542B500EC2F0C3D304C758987818F61B29A77D5CF49DB6A5D9D32B1D4334EFA40124B8C8A3F26C365B4605435F634B1B66EDCF43E4570BE98A94C8A7408C785B176593EF']
+sha3sums = ['4BFC184B73CCFFC92F076D6E7614F892B689080921F71B1C26C3C8E4F888CDCFF0CBD8A4089919ACAE5F60071F138DCC8A8C28FDAF5D5E7E8EB486BB9B7AF24CA1E17D01A36832CB']
 
 
 def ride(private):

@@ -9,12 +9,12 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'splashtool'
-pkgver = '1370691210'
+pkgver = '1375927355'
 pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
 upstream = 'https://github.com/GNU-Pony/splashtool'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 depends = ['java-runtime: 1 source file is written in Java',
            'python3: 2 source files are written in Python 3',
@@ -27,7 +27,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['67370E3C17B03E8184FBAF045CC314BBFDA4CF47321A07271DAF62DBD5C58AF6B4475BD06D08D96590411A21171685A95060D3599AF983F1AC40ACD1474607D74D2B17FD91CB9576']
+sha3sums = ['23072FC5071275652876B73FE8D0C9BFBE763CEEFADC9BE1C7CD95FBA21428051B15D36BAB4D397DB5CC4F57513D41158112EFDE4C4ED35CD592FACAA71033EDC01AC47189318D5A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -49,7 +49,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/splashtool-%s' % (srcdir, pkgver))
     make('PKGNAME=' + pkgname, 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
     rm('%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
-    ln('/usr/share/licenses/common/GPL3', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
+    ln('/usr/share/licenses/common/AGPL3', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

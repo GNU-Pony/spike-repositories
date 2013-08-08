@@ -9,12 +9,12 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'applebloom'
-pkgver = '1370706817'
+pkgver = '1375927668'
 pkgdesc = 'Apple Bloom the pony dictionary'
 upstream = 'https://github.com/GNU-Pony/applebloom'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 depends = ['bash', 'coreutils']
 makedepends = ['make', 'coreutils', 'sed']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D2C7FCC5B653F0928259CFDF0AE354AEB06A9DBD28CB0B99A10CB75BF4AE53439F5A38BB40A0B0E4FA21C56E874F19D44C730FED0666A91D9E2AA2DB22476E1346E19A9330EAFF63']
+sha3sums = ['DEB755631D60D0FB68B57ADC7167DE2485A602F18954D7EA759FBD76C04B9FC119595AC3D59CDD13E7F31E68988534B6C8C6E881F5ED4D61E27190A1D20202EEB221DF5E46351752']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -47,7 +47,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/applebloom-%s' % (srcdir, pkgver))
     make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

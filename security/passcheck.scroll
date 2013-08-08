@@ -6,9 +6,12 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'passcheck'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'Passphrase strength evaluater'
 upstream = 'https://github.com/maandree/passcheck'
 arch = ['any']
@@ -20,8 +23,10 @@ makedepends = ['make', 'coreutils', 'sed']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['FB47224218A1BD6BB298423F88FE3583F037CF7D9B21F11FA4406C40AB4E30371471FEBA96B8A6C31CC923B709A3CF9D4EC5A2CC5824DDCD3C3FEDDC238E9DF16324E485CA6782F8']
+sha3sums = ['F2347ADE3E381198D1A07829D6BAB7B79FF4576418F537FC3BCBB26A162C8EB9095FAA23700E686218BEBE584773192D95CD8BB9BF29B1E7293C12E14BDD538F9CAFA4FB9222206E']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -32,16 +37,20 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/passcheck-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'passcheck.install')
-    if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd']
+    for condition, rule in ((i_use_info, 'info'), (i_use_bash, 'bash'), (i_use_fish, 'fish'), (i_use_zsh, 'zsh')):
+        if condition:
+            args.append(rule)
+    make(args)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/passcheck-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
-    if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license']
+    for condition, rule in ((i_use_info, 'info'), (i_use_bash, 'bash'), (i_use_fish, 'fish'), (i_use_zsh, 'zsh')):
+        if condition:
+            args.append('install-%s' % rule)
+    make(args)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)

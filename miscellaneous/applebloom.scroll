@@ -9,7 +9,7 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'applebloom'
-pkgver = '1375927668'
+pkgver = '1375928474'
 pkgdesc = 'Apple Bloom the pony dictionary'
 upstream = 'https://github.com/GNU-Pony/applebloom'
 arch = ['any']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['DEB755631D60D0FB68B57ADC7167DE2485A602F18954D7EA759FBD76C04B9FC119595AC3D59CDD13E7F31E68988534B6C8C6E881F5ED4D61E27190A1D20202EEB221DF5E46351752']
+sha3sums = ['5D7D08A70DF9F1AFD3255BBFED364E9339DC79647149BF4BD7C4AF7CDB200EC0D148B17E22C8971E1E7CD0508BFB6763FB63295A97E091BFDD7D344D6DA3B18A3789FDCE9ED6036D']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

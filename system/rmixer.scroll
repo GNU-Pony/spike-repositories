@@ -7,9 +7,12 @@ from dragonsuite import *
 import os
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'rmixer'
-pkgver = '1.2'
+pkgver = '1.3'
 pkgdesc = 'Simple remote interface for the ALSA mixer'
 upstream = 'https://github.com/maandree/rmixer'
 arch = ['any']
@@ -21,8 +24,10 @@ makedepends = ['make', 'coreutils', 'java-environment>=7']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['5A74CA8E64F2FCD00BAED00813FB94FAE9D92B5A7E519A575572F02A4C5234BC0198AEB6BEE9F6BACF0DC0E4C2464AF1BD8A1281BEE223EF3281570BB4FF73743AC8A232FF88F0C1']
+sha3sums = ['5050ED3D4F45E1144F7CB04DF1A84D2F56C2C1A8CBF402E3858AF31CB9034DDF522E4E50F75076DCE174641B613E3E5DFCE334B5AA0251E0967AD1FB9FFD4789CDE18204BB051CFF']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -33,16 +38,25 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/rmixer-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'code')
-    if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    args.append('code')
+    if i_use_info:  args.append('info')
+    if i_use_bash:  args.append('bash')
+    if i_use_fish:  args.append('fish')
+    if i_use_zsh:   args.append('zsh')
+    make(args)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/rmixer-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
-    if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    args.append('install-cmd')
+    args.append('install-license')
+    if i_use_info:  args.append('install-info')
+    if i_use_bash:  args.append('install-bash')
+    if i_use_fish:  args.append('install-fish')
+    if i_use_zsh:   args.append('install-zsh')
+    make(args)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

@@ -8,7 +8,7 @@ from dragonsuite import *
 patch = 'argparser'
 _patch = 'Bash'
 pkgname = '%s-%s' % (patch, _patch.lower())
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = '%s version of argparser' % _patch
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'argparser'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Command line argument parser library, like getopt, except better.'
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']
@@ -24,7 +24,7 @@ optdepends = ['argparser-bash: Bash version'
               'argparser-java: Java version'
               'argparser-python: Python 3 version']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3892C4FD9691CBA772FA4A2833C5A55141614FF1F3061F0DDD1F595BFAB91A29276BD19E553C6A0DA985B8268B6F884AD73894271E68C9706105EAE4E31A149D7F34B109F5EDD98B']
+sha3sums = ['DD54B222C5B88466982D502FC7560DC574744C7DFD61ABF101052D674E0C4977CEACCFB5E06EF7A36C92126ABA3CDAAA76229F267332582D96179F411EFAA71A50947E1C4D277A6F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

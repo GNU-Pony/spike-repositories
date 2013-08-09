@@ -9,12 +9,12 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'sets'
-pkgver = '1.2'
+pkgver = '1.3'
 pkgdesc = 'The practical way to do set operations on sets of lines in the shell'
 upstream = 'https://github.com/maandree/sets'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['38CF2FAFBD4A08F5816F1AF5D2963619D29D68A02A71D41B5509D713588EFA97CEEDAF1E71BA08E24D364117A4F16D03457DED81FF6F4A5C50BA23028D3C4FBB26BD2B6A0395E1BE']
+sha3sums = ['0C1AC6CE4D1AF4EB2B7C68A565E2F244DB0842F8AF451BF0210D8FDD02F34145E1E15C65D674E9E146EE20843DC43F10CEBA750F9AD470F24047A18E6623F3B86A06A36D4B177B56']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

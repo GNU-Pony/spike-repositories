@@ -11,14 +11,14 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'correctpony'
-pkgver = '2.0'
+pkgver = '2.1'
 pkgdesc = 'Passphrase generator based on http://xkcd.com/936/'
 upstream = 'https://github.com/maandree/correctpony'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['AGPL3']
 private = SUPPORTED
-depends = ['java-runtime>=6', 'argparser-java', 'sh']
+depends = ['java-runtime>=6', 'argparser-java']
 makedepends = ['make', 'coreutils', 'sed', 'argparser-java', 'java-environment>=6']
 if i_use_info:
     makedepends.append('texinfo')
@@ -26,7 +26,7 @@ if i_use_info:
 if i_use_bash or is_use_fish or is_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BF43528AD583CB19C0929D57FE0C162FD7AD6D4F2B6AF5A449DE26B3188E60B1DFCD56162DD4E3D54E9C9CC807A9006565C83559559F662B89B5AF1028A5A0A8D1C67AEDEDC1BB51']
+sha3sums = ['C8CB31E3D3BCF588B3AADEF0DBCD7DEC2DC5E225A49901FE319779544421791034393F69C7A8A8B3ED6CF249F18D8A6A66B83E358FB9EDFBD0E437CE8208A0D6EEDA57284F06A6EE']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

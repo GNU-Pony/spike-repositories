@@ -4,30 +4,29 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'correctpony'
-pkgver = '1.3'
+pkgver = '2.0'
 pkgdesc = 'Passphrase generator based on http://xkcd.com/936/'
 upstream = 'https://github.com/maandree/correctpony'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['WTFPL2']
+license = ['AGPL3']
 private = SUPPORTED
-depends = ['glibc']
-makedepends = ['make', 'coreutils', 'gcc']
+depends = ['java-runtime>=6', 'argparser-java', 'sh']
+makedepends = ['make', 'coreutils', 'sed', 'argparser-java', 'java-environment>=6']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
-optdepends = ['bash: for using the correctpony-security script',
-              'bc: for using the correctpony-security script',
-              'sh: for using the correctpony-security script',
-              'coreutils: for using the correctpony-security script']
-source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['241150CDD03B504A000C19B071A5DABBE8905B00B1EFDFD610232665770DFB801F11C77C49ADE6B25BF2066D654930086B7E274D3CD1FDB6E0E12FBE7DC936C041B327790BB8C659']
+if i_use_bash or is_use_fish or is_use_zsh:
+    makedepends.append('auto-auto-complete')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BF43528AD583CB19C0929D57FE0C162FD7AD6D4F2B6AF5A449DE26B3188E60B1DFCD56162DD4E3D54E9C9CC807A9006565C83559559F662B89B5AF1028A5A0A8D1C67AEDEDC1BB51']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -37,17 +36,26 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/correctpony-v%s' % (srcdir, pkgver))
-    if not i_use_info:
-        sed([sed_script(' info$', '', '^all : '), sed_script('^', '#', 'info manual'), sed_script('^', '#', '/info')], 'Makefile')
-    if not i_use_bash:
-        sed(sed_script('^\\t', '#&', 'bash-completion'), 'Makefile')
-    make('-B', 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir)
+    cd('%s/correctpony-%s' % (srcdir, pkgver))
+    rules = ['cmd']
+    if i_use_info:  rules.append('info')
+    if i_use_bash:  rules.append('bash')
+    if i_use_fish:  rules.append('fish')
+    if i_use_zsh:   rules.append('zsh')
+    make(['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir] + rules)
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/correctpony-v%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+    cd('%s/correctpony-%s' % (srcdir, pkgver))
+    rules = ['install-cmd', 'install-dict', 'install-license']
+    if i_use_info:  rules.append('install-info')
+    if i_use_bash:  rules.append('install-bash')
+    if i_use_fish:  rules.append('install-fish')
+    if i_use_zsh:   rules.append('install-zsh')
+    make(['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir] + rules)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

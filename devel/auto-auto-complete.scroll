@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'auto-auto-complete'
-pkgver = '2'
+pkgver = '3'
 pkgdesc = 'Autogenerate shell auto-completion scripts'
 upstream = 'https://github.com/maandree/auto-auto-complete'
 arch = ['any']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'sed', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2AAA5BADE5A90B076EB5CDC5252787E7135C3FC10D48A6616432AC1D4EFD3465D891770FC9EFF8EED9189830FE91174B206ECB3A37D685FFD622574BADEC11B88532032D5284E6D9']
+sha3sums = ['759BEDE880B963E20DA586E3E44C02D392A30DDA916E12E57482A585CDE6C63FE1A5D9DACA9C07299C1776C77BFE109B1D648CBE1201CB1272E2EEFD338531E89032F4FCCDCDCC43']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

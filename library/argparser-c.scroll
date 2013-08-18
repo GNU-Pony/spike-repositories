@@ -8,12 +8,12 @@ from dragonsuite import *
 patch = 'argparser'
 _patch = 'C'
 pkgname = '%s-%s' % (patch, _patch.lower())
-pkgver = '1.1'
+pkgver = '2.0'
 pkgdesc = 'Native version of argparser written in C'
 upstream = 'https://github.com/maandree/argparser'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 makedepends = ['gcc']
 source = []

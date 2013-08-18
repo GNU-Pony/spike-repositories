@@ -8,12 +8,12 @@ from dragonsuite import *
 patch = 'argparser'
 _patch = 'Bash'
 pkgname = '%s-%s' % (patch, _patch.lower())
-pkgver = '1.1'
+pkgver = '2.0'
 pkgdesc = '%s version of argparser' % _patch
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 depends = ['bash']
 makedepends = ['sed']

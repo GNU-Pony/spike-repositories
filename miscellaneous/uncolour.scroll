@@ -1,0 +1,35 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/774263187048aef793d8da6280cff8d97b059e60'
+
+pkgname = 'uncolour'
+pkgver = '2013.08.18'
+pkgdesc = 'A command that removes ANSI escape sequences'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['sh']
+source = ['%s/scripts/uncolour' % _source, '%s/COPYING' % _source]
+sha3sums = ['F4276A1580B13255998594E42239C42266411BA2F66E33652A7CCD9F5898E7BDC02A43FEAC0A2705A34DD8504AE51A8EDD1B4C7B10381FBA90D9298FEDEE9B55B65880BF98504CD4',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    echo('Pipe coloured output to uncolour')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('uncolour', '%s/bin/uncolour' % _prefix, mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

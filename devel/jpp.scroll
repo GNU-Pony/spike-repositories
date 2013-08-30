@@ -16,13 +16,13 @@ arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['java-runtime>=6', 'bash']
-makedepends = ['make', 'coreutils', 'java-environment>=6']
+depends = ['java-runtime>=5', 'bash']
+makedepends = ['make', 'coreutils', 'java-environment>=5']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['92CBC9A3E00AA7DBD152413C9DE40043AA405FDE28AA4FB37893EF7D5CE89A5E200D7C6137900E5EA39626EBFAF71DDCF820ACA8A66A2B4331A3EBF716319FBD5109634A6FD5012A']
+sha3sums = ['20D03CDE604621EA518DF407100131BEF14B81C6EF515F5D91A942FEF0B6C4D99D9E28C1DB9C49F26B2AA81D7F7D66FDFED9CE731A3ED778349C139A96E436AEF6F769C66252BE8E']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

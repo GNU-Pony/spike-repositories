@@ -9,7 +9,7 @@ import os
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'jpp'
-pkgver = '4.2'
+pkgver = '4.4'
 pkgdesc = 'Bash based preprocessor for Java'
 upstream = 'https://github.com/maandree/jpp'
 arch = ['any']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['20D03CDE604621EA518DF407100131BEF14B81C6EF515F5D91A942FEF0B6C4D99D9E28C1DB9C49F26B2AA81D7F7D66FDFED9CE731A3ED778349C139A96E436AEF6F769C66252BE8E']
+sha3sums = ['A041487D1AA86ED3EAC1338DA86E53CB460A574604C78C8FC33A6BB4890257A8639ACDAED95E1008F4F95EBF76A18686858E790570ED1955DA01391D4B487A28F44BAF782D043741']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

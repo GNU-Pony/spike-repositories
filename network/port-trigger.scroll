@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'port-trigger'
+pkgver = '1'
+pkgdesc = 'Run programs when somepony makes a connection to a specific port'
+upstream = 'https://github.com/maandree/port-trigger'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['java-runtime']
+makedepends = ['make', 'coreutils', 'sed', 'java-environment']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BE861BF47B64A5BF4E9F3F492EF120EDCAD01A81DF8482BB9B68D64AE57B383012E4CF4629F565EF7B92EAAD30DBC02E308FE3E8B940EBE0708E1D173F983750CAE882D8386B3A33']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['porttrigger'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/porttrigger-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/porttrigger-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

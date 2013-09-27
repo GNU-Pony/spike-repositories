@@ -60,7 +60,7 @@ def build(startdir, srcdir, pkgdir, private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/pony-initialisation-%s' % (srcdir, pkgver))
-    make('DESTDIR=%s' % pkgdir, 'DATA=', 'SHARE=/usr/share', 'install')
+    make('DESTDIR=%s' % pkgdir, 'PREFIX=', 'DATA=/usr/share', 'install')
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     rm('%s/LICENSE' % _dir)
     ln('../common/GPL3', '%s/LICENSE' % _dir)

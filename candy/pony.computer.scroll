@@ -21,7 +21,7 @@ makedepends = ['make', 'coreutils', 'sed']
 #if i_use_info:
 #    makedepends.append('texinfo')
 #    makedepends.append('gzip')
-source = ['%s/archive/%s.tar.gz' % (upstream, pkgver),]
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['F1B7090E66B54640DAF83F61FEF93F01A95207FEAE67EF87B66826F94FEF3A92AA4C6181553EBA4E0624529E3953F32B5B73B51CD4D0047E006F106B78E518573E4FCDE1F05B6734']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')

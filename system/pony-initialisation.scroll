@@ -55,12 +55,12 @@ def build(startdir, srcdir, pkgdir, private):
     else:
         sed(sed_script('\\t', '&#', 'completion/zsh-completion.install'), 'Makefile')
     if len(rules) > 0:
-        make(['DESTDIR=%s', 'PREFIX=', 'DATA=/usr/share'] + rules)
+        make(['DESTDIR=%s' % pkgdir, 'PREFIX=', 'DATA=/usr/share'] + rules)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/pony-initialisation-%s' % (srcdir, pkgver))
-    make('DESTDIR=%s', 'DATA=', 'SHARE=/usr/share', 'install')
+    make('DESTDIR=%s' % pkgdir, 'DATA=', 'SHARE=/usr/share', 'install')
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     rm('%s/LICENSE' % _dir)
     ln('../common/GPL3', '%s/LICENSE' % _dir)

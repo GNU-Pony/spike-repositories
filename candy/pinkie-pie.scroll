@@ -4,7 +4,6 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 pkgname = 'pinkie-pie'
 pkgver = '1.0.2'

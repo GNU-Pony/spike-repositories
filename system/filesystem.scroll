@@ -4,7 +4,6 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
-import os
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_skel = get('I_USE_SKEL', 'y').lower().startswith('y')

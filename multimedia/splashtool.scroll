@@ -20,7 +20,7 @@ depends = ['java-runtime: 1 source file is written in Java',
            'python3: 2 source files are written in Python 3',
            'sh: 1 source file is written in shell script',
            'kbd: default font',
-           'nefa: read font files',
+           'nafe: read font files',
            'gzip: decompress fonts']
 makedepends = ['make', 'coreutils', 'java-environment']
 if i_use_info:

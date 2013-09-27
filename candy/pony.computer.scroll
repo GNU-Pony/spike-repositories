@@ -44,6 +44,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/pony.computer-%s' % (srcdir, pkgver))
     make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir(_dir, True)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 
 

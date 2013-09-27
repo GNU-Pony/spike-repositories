@@ -8,21 +8,21 @@ from dragonsuite import *
 #i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'pony.computer'
-pkgver = '1374480420'
+pkgver = '1380292062'
 pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['bash', 'ponysay'. 'coreutils', 'grep', 'sed', 'python3']
+depends = ['bash', 'ponysay'. 'coreutils', 'grep', 'sed', 'python3', 'filesystem']
 optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc']
 makedepends = ['make', 'coreutils', 'sed']
 #if i_use_info:
 #    makedepends.append('texinfo')
 #    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F1B7090E66B54640DAF83F61FEF93F01A95207FEAE67EF87B66826F94FEF3A92AA4C6181553EBA4E0624529E3953F32B5B73B51CD4D0047E006F106B78E518573E4FCDE1F05B6734']
+sha3sums = ['F32A3274CD1133DBC238E96B6FA76E9CEA09D395EFEF3856551BD39BCB14D9112F9F922EBC7433A3117287BEAC79860B4685E37FF9F587DDD85EE027A4538F8F94863EB2F2882780']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

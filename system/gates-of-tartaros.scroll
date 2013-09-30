@@ -1,0 +1,63 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'gates-of-tartaros'
+pkgver = '1380509931'
+pkgdesc = 'Extensible minimal replacement for agetty with SSH support'
+upstream = 'https://github.com/GNU-Pony/gates-of-tartaros'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+depends = ['util-linux', 'bash', 'openssh', 'coreutils']
+optdepends = ['openssh: for SSH login']
+makedepends = ['make', 'sed', 'coreutils']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['4AECD47D578A60E4139D8C52B9332271ABEEDD8701595CCFC2E3636CFBCF235A9924F393278F79DF6FA771D7EFCBC535DB00931F6579A20463FF2806C079F14042D7DE8BFC666FA7']
+
+
+def ride(private):
+    execute(['info', 'gates-of-tartaros', 'setting up'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gates-of-tartaros-%s' % (srcdir, pkgver))
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd')
+    if i_use_info:
+        make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gates-of-tartaros-%s' % (srcdir, pkgver))
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd')
+    if i_use_info:
+        make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

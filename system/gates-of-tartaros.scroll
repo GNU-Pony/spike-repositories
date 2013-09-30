@@ -15,7 +15,7 @@ arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
-depends = ['util-linux', 'bash', 'openssh', 'coreutils']
+depends = ['util-linux', 'bash', 'coreutils']
 optdepends = ['openssh: for SSH login']
 makedepends = ['make', 'sed', 'coreutils']
 if i_use_info:

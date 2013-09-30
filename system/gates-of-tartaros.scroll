@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'gates-of-tartaros'
-pkgver = '1380555115'
+pkgver = '1380563653'
 pkgdesc = 'Extensible minimal replacement for agetty with SSH support'
 upstream = 'https://github.com/GNU-Pony/gates-of-tartaros'
 arch = ['any']
@@ -22,7 +22,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['88F0AD097B06435D431B3F4898C6CE0867F130E7B132016EE896C1614CF090003238668C913BF0980F29CA74410AF6575DEBABC20B9D92CF72613AFD0CCD175D471641BD54660828']
+sha3sums = ['D78ACEF07B802475565CDA14EC8632495C71363A7E432756A818AAA39780CA4E6D45570781D5D681B8AF8C8BE8E35BCFFC6E4D4A06EFA98190462C41254E8A59A65157D8E7AB77C4']
 
 
 def ride(private):

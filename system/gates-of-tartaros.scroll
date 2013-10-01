@@ -6,23 +6,28 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_sh = get('I_USE_SH', 'bash:bash').lower()
+if ':' not in i_use_sh:
+    i_use_sh = i_use_sh + ':' + i_use_sh
 
 pkgname = 'gates-of-tartaros'
-pkgver = '1380578140'
+pkgver = '1380630025'
 pkgdesc = 'Extensible minimal replacement for agetty with SSH support'
 upstream = 'https://github.com/GNU-Pony/gates-of-tartaros'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
-depends = ['util-linux', 'bash', 'coreutils']
+depends = ['util-linux', 'coreutils',  i_use_sh.split(':')[0]]
 optdepends = ['openssh: for SSH login']
 makedepends = ['make', 'sed', 'coreutils']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['54AAF3B36894B78F2E90A046F8223E1E8711FD140865E51DFE353E1653457E4A05A5EB1857E443B85833EB122A6C4863FC91239763E61E94C3138BF896E7A5F8478F86587BCDE677']
+sha3sums = ['B4D461FA1B815F201E2E46ED2DCDF0E69835F4A940D7C5F284FF1B22DE050BF90F3D01613AD9544B841F4DE62851F244B93D187CAD965A8480EE033852CB848213649CD79260AF41']
+
+_sh = i_use_sh.split(':')[1]
 
 
 def ride(private):
@@ -31,7 +36,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/gates-of-tartaros-%s' % (srcdir, pkgver))
-    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd')
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'SH=%s' % _s, 'cmd')
     if i_use_info:
         make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
 

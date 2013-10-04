@@ -1,0 +1,64 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'celestia'
+pkgver = '1380849738'
+pkgdesc = 'Automated spike-scroll updater'
+upstream = 'https://github.com/GNU-Pony/celestia'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['bash', 'python3']
+makedepends = ['make', 'coreutils', 'sed']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['686A84F81ABD3F5EA5DB23EE302A366D390379E0B6CECF2017CDD0A2FBF5B1187F7F376D886A49BD24E377C751182E585C6E3587B2868880E654B7EDC66111DEAFF4340AF777034F']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+_etc = lambda private : '/etc' if not private else path('~/.config')
+
+
+def ride(private):
+    execute(['celestia'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/celestia-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'ETC=%s' % _etc(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'bin')
+    if i_use_info:
+        make('PREFIX=%s' % _prefix(private), 'ETC=%s' % _etc(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    else:
+        sed([sed_script('/info', '\\t', '&#')], 'Makefile')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/celestia-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'ETC=%s' % _etc(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

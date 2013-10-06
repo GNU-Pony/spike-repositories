@@ -10,7 +10,7 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'pony-initialisation'
-pkgver = '1368172760'
+pkgver = '1381025241'
 pkgdesc = 'System bootup scripts for sysvinit'
 upstream = 'https://github.com/GNU-Pony/pony-initialisation'
 arch = ['any']
@@ -31,7 +31,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['48840932C2275FA5475D94137F69A1DF7334D12143895044137847AE2C346A552D5A2ACABF32027DBFCA80F34B33179253887C6F14CF04699C8E2C1C024688861BF73E7112C3D73C']
+sha3sums = ['B621D75205B3BA9A2B0338E552E4708ABA525F9B86DE14AA6488700D17EC4579E73E8AB2A1578007C22AE81BB8C7C698263012888D05157E3F0C8C6AABFFFAA7D25AAD824002D227']
 
 
 def ride(private):

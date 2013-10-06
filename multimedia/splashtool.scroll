@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'splashtool'
-pkgver = '1375927355'
+pkgver = '1381025109'
 pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
 upstream = 'https://github.com/GNU-Pony/splashtool'
 arch = ['any']
@@ -26,7 +26,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['23072FC5071275652876B73FE8D0C9BFBE763CEEFADC9BE1C7CD95FBA21428051B15D36BAB4D397DB5CC4F57513D41158112EFDE4C4ED35CD592FACAA71033EDC01AC47189318D5A']
+sha3sums = ['D7A3ABB345FE9A42FEA30B33E595ABDCBFA785F12C92DB9A9358CDB9ACBD95674C8C11BBE930C2A8260A41E55EED1695B8ACD2193BACC3DBED0BC0973A2D816C5E7587AFAA693B7C']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -8,7 +8,7 @@ from dragonsuite import *
 #i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'pony.computer'
-pkgver = '1380292062'
+pkgver = '1381025046'
 pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
@@ -22,7 +22,7 @@ makedepends = ['make', 'coreutils', 'sed']
 #    makedepends.append('texinfo')
 #    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F32A3274CD1133DBC238E96B6FA76E9CEA09D395EFEF3856551BD39BCB14D9112F9F922EBC7433A3117287BEAC79860B4685E37FF9F587DDD85EE027A4538F8F94863EB2F2882780']
+sha3sums = ['262165767CD723D3CADECF760D8E620A9E16A79639EAB28576C5DB7E5353A2884ED6B3C163B9367914E5B6B9549BCA184B1B0984A18AF1704736428169DB13F422C300EC62B66F47']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

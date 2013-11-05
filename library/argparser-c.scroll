@@ -5,9 +5,9 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-patch = 'argparser'
+patches = 'argparser'
 _patch = 'C'
-pkgname = '%s-%s' % (patch, _patch.lower())
+pkgname = '%s-%s' % (patches, _patch.lower())
 pkgver = '5.0'
 pkgdesc = 'Native version of argparser written in C'
 upstream = 'https://github.com/maandree/argparser'
@@ -23,18 +23,18 @@ _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['info', patch, '%s version' % _patch])
+    execute(['info', patches, '%s version' % _patch])
 
 
 def patch_build(startdir, srcdir, pkgdir, private):
-    globals()['scroll_%s_build' % patch].append('%s' % _patch.lower())
+    globals()['scroll_%s_build' % patches].append('%s' % _patch.lower())
 
 
 def patch_package(startdir, srcdir, pkgdir, private):
-    globals()['scroll_%s_package' % patch].append('install-%s' % _patch.lower())
+    globals()['scroll_%s_package' % patches].append('install-%s' % _patch.lower())
 
 
 def package(startdir, srcdir, pkgdir, private):
     _dir = lambda pkg : '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkg)
-    ln(_dir(patch), _dir(pkgname))
+    ln(_dir(patches), _dir(pkgname))
 

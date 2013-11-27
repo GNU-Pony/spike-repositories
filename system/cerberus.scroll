@@ -1,0 +1,124 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_auth = get('I_USE_PAM', 'pam').lower()
+i_use_login = get('I_USE_LOGIN', '').lower() == 'cerberus'
+
+for _auth in i_use_auth.split(':') + ['crypt']:
+    if _auth in ('pam', 'crypt', 'none'):
+        i_use_auth = _auth
+        break
+
+pkgname = 'cerberus'
+pkgver = '1385512167'
+pkgdesc = 'A configurable minimal login program that uses libpassphrase'
+upstream = 'https://github.com/GNU-Pony/cerberus'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+depends = ['glibc', 'libpassphrase', 'linux'] ## 'linux' can be removed if both OWN_VCS and OWN_VCSA is removed from _configure
+if i_use_auth == 'pam':
+    depends.append(i_use_auth)
+makedepends = ['make', 'coreutils', 'gcc']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['F253C93CDC15F43F59F5C2A348D573229512FC62B91C02214E69F7CE1420D719B9B50F2FF79D218E3D8AF72CF88D7EC06F5C3E2FB43BAF152D8C830DF5C9E0D9F80EDD57AB8FB2AA']
+
+# Technically you can do a private installation (provided you adapt
+# the instructiosn below), but that makes no sense because it should
+# only be started from a getty program or a service. If you do a
+# private installation (for a user other than root) than root need to
+# take (group) ownership of it and forward permissions by setting the
+# setuid (or setgid) bit and with that comes security holes inherited
+# by cerberus design to be minimal and skip use cases that should
+# never happen.
+
+
+
+def _configure():
+    '''
+    See `info cerberus configuring` for how to configure cerberus.
+    AUTH is set using I_USE_AUTH, all other configurations can be done here.
+    
+    @return  :list<str>  Options other than AUTH pass to `make` to configure cerberus
+    '''
+    # General configurations
+    cpp_defs  = 'OWN_VCS OWN_VCSA USE_TTY_GROUP'.split(' ')
+    make_opts = []
+    
+    # PATH configurations
+    local_prefix = '/usr/local'
+    usr_prefix   = '/usr'
+    root_prefix  = ''
+    games_infix  = '/games'
+    
+    path         = []
+    path_root    = []
+    
+    for a_prefix in [local_prefix, usr_prefix, root_prefix]:
+        if a_prefix is not None:
+            path.append(a_prefix + '/bin')
+            path_root.append(a_prefix + '/sbin')
+            path_root.append(a_prefix + '/bin')
+            if (games_infix is not None) and (a_prefix != root_prefix):
+                path.append(a_prefix + games_infix + '/bin')
+    
+    # Return configurations
+    make_opts.append('EXTRA_CPP_FLAGS="-D%s"' % ' -D'.join(_cpp_defs))
+    make_opts.append('PATH=%s' % ':'.join(path))
+    make_opts.append('PATH_ROOT=%s' % ':'.join(path_root))
+    return make_opts
+
+
+
+def ride(private):
+    execute(['info', 'cerberus'])
+
+
+_make_opts = None
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/cerberus-%s' % (srcdir, pkgver))
+    _make_opts = _configure() + ['AUTH=%s' % i_use_auth]
+    _make_opts += ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    
+    sed(sed_script('^.+$', 'install:', '^install:'), 'Makefile')
+    if not i_use_info:
+        sed(sed_script('^', '#', '/info'), 'Makefile')
+        sed(sed_script('info', '', '^doc:'), 'Makefile')
+    make(_make_opts + ['cmd'])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/cerberus-%s' % (srcdir, pkgver))
+    make(_make_opts + ['install'])
+    if i_use_login:
+        ln('cerberus', '%s/usr/sbin/login' % pkgdir)
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

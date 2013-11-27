@@ -15,7 +15,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['libc', 'libpassphrase']
+depends = ['libc']
 makedepends = ['make', 'coreutils', 'gcc']
 if i_use_info:
     makedepends.append('texinfo')

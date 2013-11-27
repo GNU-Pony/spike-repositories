@@ -94,7 +94,7 @@ def build(startdir, srcdir, pkgdir, private):
     if not i_use_info:
         sed(sed_script('^', '#', '/info'), 'Makefile')
         sed(sed_script('info', '', '^doc:'), 'Makefile')
-    make(_make_opts + ['cmd'])
+    make(_make_opts + ['all'])
 
 
 def package(startdir, srcdir, pkgdir, private):

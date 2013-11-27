@@ -1,0 +1,94 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'libpassphrase'
+pkgver = '1385512181'
+pkgdesc = 'Personalisable library for TTY passphrase reading'
+upstream = 'https://github.com/GNU-Pony/libpassphrase'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libc', 'libpassphrase']
+makedepends = ['make', 'coreutils', 'gcc']
+if i_use_info:
+    makedepends.append('texinfo')
+    makedepends.append('gzip')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['84F368D5FA5895E2B2DEFEC256F0E6C3B3B42B93B00BA403ADE5E4DBA847649B339660356D77083E580F2B12EAEAEF6B73B42D60CD169DAB264D6C08831030726300E3B5C0B89ED6']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+
+def _configure():
+    '''
+    See `info libpassphrase configuring` for how to configure libpassphrase
+    
+    @return  :list<str>  Options to pass to `make` to configure libpassphrase
+    '''
+    options = []
+    
+    #options.append('PASSPHRASE_ECHO')      # Do not hide the passphrase
+    options.append('PASSPHRASE_STAR')      # Use '*' for each character instead of no echo
+    #options.append('PASSPHRASE_REALLOC')   # Soften security by using `realloc`
+    options.append('PASSPHRASE_MOVE')      # Enable move of point
+    options.append('PASSPHRASE_INSERT')    # Enable insert mode
+    options.append('PASSPHRASE_OVERRIDE')  # Enable override mode
+    options.append('PASSPHRASE_DELETE')    # Enable reversed erase command
+    options.append('PASSPHRASE_CONTROL')   # Enable use of control key combinations
+    options.append('PASSPHRASE_DEDICATED') # Enable use of dedicated keys
+    options.append('DEFAULT_INSERT')       # Use insert mode as default
+    options.append('PASSPHRASE_INVALID')   # Prevent duplication of non-initialised memory
+    
+    return ['OPTIONS="%s"' % ' '.join(options)]
+
+
+
+def ride(private):
+    execute(['info', 'libpassphrase'])
+
+
+_make_opts = None
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libpassphrase-%s' % (srcdir, pkgver))
+    _make_opts = _configure() + ['AUTH=%s' % i_use_auth]
+    _make_opts += ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'PREFIX=%' % _prefix(private)]
+    
+    sed(sed_script('^.+$', 'install:', '^install:'), 'Makefile')
+    if not i_use_info:
+        sed(sed_script('^', '#', '/info'), 'Makefile')
+        sed(sed_script('info', '', '^doc:'), 'Makefile')
+    make(_make_opts + ['all'])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libpassphrase-%s' % (srcdir, pkgver))
+    make(_make_opts + ['install'])
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

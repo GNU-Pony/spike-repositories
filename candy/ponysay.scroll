@@ -27,6 +27,9 @@ optdepends = ['util-say>=3: Improved TTY support with KMS and PNG files']
 makedepends = ['python3', 'zip']
 if i_use_info:
     makedepends.append('texinfo')
+if i_use_pdf_info:
+    makedepends.append('texlive-plainextra')
+if i_use_info or i_use_pdf_info or i_use_man or i_use_man_es:
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['ACB1935EFEE8232FC806E2D901B849CD96555305B3696657458055F1BF456B28B105F2635D2E171D94A62A787DE349E97958D39ACE79BD23648D13CB5155E19453D5FA9820DDF0F7']

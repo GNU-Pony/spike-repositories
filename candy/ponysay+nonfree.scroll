@@ -30,6 +30,8 @@ optdepends = ['util-say>=3: Improved TTY support with KMS and PNG files']
 makedepends = ['python3', 'zip']
 if i_use_info:
     makedepends.append('texinfo')
+if i_use_pdf_info:
+    makedepends.append('texlive-plainextra')
 if i_use_info or i_use_pdf_info or i_use_man or i_use_man_es
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]

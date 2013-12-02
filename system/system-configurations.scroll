@@ -1,0 +1,29 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'system-configurations'
+pkgver = '1.0'
+pkgdesc = 'Base system configuration files'
+upstream = 'https://github.com/GNU-Pony/system-configurations'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD']
+private = UNSUPPORTED
+groups = ['base']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['B6FF121FC688880B583B2D56C08FBC9FB68062B5BDC0FC57BFA4BEBFA7708848D13B95B7FA37478C1CA4CBE8BB0A948FA7CA42B4FF6B657044A89F9CD2E31B29F198C337E5D21E30']
+
+
+def ride(private):
+    echo('System configurations are installed in /etc and are editable with an text editor')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/system-configurations-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+

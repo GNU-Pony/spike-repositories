@@ -27,12 +27,12 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/got-diminished-%s' % (srcdir, pkgver))
-    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'LICENSES=%s' % '/usr/share/licenses')
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/got-diminished-%s' % (srcdir, pkgver))
-    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'LICENSES=%s' % '/usr/share/licenses', 'install')
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

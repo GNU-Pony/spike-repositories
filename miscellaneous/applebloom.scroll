@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'applebloom'
-pkgver = '1381025338'
+pkgver = '1385907077'
 pkgdesc = 'Apple Bloom the pony dictionary'
 upstream = 'https://github.com/GNU-Pony/applebloom'
 arch = ['any']
@@ -21,7 +21,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['617897BF738E21A7603E39B697705BA05E49201331B2A02643F9DE06BC049EF379DC37F8BE722E8BE0DDD9B87C12E6354CB9F0BDD818ACE7DD79D4AF79F8ECE6A73AD1C5B9620B70']
+sha3sums = ['A9354853A8755E47253EB484D6137D07CC9167FB6287736E4393036320F1686C990017064A0660F47CA6E486CB74EC0E6C8B259FFC0DAB3D5A44E167E6AC6D3E495E14317BFBE198']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'bash.d'
-pkgver = '1381473521'
+pkgver = '1385976984'
 pkgdesc = 'Subscripts for GNU Bash shells'
 upstream = 'https://github.com/GNU-Pony/bash.d'
 arch = ['any']
@@ -19,8 +19,9 @@ optdepends = ['libnotify: for alert.bash',
               'sed: for palette.bash',
               'git: for git branch in prompt.bash',
               'acpi: for battery status in prompt.bash']
+makedepends = ['make', 'findutils', 'grep', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['E63D83D34DE34A6519C12A56DC8E439B3819B074CEAE92F0F3109D76281F0CCDE8E81B053EE410E12C7B77D1C1388F45B03C237A920306F0C27189CA06A6F46347A10203C70D5181']
+sha3sums = ['15C2CB3050FFB1AAD287135329F2806B75AAF4E7429C5B75748A8225FAF9CBD9C5647D25EA0BB40B138C8E958F40FAD0BF419FA4A10212F108F522B1C2B0A5F14A3C25BE0350BC1A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -31,12 +32,7 @@ def ride(private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/bash.d-%s' % (srcdir, pkgver))
-    _dir = '%s%s/share/bash.d' % (pkgdir, _prefix(private))
-    install(path('src/*.bash'), _dir, mode = 0o644)
-    _dir = '%s%s/share/doc' % (pkgdir, _prefix(private))
-    install('README', '%s/%s' % (_dir, pkgname), mode = 0o644)
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    mkdir_p(_dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-    install('COPYING', '%s/COPYING' % _dir, mode = 0o644)
 

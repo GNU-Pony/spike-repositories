@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'bash.d'
-pkgver = '1385976984'
+pkgver = '1385977442'
 pkgdesc = 'Subscripts for GNU Bash shells'
 upstream = 'https://github.com/GNU-Pony/bash.d'
 arch = ['any']
@@ -21,7 +21,7 @@ optdepends = ['libnotify: for alert.bash',
               'acpi: for battery status in prompt.bash']
 makedepends = ['make', 'findutils', 'grep', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['15C2CB3050FFB1AAD287135329F2806B75AAF4E7429C5B75748A8225FAF9CBD9C5647D25EA0BB40B138C8E958F40FAD0BF419FA4A10212F108F522B1C2B0A5F14A3C25BE0350BC1A']
+sha3sums = ['F43A24A0EE30EE949FBD78D795701204C1796E31AFB8FFCDE3D6C486C848DF248DC3DCCBAA6EADB7F2FCE038C30E1722BB5E0ED5EC9BE977542C9613BBF9C57263E48331E4CE547F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

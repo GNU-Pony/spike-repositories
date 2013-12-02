@@ -51,25 +51,26 @@ def _configure():
     @return  :list<str>  Options other than AUTH pass to `make` to configure cerberus
     '''
     # General configurations
-    cpp_defs  = 'OWN_VCS OWN_VCSA USE_TTY_GROUP'.split(' ')
-    make_opts = []
+    cpp_defs     = 'OWN_VCS OWN_VCSA USE_TTY_GROUP'.split(' ')
+    make_opts    = []
     
     # PATH configurations
-    local_prefix = '/usr/local'
-    usr_prefix   = '/usr'
-    root_prefix  = ''
-    games_infix  = '/games'
+    local_       = '/usr/local'
+    usr_         = '/usr'
+    root_        = ''
+    local_games_ = '/usr/local/games'
+    usr_games_   = '/usr/games'
+    root_games_  = None
     
     path         = []
     path_root    = []
     
-    for a_prefix in [local_prefix, usr_prefix, root_prefix]:
-        if a_prefix is not None:
-            path.append(a_prefix + '/bin')
-            path_root.append(a_prefix + '/sbin')
-            path_root.append(a_prefix + '/bin')
-            if (games_infix is not None) and (a_prefix != root_prefix):
-                path.append(a_prefix + games_infix + '/bin')
+    for prefix_ in [local_, usr_, root_, local_games_, usr_games_, root_games_]:
+        path.append(prefix_ + '/bin')
+        
+    for prefix_ in [local_, usr_, root_]:
+        path_root.append(prefix_ + '/sbin')
+        path_root.append(prefix_ + '/bin')
     
     # Return configurations
     make_opts.append('EXTRA_CPP_FLAGS="-D%s"' % ' -D'.join(_cpp_defs))

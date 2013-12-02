@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'got-diminished'
+pkgver = '1385907171'
+pkgdesc = 'Extension for gates-of-tartaros to minimise memory usage after logging in'
+upstream = 'https://github.com/GNU-Pony/got-diminished'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = UNSUPPORTED
+depends = ['libc', 'coreutils', 'util-linux']
+optdepends = ['openssh: for SSH login']
+makedepends = ['make', 'sed', 'coreutils', 'gcc']
+extension = 'gates-of-tartaros'
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['1A78CAE7BA1D2760CB32F81F89B7B60239F2D7031A77E2F6F8F4F01D90E1B88A26B102C2EA3EBA86D04BBFC161AC20D5B0EF884FD8E6C2C4A0DA5DE30317482857BAA14508B3BA6F']
+
+
+def ride(private):
+    echo('Use the got-diminished script in your /etc/gotrc')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/got-diminished-%s' % (srcdir, pkgver))
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/got-diminished-%s' % (srcdir, pkgver))
+    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

@@ -64,7 +64,7 @@ def build(startdir, srcdir, pkgdir, private):
     if not i_use_largefiles:
         args.append('--disable-largefile')
     if not i_use_floats:
-        args.append('----with-no-float')
+        args.append('--with-no-float')
     
     execute(args)
     make()

@@ -1,0 +1,56 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+
+pkgname = 'xz'
+pkgver = '5.0.5'
+pkgdesc = 'Library and command line tools for XZ and LZMA compressed files'
+upstream = 'http://tukaani.org/xz'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['public (dedication)', 'LGPL2', 'GPL2', 'GPL3', 'custom (all permissive)']
+private = SUPPORTED
+depends = ['glibc', 'sh']
+makedepends = ['glibc']
+source = ['%s/xz-%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['018D5868AF7389D65358F55BB167AB20E81CF809ACCD60861562F86332DB7528E63AABAC230C7183B12F45F56CE0BB4576ABAF16BF3E97F08C18506771AE294073047DFAB9424DC4']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('man', '1', 'xz')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/xz-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=/usr', '--disable-rpath', '--enable-werror')
+    make()
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    make('check')
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/xz-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_licenses)
+    ln('../../doc/xz/COPYING',               _licenses + '/COPYING')
+    ln('/usr/share/licenses/common/LGPL2.1', _licenses + '/COPYING.LGPLv2')
+    ln('/usr/share/licenses/common/GPL2',    _licenses + '/COPYING.GPLv2')
+    ln('/usr/share/licenses/common/GPL3',    _licenses + '/COPYING.GPLv3')
+    ln('/usr/share/licenses/common/public',  _licenses + '/COPYING.public')
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

@@ -27,7 +27,7 @@ _prefix = lambda private : (path('~/.local') if private else '/usr')
 
 
 def ride(private):
-    execute('info', 'tar')
+    execute('info', 'tar', 'invoking')
 
 
 def build(startdir, srcdir, pkgdir, private):

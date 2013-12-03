@@ -34,8 +34,9 @@ _eprefix = lambda private : (path('~/.local') if private else '')
 
 def ride(private):
     if i_use_info:
-        execute('info', 'sed')
-    execute('man', '1', 'sed')
+        execute('info', 'sed', 'invoking')
+    else:
+        execute('man', '1', 'sed')
 
 
 def build(startdir, srcdir, pkgdir, private):

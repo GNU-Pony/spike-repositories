@@ -1,0 +1,82 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_editor = get('I_USE_EDITOR', 'nano') # `vi` is default upstream, but nano is much simpler and better as default
+i_use_secure = get('I_USE_SECURE', 'n').lower().startswith('y')
+#     Builds a "secure" version of less, with some features disabled
+#     to prevent users from viewing other files, accessing shell
+#     commands, etc.
+i_use_regex = get('I_USE_REGEX', 'pcre').lower().split(',')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
+i_use_floats = get('I_USE_FLOATS', 'y').lower().startswith('y')
+
+_regex = 'pcre'
+for candidate in i_use_regex:
+    if candidate in 'auto gnu posix pcre re_comp regcomp regcomp-local none no n'.split(' '):
+        # auto is not recommended, spike will not know what you are using
+        # regcmp is not support by this scroll as it is unknown which implementation of libc is required, and it is not glibc
+        _regex = candidate
+        break
+i_use_regex = _regex
+if i_use_regex in 'no n'.split(' '):
+    i_use_regex = 'none'
+
+pkgname = 'less'
+pkgver = '458'
+pkgdesc = 'A terminal based program for viewing text files'
+upstream = 'http://www.greenwoodsoftware.com/less'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['ncurses']
+makedepends = ['ncurses', 'gcc', 'sed', 'make', 'coreutils', 'm4']
+makedepends.append('gzip') # for manpage
+if i_use_regex == 'prce':
+    makedepends.append('prce')
+depends.append('glibc' if i_use_regex == 'gnu' else 'libc')
+makedepends.append('glibc' if i_use_regex == 'gnu' else 'libc')
+source = ['http://www.greenwoodsoftware.com/less/less-%s.tar.gz' % pkgver]
+sha3sums = ['EBE9A377BBC0FA190C4AD85F4C9406C30C0EEE3ECD63333E48E7F26262BEDAA81DFD771FCB9D3B9F11E1F51B1E878567E74CD9333AD466E803A727849AA701A63B305E55407F1655']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('man', 'less')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/less-%s' % (srcdir, pkgver))
+    
+    args = ['./configure', '--prefix=%s' % _prefix(private), '--sysconfdir=/etc']
+    args.append('--with-editor=%s' % i_use_editor)
+    args.append('--with-regex=%s' % i_use_regex)
+    if i_use_secure:
+        args.append('--with-secure')
+    if not i_use_largefiles:
+        args.append('--disable-largefile')
+    if not i_use_floats:
+        args.append('----with-no-float')
+    
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/less-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

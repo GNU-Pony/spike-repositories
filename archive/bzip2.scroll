@@ -1,0 +1,88 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'bzip2'
+pkgver = '1.0.6'
+pkgdesc = 'A high-quality data compression program'
+upstream = 'http://sources.redhat.com/bzip2'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['libc', 'gcc', 'make', 'coreutils', 'patch'. 'sed']
+if i_use_man:
+    makedepends.append('gzip')
+source = ['http://www.bzip.org/%s/bzip2-%s.tar.gz' % (pkgver, pkgver), 'bzip2@1.0.4-bzip2recover.patch']
+noextract = source[1:]
+sha3sums = ['8120830CB05A3D5F3851AE47E4FE138D4502BE86A09752C8BB49E6D3122CA2E0656F02F281F1C1616E043ED7A4DD179C8AFD1A1AF62238CF31292738BE7B90E2CBF10109A5884770', None]
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('man', '1', 'bzip2')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/bzip2-%s' % (srcdir, pkgver))
+    sed(sed_script('^CFLAGS=\\(.*\\)$', 'CFLAGS=\\1 \\$(BIGFILES)'), 'Makefile-libbz2_so')
+    patch(startdir + '/bzip2@1.0.4-bzip2recover.patch')
+    make('-f', 'Makefile-libbz2_so')
+    make('bzip2', 'bzip2recover', 'libbz2.a')
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/bzip2-%s' % (srcdir, pkgver))
+    make('test')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/bzip2-%s' % (srcdir, pkgver))
+    
+    ## `make install` is bad and does not allow
+    ## installation to an intermediate directory.
+    ## We need therefore do that installation
+    ## the hard way.
+    
+    _pre = pkgdir + _prefix(private)
+    
+    # Directories to where files are being installed
+    _dirs = ['bin', 'lib', 'include']
+    if i_use_man:
+        _dirs.append('share/man/man1')
+    install(_dirs, _pre, mode = 0o755, directory = True, parents = True)
+    
+    # Commands
+    install('bzip2-shared', _pre + '/bin/bzip2', mode = 0o755)
+    install(['bzip2recover', 'bzdiff', 'bzgrep', 'bzmore'], _pre + '/bin')
+    ln('bzip2', _pre + '/bin/bunzip2')
+    ln('bzip2', _pre + '/bin/bzcat')
+    
+    # Libraries
+    install('libbz2.so.%s' % pkgver, _pre + '/lib', mode = 0o755)
+    ln('libbz2.so.%s' % pkgver, _pre + '/lib/libbz2.so')
+    for parts in range(len(pkgver.split('.')) - 1):
+        ln('libbz2.so.%s' % pkgver, _pre + '/lib/libbz2.so.' + pkgver.split('.')[:parts + 1])
+    
+    # Headers
+    install('bzlib.h', _pre + '/include', mode = 0o644)
+    
+    # Manpages
+    if i_use_man:
+        execute('gzip', '-9', 'bzip2.1')
+        install('bzip2.1.gz', _pre + '/share/man/man1', mode = 0o644)
+        ln('bzip2.1.gz', _pre + '/share/man/man1/bunzip2.1.gz')
+        ln('bzip2.1.gz', _pre + '/share/man/man1/bzcat.1.gz')
+        ln('bzip2.1.gz', _pre + '/share/man/man1/bzip2recover.1.gz')
+    
+    # License
+    install('LICENSE', _pre + '/share/licenses/' + pkgname, mode = 0o644, parents = True)
+

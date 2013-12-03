@@ -17,7 +17,7 @@ license = ['custom (all permissive free)']
 private = SUPPORTED
 options = ['staticlibs']
 depends = ['libc']
-makedepends = ['libc', 'sh', 'bash', 'gcc', 'sed', 'make', 'coreutils', 'm4']
+makedepends = ['libc', 'sh', 'bash', 'gcc', 'sed', 'make', 'coreutils', 'm4', 'grep']
 if i_use_man:
     makedepends.append('gzip')
 source = ['https://github.com/madler/zlib/archive/v%s.tar.gz' % pkgver]

@@ -1,0 +1,50 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'zlib'
+pkgver = '1.2.7'
+pkgdesc = 'Compression library implementing the deflate compression method found in gzip and PKZIP'
+upstream = 'http://www.zlib.net/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (all permissive free)']
+private = SUPPORTED
+options = ['staticlibs']
+depends = ['libc']
+makedepends = ['libc', 'sh', 'bash', 'gcc', 'sed', 'make', 'coreutils', 'm4']
+source = ['https://github.com/madler/zlib/archive/v%s.tar.gz' % pkgver]
+sha3sums = ['DDDFD8E49486CC17920758AFAE649C56AEA30C6744771CA37F04A1B560EB2936B940D925BF2EC99F30B004EC31ABE71DE35C99BFA05C291E4D1E0463A3160574D2C5F2FAC78E7552']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('man', '3', 'zlib')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/zlib-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    bash('grep -A 24 "^  Copyright" zlib.h > LICENSE')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/zlib-%s' % (srcdir, pkgver))
+    make('test')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/zlib-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    install('LICENSE', pkgdir + _prefix(private) + '/share/licenses/zlib/LICENSE', mode = 0o644, parents = True)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

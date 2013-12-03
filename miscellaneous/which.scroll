@@ -49,7 +49,6 @@ def package(startdir, srcdir, pkgdir, private):
         rm_r(pkgdir + _prefix(private) + '/share/man')
     if not i_use_info:
         rm_r(pkgdir + _prefix(private) + '/share/info')
-    filter_locale(i_use_locale, pkgdir, _prefix(private))
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

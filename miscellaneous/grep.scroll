@@ -8,6 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 i_use_locale = get('I_USE_LOCALE'. '*')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
 
 pkgname = 'grep'
 pkgver = '2.15'
@@ -37,7 +38,10 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/which-%s' % (srcdir, pkgver))
-    execute('./configure', '--prefix=%s' % _prefix(private), '--without-included-regex')
+    args = ['./configure', '--prefix=%s' % _prefix(private), '--without-included-regex']
+    if not i_use_largefiles:
+        args.append('--disable-largefile')
+    execute(args)
     make()
 
 

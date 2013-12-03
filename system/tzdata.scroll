@@ -1,0 +1,51 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+# NB!  It is still common for servers to encounter fatal problems on leapseconds,
+#      if you are running a server your may consider freezing this package so no
+#      upcoming leapseconds are registrered on the local leapseconds register.
+
+pkgname = 'tzdata'
+pkgver = '2013h'
+pkgdesc = 'Sources for time zone information'
+upstream = 'http://www.iana.org/time-zones'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['public']
+private = SUPPORTED # but makes no sense to make a private install
+groups = ['base']
+depends = ['filesystem']
+makedepends = ['glibc']
+source = ['%s/time-zones/repository/releases/tzdata%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['DDEE79FA714875DF61A6E452ED4D8017ED5FF731696774F4B884D8FE1EEC6CDA13FC1533B70505A29C2AA14660803B90DFE0CB3AE8CEC6370A909A0160DE43B16792CE2137073830']
+
+
+_dir = lambda private : '%s/share/zoneinfo' % (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    echo('Time zone data files have been installed to %s' % _dir(private))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s' % srcdir)
+    
+    timezones = ['africa', 'antarctica', 'asia', 'australasia',
+                 'europe', 'northamerica', 'southamerica',
+                 'pacificnew', 'etcetera', 'backward', 'systemv',
+                 'factory', 'solar87', 'solar88', 'solar89']
+    
+    zic_args = ['zic', '-y', './yearistype', '-d']
+    zic = lambda directory, args : execute(zic_args + [pkgdir + _dir(private) + directory] + args)
+    
+    zic('',       timezones)
+    zic('/posix', timezones)
+    zic('/right', ['-L', 'leapseconds'] + timezones)
+    zic('',       ['-p', 'America/New_York'])
+    
+    install(['iso3166.tab', 'zone.tab'], pkgdir + _dir(private), mode = 0o444)
+

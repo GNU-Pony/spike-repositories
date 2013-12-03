@@ -37,8 +37,9 @@ private = SUPPORTED
 depends = ['ncurses']
 makedepends = ['ncurses', 'gcc', 'sed', 'make', 'coreutils', 'm4']
 makedepends.append('gzip') # for manpage
-if i_use_regex == 'prce':
-    makedepends.append('prce')
+if i_use_regex == 'pcre':
+    depends.append('pcre')
+    makedepends.append('pcre')
 depends.append('glibc' if i_use_regex == 'gnu' else 'libc')
 makedepends.append('glibc' if i_use_regex == 'gnu' else 'libc')
 source = ['http://www.greenwoodsoftware.com/less/less-%s.tar.gz' % pkgver]

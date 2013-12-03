@@ -16,8 +16,8 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['public (dedication)', 'LGPL2', 'GPL2', 'GPL3', 'custom (all permissive)']
 private = SUPPORTED
-depends = ['glibc', 'sh']
-makedepends = ['glibc']
+depends = ['libc', 'sh']
+makedepends = ['libc', 'gcc']
 source = ['%s/xz-%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['018D5868AF7389D65358F55BB167AB20E81CF809ACCD60861562F86332DB7528E63AABAC230C7183B12F45F56CE0BB4576ABAF16BF3E97F08C18506771AE294073047DFAB9424DC4']
 

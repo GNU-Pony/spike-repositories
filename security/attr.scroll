@@ -5,6 +5,9 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+
 pkgname = 'attr'
 pkgver = '2.4.47'
 pkgdesc = 'Extended attribute support library for ACL support'
@@ -14,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['LGPL']
 private = UNSUPPORTED
 depends = ['glibc']
-makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc']
+makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'gettext']
 provides = ['xfsattr']
 conflicts = ['xfsattr']
 source = ['http://download.savannah.gnu.org/releases/attr/attr-%s.src.tar.gz' % pkgver]
@@ -35,4 +38,8 @@ def package(startdir, srcdir, pkgdir, private):
     rm(pkgdir + '/usr/lib/libattr.a')
     chmod(path('%s/usr/lib/libattr.so.*.*.*' % path_escape(pkgdir)), 0o755)
     rm_r(pkgdir + '/usr/share/man/man2') # conflict with man-pages
+    if not i_use_man:
+        rm_r(pkgdir + '/usr/share/man')
+    filter_locale(i_use_locale, pkgdir, '/usr')
+    ln('/usr/share/doc/%s' % pkgname, '%s/usr/share/licenses/%s' % (pkgdir, pkgname))
 

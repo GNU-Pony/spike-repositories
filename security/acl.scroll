@@ -5,6 +5,9 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+
 pkgname = 'acl'
 pkgver = '2.2.52'
 pkgdesc = 'Access control list utilities, libraries and headers'
@@ -14,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['LGPL']
 private = UNSUPPORTED
 depends = ['attr>=2.4.46']
-makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc']
+makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'attr>=2.4.46']
 provides = ['xfsacl']
 conflicts = ['xfsacl']
 source = ['http://download.savannah.gnu.org/releases/acl/acl-%s.src.tar.gz' % pkgver]
@@ -31,4 +34,8 @@ def build(startdir, srcdir, pkgdir, private):
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/acl-%s' % (srcdir, pkgver))
     make('DIST_ROOT=%s' % pkgdir, 'install', 'install-lib', 'install-dev')
+    if not i_use_man:
+        rm_r(pkgdir + '/usr/share/man')
+    filter_locale(i_use_locale, pkgdir, '/usr')
+    ln('/usr/share/doc/%s' % pkgname, '%s/usr/share/licenses/%s' % (pkgdir, pkgname))
 

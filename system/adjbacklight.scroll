@@ -15,8 +15,8 @@ arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['java-runtime>=6', 'bash', 'coreutils', 'sudo', 'linux']
-makedepends = ['make', 'coreutils', 'sed', 'java-environment>=6']
+depends = ['java-runtime-headless>=6', 'bash', 'coreutils', 'sudo', 'linux']
+makedepends = ['make', 'coreutils', 'sed', 'java-environment-headless>=6']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')

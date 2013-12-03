@@ -16,8 +16,8 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['LGPL']
 private = UNSUPPORTED
-depends = ['attr>=2.4.46']
-makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'attr>=2.4.46']
+depends = ['glibc', 'attr>=2.4.46']
+makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'gcc', 'attr>=2.4.46']
 provides = ['xfsacl']
 conflicts = ['xfsacl']
 source = ['http://download.savannah.gnu.org/releases/acl/acl-%s.src.tar.gz' % pkgver]

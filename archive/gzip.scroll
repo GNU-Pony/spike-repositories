@@ -18,7 +18,7 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc', 'bash', 'less']
 makedepends = ['glibc', 'gcc', 'sh', 'sed', 'make', 'coreutils', 'm4']
-makedepends += ['texinfo', 'gzip'] # for info manual
+makedepends += ['texinfo', 'gzip'] # for info manual (gzip is needed for man as well)
 source = ['ftp://ftp.gnu.org/pub/gnu/gzip/gzip-%s.tar.xz' % pkgver]
 sha3sums = ['EB82AB7D8820FA136560D99F371EE1D8367D09E1C259451F140FB0CC728C5B64F82B2E6351CC34FB7E8F2ECB26F609BE7AFDF2DED829789A49894CCEC3188F0ED0BF5E142B15752B']
 

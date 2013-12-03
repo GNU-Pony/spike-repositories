@@ -18,6 +18,8 @@ private = SUPPORTED
 options = ['staticlibs']
 depends = ['libc']
 makedepends = ['libc', 'sh', 'bash', 'gcc', 'sed', 'make', 'coreutils', 'm4']
+if i_use_man:
+    makedepends.append('gzip')
 source = ['https://github.com/madler/zlib/archive/v%s.tar.gz' % pkgver]
 sha3sums = ['DDDFD8E49486CC17920758AFAE649C56AEA30C6744771CA37F04A1B560EB2936B940D925BF2EC99F30B004EC31ABE71DE35C99BFA05C291E4D1E0463A3160574D2C5F2FAC78E7552']
 

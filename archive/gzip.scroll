@@ -1,0 +1,72 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'gzip'
+pkgver = '1.6'
+pkgdesc = 'GNU compression utility'
+upstream = 'http://www.gnu.org/software/gzip'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'bash', 'less']
+makedepends = ['glibc', 'gcc']
+makedepends += ['texinfo', 'gzip'] # for info manual
+source = ['ftp://ftp.gnu.org/pub/gnu/gzip/gzip-%s.tar.xz' % pkgver]
+sha3sums = ['EB82AB7D8820FA136560D99F371EE1D8367D09E1C259451F140FB0CC728C5B64F82B2E6351CC34FB7E8F2ECB26F609BE7AFDF2DED829789A49894CCEC3188F0ED0BF5E142B15752B']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('info', 'gzip')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gzip-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' % _prefix(private), '--libexecdir=%s/libexec' % _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/gzip-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gzip-%s' % (srcdir, pkgver))
+    make('prefix=%s/%s' % (pkgdir, _prefix(private)), 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

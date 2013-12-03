@@ -35,7 +35,7 @@ def build(startdir, srcdir, pkgdir, private):
     make()
 
 def check(startdir, srcdir, pkgdir, private):
-    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    cd('%s/xz-%s' % (srcdir, pkgver))
     make('check')
 
 def package(startdir, srcdir, pkgdir, private):

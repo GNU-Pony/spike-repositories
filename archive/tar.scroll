@@ -37,12 +37,12 @@ def build(startdir, srcdir, pkgdir, private):
 
 
 def check(startdir, srcdir, pkgdir, private):
-    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    cd('%s/tar-%s' % (srcdir, pkgver))
     make('check')
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/xz-%s' % (srcdir, pkgver))
+    cd('%s/tar-%s' % (srcdir, pkgver))
     make('DESTDIR=%s' % pkgdir, 'install')
     
     _licenses = pkgdir + _prefix(private) + '/share/licenses'

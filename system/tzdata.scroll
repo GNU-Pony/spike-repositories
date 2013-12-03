@@ -48,4 +48,8 @@ def package(startdir, srcdir, pkgdir, private):
     zic('',       ['-p', 'America/New_York'])
     
     install(['iso3166.tab', 'zone.tab'], pkgdir + _dir(private), mode = 0o444)
+    
+    _licenses = '%s/share/licenses' % (path('~/.local') if private else '/usr')
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/public', '%s/%s' % (_licenses, pkgname))
 

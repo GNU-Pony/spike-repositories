@@ -31,7 +31,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/xz-%s' % (srcdir, pkgver))
-    execute('./configure', '--prefix=/usr', '--disable-rpath', '--enable-werror')
+    execute('./configure', '--prefix=%s' % _prefix(private), '--disable-rpath', '--enable-werror')
     make()
 
 def check(startdir, srcdir, pkgdir, private):

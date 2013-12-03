@@ -31,8 +31,8 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/xz-%s' % (srcdir, pkgver))
-    execute('./configure', '--prefix=/usr', '--libexecdir=/usr/libexec')
+    cd('%s/tar-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private), '--libexecdir=%s/libexec' % _prefix(private))
     make()
 
 

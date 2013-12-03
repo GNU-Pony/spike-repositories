@@ -1,0 +1,71 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+
+pkgname = 'tar'
+pkgver = '1.27.1'
+pkgdesc = 'Utility used to store, backup and transport files'
+upstream = 'http://www.gnu.org/software/tar/tar.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libc', 'sh', 'acl', 'attr']
+makedepends = ['libc', 'acl', 'attr', 'gcc']
+makedepends += ['texinfo', 'gzip'] # for info manual
+source = ['ftp://ftp.gnu.org/gnu/tar/tar-%s.tar.xz' % pkgver]
+sha3sums = ['3D838B88501AD9E8733393A01ECC9DFFE66D47188C3A494C63AA66916BB5A79908CFDF53BA6EEA4FFFA17A026B7272C402D830F318710610E54301B60D088444029D388B198521C2']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('info', 'tar')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/xz-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=/usr', '--libexecdir=/usr/lib/tar')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/xz-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

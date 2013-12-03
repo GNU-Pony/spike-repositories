@@ -24,6 +24,10 @@ source = ['http://download.savannah.gnu.org/releases/attr/attr-%s.src.tar.gz' % 
 sha3sums = ['F4AC83E235151951F3E430CA674F580A775D99DBC995D31F9CECC2AF62F3BB82C651173197C81DA4126EB22E3E594BBD7A6A3F986B22A4CE991A4054045FAAFD4B32E1B035A104E4']
 
 
+def ride(private):
+    execute('man', '5', 'attr')
+
+
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/attr-%s' % (srcdir, pkgver))
     export('INSTALL_USER', 'root')

@@ -24,6 +24,10 @@ source = ['http://download.savannah.gnu.org/releases/acl/acl-%s.src.tar.gz' % pk
 sha3sums = ['274A938BA3B76CE4D42157BCCFF5B4F1A45DFD4F10E0853539665AC253F212C76F7C8705916BD9B0ABB2A129270F2DF7CD6362DAFCB2D30E1153F6309B758E26BF9FEB0BA8F9D23C']
 
 
+def ride(private):
+    execute('man', '5', 'acl')
+
+
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/acl-%s' % (srcdir, pkgver))
     export('INSTALL_USER', 'root')

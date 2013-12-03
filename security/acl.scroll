@@ -1,0 +1,34 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'acl'
+pkgver = '2.2.52'
+pkgdesc = 'Access control list utilities, libraries and headers'
+upstream = 'http://savannah.nongnu.org/projects/acl'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL']
+private = UNSUPPORTED
+depends = ['attr>=2.4.46']
+makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc']
+provides = ['xfsacl']
+conflicts = ['xfsacl']
+source = ['http://download.savannah.gnu.org/releases/acl/acl-%s.src.tar.gz' % pkgver]
+sha3sums = ['274A938BA3B76CE4D42157BCCFF5B4F1A45DFD4F10E0853539665AC253F212C76F7C8705916BD9B0ABB2A129270F2DF7CD6362DAFCB2D30E1153F6309B758E26BF9FEB0BA8F9D23C']
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/acl-%s' % (srcdir, pkgver))
+    export('INSTALL_USER', 'root')
+    export('INSTALL_GROUP', 'root')
+    execute('./configure', '--prefix=/usr', '--libdir=/usr/lib', '--libexecdir=/usr/libexec')
+    make()
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/acl-%s' % (srcdir, pkgver))
+    make('DIST_ROOT=%s' % pkgdir, 'install', 'install-lib', 'install-dev')
+

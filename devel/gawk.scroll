@@ -1,0 +1,82 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+i_use_libsigsegv = get('I_USE_LIBSIGSEGV'. 'n').lower().startswith('y')
+
+pkgname = 'gawk'
+pkgver = '4.1.0'
+pkgdesc = 'GNU version of awk'
+upstream = 'http://www.gnu.org/software/gawk/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+provides = ['awk']
+depends = ['sh', 'glibc', 'mpfr']
+makedepends = ['glibc', 'mpfr', 'gcc', 'sh', 'grep', 'sed', 'findutils', 'coreutils', 'make', 'm4']
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for manpage and info
+source = ['ftp://ftp.gnu.org/pub/gnu/gawk/gawk-%s.tar.gz' % pkgver]
+sha3sums = ['EF89C98CB9D99D2A408AD6E26551E8861FAB21883692AC2CBD1C6D455485DE2521612523B35435B232B752AF5F2F0D9FCE7924D546513CF1F53E761AA64474BC009109FD1AE9687D']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('info', 'gawk')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gawk-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=%s' % _prefix(private), '--libexecdir=%s/libexec' % _prefix(private)]
+    if not i_use_libsigsegv:
+        args.append('--without-libsigsegv')
+    else:
+        args.append('--with-libsigsegv')
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/gawk-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gawk-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    install('COPYING', '%s/COPYING' % _dir)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

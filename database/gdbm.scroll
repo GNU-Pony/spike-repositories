@@ -1,0 +1,106 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_secure = get('I_USE_SECURE', 'y').lower().startswith('y')
+
+pkgname = 'gdbm'
+pkgver = '1.10'
+pkgdesc = 'GNU database library'
+upstream = 'http://www.gnu.org/software/gdbm/gdbm.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'sh']
+makedepends = ['glibc', 'gcc', 'sh', 'grep', 'sed', 'findutils', 'coreutils', 'make', 'm4']
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for manpage and info
+source = ['ftp://ftp.gnu.org/pub/gnu/gdbm/gdbm-%s.tar.gz' % pkgver]
+sha3sums = ['6F6AF3C162C8873DA95EB7803801ED929488A32D86FE4E826FD3FEF494A423B1DACEFDCC1453CE7225347AB4E3958430E3A71FCDEC280B15D1889B341C1DF5741A3EEF21E18E8A21']
+if i_use_secure:
+    source.append('gdbm@1.10-zeroheaders.patch')
+    sha3sums.append(None)
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('info', 'gdbm')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gdbm-%s' % (srcdir, pkgver))
+    _pre = _prefix(private)
+    
+    if i_use_secure:
+        # Prevent gdbm from storing uninitialised memory content to database files.
+        # This patch improves security, as the uninitialised memory might contain
+        # sensitive informations from other applications.
+        #     https://bugzilla.redhat.com/show_bug.cgi?id=4457
+        #     http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208927
+        patch(startdir + '/gdbm@1.10-zeroheaders.patch')
+    
+    execute('./configure',
+            '--prefix=%s' % _pre,
+            '--infodir=%s/share/info' % _pre,
+            '--mandir=%s/share/man' % _pre,
+            '--enable-libgdbm-compat')
+    
+    make('prefix=%s' % _prefix(private))
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/gdbm-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gdbm-%s' % (srcdir, pkgver))
+    
+    _pre = pkgdir + _prefix(private)
+    
+    make('prefix=%s' % _pre,
+         'manprefix=%s/share/man' % _pre,
+         'man3dir=%s/share/man/man3' % _pre,
+         'infodir=%s/share/info' % _pre,
+         'install')
+    
+    # Symlinks for compatibility
+    mkdir_p(_pre + '/include/gdbm')
+    for f in ['gdbm', 'ndbm', 'dbm']:
+        ln('../%s.h' % f, '%s/include/gdbm/%s.h' % (_pre, f))
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % (_dir))
+    install('COPYING', '%s/COPYING' & _dir)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -1,0 +1,77 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE'. '*')
+
+pkgname = 'findutils'
+pkgver = '4.4.2'
+pkgdesc = 'GNU utilities to locate files'
+upstream = 'http://www.gnu.org/software/findutils'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['sh', 'glibc']
+makedepends = ['glibc', 'gcc', 'sh', 'make', 'sed', 'coreutils', 'm4', 'grep']
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for manpage and info
+source = ['ftp://ftp.gnu.org/pub/gnu/findutils/findutils-%s.tar.gz' % pkgver]
+sha3sums = ['B0FD04951BE785F01FE6A11AEC302A6D6BFEFB0B66A7ADD1D914862ADD4A4E1C6EADF4562F67E3E25B3DC730D7A99E5A9C8CCEAF064043FBC3059DFB84449BE1CECE64A763FC4EDE']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('find')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/findutils-%s' % (srcdir, pkgver))
+    sed(sed_script('locate', '', '^SUBDIRS'), 'Makefile.in')
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/findutils-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/findutils-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    install('COPYING', '%s/COPYING' % _dir)
+    
+    if not man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

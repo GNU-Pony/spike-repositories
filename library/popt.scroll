@@ -36,7 +36,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/popt-%s' % (srcdir, pkgver))
-    args = ['./configure', '--prefix=' + _prefix(private)]
+    args = ['./configure', '--prefix=' + _prefix(private), '--disable-static']
     if not i_use_largefiles:
         args.append('--disable-largefile')
     execute(args)

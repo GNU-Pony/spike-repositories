@@ -21,8 +21,8 @@ depends = ['sh', 'util-linux', 'glibc']
 makedepends = ['bc', 'glibc', 'gcc', 'sh', 'grep', 'findutils', 'sed', 'make', 'coreutils', 'm4']
 makedepends.append('texinfo') # for info manual
 makedepends.append('man') # for manpages and info
-source = ['http://downloads.sourceforge.net/sourceforge/e2fsprogs/e2fsprogs-%s.tar.gz' % pkgver]
-sha3sums = ['D182B16983D8EF6FB73A8E6F7A5E6900F2DF0F130EA9A4838E9D74A7E3B6227D4F092EC53F73AED8F249DAF5C3119647747E96D6D1A4B814D70B3D5091E384547265583192F6E7FD']
+source = ['http://downloads.sourceforge.net/sourceforge/e2fsprogs/e2fsprogs-%s.tar.gz' % pkgver, 'e2fsprogs@mke2fs.conf']
+sha3sums = ['D182B16983D8EF6FB73A8E6F7A5E6900F2DF0F130EA9A4838E9D74A7E3B6227D4F092EC53F73AED8F249DAF5C3119647747E96D6D1A4B814D70B3D5091E384547265583192F6E7FD', None]
 
 
 _prefix = lambda private : (path('~/.local') if private else '/usr')
@@ -51,6 +51,9 @@ def package(startdir, srcdir, pkgdir, private):
     sed(sed_script('^AWK=.*', 'AWK=awk'), _pre + '/bin/compile_et')
     sed(sed_script('^SS_DIR=.*', 'SS_DIR="%s/share/ss"' % _prefix(private)), _pre + '/bin/mk_cmds')
     sed(sed_script('^ET_DIR=.*', 'ET_DIR="%s/share/et"' % _prefix(private)), _pre + '/bin/compile_et')
+    
+    mkdir_p(pkgdir + '/etc')
+    install(startdir + '/e2fsprogs@mke2fs.conf', pkgdir + '/etc/mke2fs.conf')
     
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     mkdir_p(_dir)

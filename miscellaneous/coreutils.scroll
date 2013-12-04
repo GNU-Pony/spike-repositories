@@ -7,13 +7,13 @@ from dragonsuite import *
 
 i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
 i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
-i_use_locale     = get('I_USE_LOCALE'.     '*')
+i_use_locale     = get('I_USE_LOCALE',     '*')
 i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
 i_use_acl        = get('I_USE_ACL',        'y').lower().startswith('y')
 i_use_xattr      = get('I_USE_XATTR',      'y').lower().startswith('y')
 i_use_libcap     = get('I_USE_LIBCAP',     'y').lower().startswith('y')
 i_use_gmp        = get('I_USE_GMP',        'y').lower().startswith('y')
-i_use_pth        = get('I_USE_PTH'.        'n').lower().startswith('y')
+i_use_pth        = get('I_USE_PTH',        'n').lower().startswith('y')
 
 pkgname = 'coreutils'
 pkgver = '8.21'

@@ -5,10 +5,10 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
-i_use_locale = get('I_USE_LOCALE'. '*')
-i_use_libsigsegv = get('I_USE_LIBSIGSEGV'. 'n').lower().startswith('y')
+i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
+i_use_libsigsegv = get('I_USE_LIBSIGSEGV', 'n').lower().startswith('y')
 
 pkgname = 'gawk'
 pkgver = '4.1.0'

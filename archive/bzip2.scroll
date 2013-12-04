@@ -5,7 +5,7 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
 i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
 
 pkgname = 'bzip2'
@@ -17,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['custom (permissive free)']
 private = SUPPORTED
 depends = ['libc']
-makedepends = ['libc', 'gcc', 'make', 'coreutils', 'patch'. 'sed']
+makedepends = ['libc', 'gcc', 'make', 'coreutils', 'patch', 'sed']
 if i_use_man:
     makedepends.append('gzip')
 source = ['http://www.bzip.org/%s/bzip2-%s.tar.gz' % (pkgver, pkgver), 'bzip2@1.0.4-bzip2recover.patch']

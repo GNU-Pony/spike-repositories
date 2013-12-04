@@ -5,8 +5,8 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_locale = get('I_USE_LOCALE'. '*')
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
 
 pkgname = 'tar'
 pkgver = '1.27.1'

@@ -5,9 +5,9 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
-i_use_locale = get('I_USE_LOCALE'. '*')
+i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
 i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
 
 pkgname = 'grep'

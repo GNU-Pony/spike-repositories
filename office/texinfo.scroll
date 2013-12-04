@@ -5,11 +5,11 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
-i_use_locale = get('I_USE_LOCALE'. '*')
+i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
 i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
-i_use_pth        = get('I_USE_PTH'.        'n').lower().startswith('y')
+i_use_pth        = get('I_USE_PTH',        'n').lower().startswith('y')
 
 pkgname = 'texinfo'
 pkgver = '5.2'
@@ -60,7 +60,7 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     mkdir_p(_dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-    install('COPYING', '%s/COPYING' _dir)
+    install('COPYING', '%s/COPYING' % _dir)
     
     if not i_use_info:
         rm_r(pkgdir + _prefix(private) + '/share/info')

@@ -1,0 +1,50 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'cracklib'
+pkgver = '2.9.0'
+pkgdesc = 'Password checking libraryPassword checking library'
+upstream = 'http://sourceforge.net/projects/cracklib'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc', 'zlib']
+makedepends = ['zlib', 'sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'gcc', 'bash']
+source = ['http://downloads.sourceforge.net/sourceforge/cracklib/cracklib-%s.tar.gz' % pkgver]
+sha3sums = ['DEEF19F36923F2928623B2B553F73639E3D0FE57318751A33D812577BD73C98C3A8C60FE0773155BEF2C4F14242649200B072DDDDD7662B0F5C48766D690C28733D0A13A479FF595']
+
+
+def ride(private):
+    echo('A few commands have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/cracklib-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private), '--without-python')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/cracklib-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/cracklib-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/dict'
+    mkdir_p(_dir)
+    ln('../cracklib/cracklib-small', _dir + '/cracklib-small')
+    
+    _dir = bash_escape(pkgdir + _prefix(private))
+    bash('./util/cracklib-format dicts/cracklib-small | ./util/cracklib-packer %s/share/cracklib/pw_dict' % _dir)
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

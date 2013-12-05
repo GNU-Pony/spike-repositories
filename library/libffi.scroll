@@ -1,0 +1,75 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'libffi'
+pkgver = '3.0.13'
+pkgdesc = 'Portable, high level programming interface to various calling conventions'
+upstream = 'http://sourceware.org/libffi/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['MIT']
+private = SUPPORTED
+depends = ['glibc']
+checkdepends = ['dejagnu']
+makedepends = ['gcc', 'glibc', 'make', 'coreutils', 'sed', 'grep', 'findutils', 'sh', 'm4']
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for manpages and info
+source = ['ftp://sourceware.org/pub/libffi/libffi-%s.tar.gz' % pkgver]
+sha3sums = ['BEC1E80E86A3732C96236F43E35967E5B43D2E1D0AA53156DA6B83857AAF2A1830D7D2FC66C690BDF358664A57959EAD43A778334A56897937B546CADE308EEFFAEB8C2B4A2DC4C2']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    if i_use_info:
+        execute('info', 'libffi')
+    else:
+        execute('man', '3', 'ffi')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libffi-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private), '--disable-static')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libffi-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libffi-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'RAISE_SETFCAP=no', 'prefix=' + _prefix(private), 'lib=/lib', 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses'
+    install('LICENSE', _dir + '/' + pkgname + '/LICENSE', parents = True, mode = 0o644)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

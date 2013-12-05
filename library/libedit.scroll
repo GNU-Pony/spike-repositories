@@ -29,13 +29,13 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/libedit-%s' % (srcdir, pkgver))
+    cd('%s/libedit-%s' % (srcdir, pkgver.replace('_', '-')))
     execute('./configure', '--prefix=' + _prefix(private), '--enable-widec')
     make()
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/libedit-%s' % (srcdir, pkgver))
+    cd('%s/libedit-%s' % (srcdir, pkgver.replace('_', '-')))
     make('prefix=' + pkgdir + _prefix(private), 'install')
     
     _share = pkgdir + _prefix(private) + '/share'

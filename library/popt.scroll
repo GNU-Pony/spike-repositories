@@ -5,10 +5,6 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-## It recommended to compile this package once for every
-## exact CPU type you will be running this package on.
-
-
 i_use_man        = get('I_USE_MAN',    'y').lower().startswith('y')
 i_use_locale     = get('I_USE_LOCALE', '*')
 i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')

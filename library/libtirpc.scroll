@@ -1,0 +1,65 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+
+pkgname = 'libtirpc'
+pkgver = '0.2.3'
+pkgdesc = 'Transport Independent RPC library (SunRPC replacement)'
+upstream = 'http://libtirpc.sourceforge.net/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD']
+private = SUPPORTED
+depends = ['glibc', 'libgssglue']
+makedepends = ['gcc', 'glibc', 'libgssglue', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends.append('gzip') # for manpages
+source = ['http://downloads.sourceforge.net/sourceforge/libtirpc/libtirpc-%s.tar.bz2' % pkgver, 'libtirpc@build.patch']
+noextract = source[1:]
+sha3sums = ['F54A9C99A8D1C301C89245819F370997CEF439A2CE94BB6138880C580090C971A4A434BD4338B946A63A9462E3E1085A07F92F0D43B418B58E4C30F246572378CBF655DA4B5A1615', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libtirpc-%s' % (srcdir, pkgver))
+    patch(srcdir + '/libtirpc@build.patch', forward = False)
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconf=' + (path('~/.config') if private else '/etc'),
+            '--enable-gss']
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libtirpc-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    install('COPYING', pkgdir + '/usr/share/licenses/libtirpc/LICENSE', mode = 0o644, parents = True)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

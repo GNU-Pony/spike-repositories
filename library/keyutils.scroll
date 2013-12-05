@@ -1,0 +1,67 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', '*')
+
+pkgname = 'keyutils'
+pkgver = '1.5.8'
+pkgdesc = 'Linux key management utilities'
+upstream = 'http://www.kernel.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc', 'sh']
+makedepends = ['gcc', 'glibc', 'make', 'coreutils', 'sed', 'file']
+makedepends.append('gzip') # for manpages
+source = ['http://people.redhat.com/~dhowells/keyutils/keyutils-%s.tar.bz2' % pkgver]
+sha3sums = ['EF8A55A1659F796FF5A6B4D5FA462FE0A96994396E452DF7F1BADF93A89446E36AD1A1B0D7905E0E9FAE652346113706651C2C921F660B1DEA3B0CC6FDAE6FECA12067057372E7C8']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def _private_args():
+    _rc = ['ETCDIR=%s'     % path('~/.config'),
+           'BINDIR=%s'     % path('~/.local/bin'),
+           'SBINDIR=%s'    % path('~/.local/sbin'),
+           'SHAREDIR=%s'   % path('~/.local/share/keyutils'),
+           'MAN1=%s'       % path('~/.local/share/man/man1'),
+           'MAN3=%s'       % path('~/.local/share/man/man3'),
+           'MAN5=%s'       % path('~/.local/share/man/man5'),
+           'MAN8=%s'       % path('~/.local/share/man/man8'),
+           'INCLUDEDIR=%s' % path('~/.local/include')]
+    return _rc
+
+
+def ride(private):
+    execute('man', '1', 'keyctl')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    CFLAGS = get('CFLAGS')
+    LDFLAGS = get('LDFLAGS')
+    args = ['CFLAGS=' + CFLAGS, 'LDFLAGS=' + LDFLAGS]
+    if private:
+        args += _private_args()
+    make(args)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    args = ['DESTDIR=' + pkgdir, 'install']
+    if private:
+        args += _private_args()
+    make(args)
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    for _lic in license:
+        ln('/usr/share/licenses/common/' + _lic, _dir + '/' + _lic)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

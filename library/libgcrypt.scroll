@@ -55,8 +55,8 @@ def package(startdir, srcdir, pkgdir, private):
     make('prefix=' + pkgdir + _prefix(private), 'install')
     
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
-    install('COPYING', _dir + '/COPYING', parents = True, mode = 0o644)
-    install('COPYING.LIB', _dir + '/COPYING.LIB', parents = True, mode = 0o644)
+    for _lic in license:
+        ln('/usr/share/licenses/common/' + _lic, _dir + '/' + _lic)
     
     if not i_use_info:
         rm_r(pkgdir + _prefix(private) + '/share/info')

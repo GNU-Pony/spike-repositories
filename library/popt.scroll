@@ -42,7 +42,7 @@ def build(startdir, srcdir, pkgdir, private):
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/popt-%s' % (srcdir, pkgver))
     make('DESTDIR=' + pkgdir, 'install')
-    install('COPYING', pkgdir + '/usr/share/licenses/popt/LICENSE', mode = 0o644, parents = True)
+    install('COPYING', pkgdir + _prefix(private) + '/share/licenses/popt/LICENSE', mode = 0o644, parents = True)
     
     if not i_use_man:
         rm_r(pkgdir + _prefix(private) + '/share/man')

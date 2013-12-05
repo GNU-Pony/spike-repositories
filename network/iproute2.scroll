@@ -19,7 +19,7 @@ private = UNSUPPORTED # Some work is needed to change filesystem hierarchy
 depends = ['glibc' 'db' 'iptables', 'linux']
 if i_use_atm_network:
     optdepends = ['linux-atm: Asynchronous transfer mode networking support']
-makedepends = ['glibc', 'gcc', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep', 'gzip', 'util-linux', 'pkg-config']
+makedepends = ['glibc', 'gcc', 'db', 'iptables', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep', 'gzip', 'util-linux', 'pkg-config']
 if i_use_atm_network:
     makedepends.append('linux-atm: Asynchronous transfer mode networking support')
 options = ['staticlibs', '!makeflags']

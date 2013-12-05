@@ -1,0 +1,63 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'libcap'
+pkgver = '2.22'
+pkgdesc = 'POSIX 1003.1e capabilities'
+upstream = 'http://sites.google.com/site/fullycapable'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'nBSD']
+private = SUPPORTED
+depends = ['glibc', 'attr']
+makedepends = ['gcc', 'glibc', 'attr', 'make', 'sed', 'coreutils', 'findutils']
+makedepends.append('gzip') # for manpages
+options = ['!staticlibs']
+source = ['ftp://ftp.archlinux.org/other/libcap/libcap-%s.tar.gz' % pkgver]
+sha3sums = ['2439FEAB2CD2377D26F5CC4B79DE6FEE28AFC11FA10FDC7D368BC28FAF41DF762ED2038F1A211E43745A4F459E29625E4D84E85D2612F291B454E529494940237EE6FBFA56E09BF0']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    cat(_prefix(private) + '/share/doc/libcap/capability.conf.example')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libcap-%s' % (srcdir, pkgver))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libcap-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'RAISE_SETFCAP=no', 'prefix=' + _prefix(private), 'lib=/lib', 'install')
+    
+    _share = pkgdir + _prefix(private) + '/share'
+    install('pam_cap/capability.conf', _share + '/doc/pkgname/capability.conf.example', parents = True, mode = 0o644)
+    install('License', _share + '/licenses/' + pkgname + '/LICENSE', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

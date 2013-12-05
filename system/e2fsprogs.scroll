@@ -18,7 +18,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL2', 'LGPL2', 'MIT']
 private = SUPPORTED
 depends = ['sh', 'util-linux', 'glibc']
-makedepends = ['bc', 'glibc', 'gcc', 'sh', 'grep', 'findutils', 'sed', 'make', 'coreutils', 'm4']
+makedepends = ['bc', 'glibc', 'gcc', 'sh', 'bash', 'grep', 'findutils', 'sed', 'make', 'coreutils', 'm4']
 makedepends.append('texinfo') # for info manual
 makedepends.append('man') # for manpages and info
 source = ['http://downloads.sourceforge.net/sourceforge/e2fsprogs/e2fsprogs-%s.tar.gz' % pkgver, 'e2fsprogs@mke2fs.conf']

@@ -1,0 +1,65 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'expat'
+pkgver = '2.1.0'
+pkgdesc = 'A stream-oriented XML parser for C'
+upstream = 'http://expat.sourceforge.net/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['cc', 'libc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends.append('gzip') # for manpage
+source = ['http://downloads.sourceforge.net/sourceforge/expat/expat-%s.tar.gz' % pkgver]
+sha3sums = ['6FA6A95BB73DFE68D429BB5097A65778103E1C015F48A0C173CAA4C890E79A7437861767E5B69340373E5C3E416231031CC0040E992B7BCC609B446AD62F05FD2415A80974B22B2E']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'xmlwf')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/expat-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/expat-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/expat-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    install('COPYING', _dir + '/COPYING', mode = 0o644, parents = True)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

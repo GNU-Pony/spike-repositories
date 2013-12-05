@@ -18,6 +18,8 @@ private = SUPPORTED
 depends = ['curses']
 makedepends = ['cc', 'libc', 'curses', 'sh', 'grep', 'make', 'sed', 'coreutils', 'findutils']
 makedepends.append('gzip') # for manpages
+provides = ['libedit>=2.11<2.12'] # According to information in header files
+provides = ['libedit=3.1'] # Actual version
 source = ['http://www.thrysoee.dk/editline/libedit-%s.tar.gz' % pkgver.replace('_', '-')]
 sha3sums = ['C68302CD82B6E8FDC046F1A11249EFC4801A37D595F2D7573758238DA986C2BB236C5440B83FC77305EC75CEB7F9692B907AA2278AFB631F65C8DCB6C59D9FEE0043035279320FA5']
 

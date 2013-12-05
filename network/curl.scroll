@@ -1,0 +1,107 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
+i_use_system_ca_certificates = get('I_USE_SYSTEM_CA_CERTIFICATES', 'n').lower().startswith('y')
+
+pkgname = 'curl'
+pkgver = '7.33.0'
+pkgdesc = 'An URL retrieval utility and library'
+upstream = 'http://curl.haxx.se'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['MIT']
+private = UNSUPPORTED
+depends = ['libc', 'ca-certificates', 'libssh2', 'openssl', 'zlib', 'sh', 'coreutils'. 'bc', 'sed']
+makedepends = ['libc', 'cc', 'sed', 'bash', 'make', 'sh', 'm4', 'grep', 'findutils', 'sed', 'coreutils']
+makedepends.append('gzip') # for manpages
+source = ['http://curl.haxx.se/download/curl-%s.tar.gz' % pkgver,
+          'https://github.com/bagder/curl/commit/867b52a.patch',
+          'curl@curlbuild.h']
+noextract = source[1:]
+sha3sums = ['3B95D4E64A02A478CA7BFF5089EED3ACA214B4B7B30DAFACE6D5EE69018C669645B5D60FD363AD1BC7F17D32B9C3F1E2BA4945263FC1A1D1E61900A062593A01E180EEC030DA3E64',
+            'C8DBBD385E929664300C42A9803765A8D3AB8DF88F1B6C1F12EAAE59A0532D38E0FA71E290D2807309A04A2F71E47AC51BD2F0A12ABA344F5EC6524EBE884D2E5E98661E50BD23FE',
+            None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'curl')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/curl-%s' % (srcdir, pkgver))
+    
+    patch(srcdir + '/867b52a.patch')
+    
+    args = ['./configure', '--prefix=' + _prefix(private), '--mandir=%s/share/man' % _prefix(private)]
+    args += ['--enable-versioned-symbols',
+             '--enable-threaded-resolver',
+             '--enable-ipv6',
+             '--without-libidn',
+            '--with-random=/dev/urandom']
+    
+    if i_use_system_ca_certificates or not private:
+        args.append('--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt')
+    else:
+        args.append('--with-ca-bundle=%s/ssl/certs/ca-certificates.crt' % path('~/.config'))
+    
+    if not i_use_largefiles:
+        args.append('--disable-largefile')
+    
+    #args.append('--enable-http')
+    #args.append('--disable-http')
+    #args.append('--enable-ftp')
+    #args.append('--disable-ftp')
+    #args.append('--enable-file')
+    #args.append('--disable-file')
+    #args.append('--enable-ldap')
+    args.append('--disable-ldap')
+    #args.append('--enable-ldaps')
+    args.append('--disable-ldaps')
+    #args.append('--enable-rtsp')
+    #args.append('--disable-rtsp')
+    #args.append('--enable-proxy')
+    #args.append('--disable-proxy')
+    #args.append('--enable-dict')
+    #args.append('--disable-dict')
+    #args.append('--enable-telnet')
+    #args.append('--disable-telnet')
+    #args.append('--enable-tftp')
+    #args.append('--disable-tftp')
+    #args.append('--enable-pop3')
+    #args.append('--disable-pop3')
+    #args.append('--enable-imap')
+    #args.append('--disable-imap')
+    #args.append('--enable-smtp')
+    #args.append('--disable-smtp')
+    #args.append('--enable-gopher')
+    #args.append('--disable-gopher')
+    args.append('--enable-manual')
+    #args.append('--disable-manual')
+    
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/curl-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    curlbuild = 'curlbuild-%i' % (8 * int(bash_pipe('cpp <<<\'__SIZEOF_POINTER__\' | sed \'/^#/d\'')[0]))
+    mkdir_p(_pre + '/include/curl')
+    mv(_pre + '/include/curl/curlbuild.h', _pre + '/include/curl/' + curlbuild)
+    install(srcdir + '/curl@curlbuild.h', _pre + '/include/curl/curlbuild.h', mode = 0o644)
+    
+    install('COPYING', _pre + '/share/licenses/curl/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r('%s/usr/share/man' & pkgdir)
+

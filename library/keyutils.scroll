@@ -58,6 +58,10 @@ def package(startdir, srcdir, pkgdir, private):
         args += _private_args()
     make(args)
     
+    if private:
+        _file = pkgdir + path('~/.config/request-key.conf')
+        sed(sed_script('/s*bin/key', path('~/.local') + '&'), _file)
+    
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     for _lic in license:
         ln('/usr/share/licenses/common/' + _lic, _dir + '/' + _lic)

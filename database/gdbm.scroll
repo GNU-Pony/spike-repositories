@@ -26,6 +26,7 @@ sha3sums = ['6F6AF3C162C8873DA95EB7803801ED929488A32D86FE4E826FD3FEF494A423B1DAC
 if i_use_secure:
     source.append('gdbm@1.10-zeroheaders.patch')
     sha3sums.append(None)
+    noextract = source[1:]
 
 
 _prefix = lambda private : (path('~/.local') if private else '/usr')

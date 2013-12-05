@@ -22,6 +22,7 @@ makedepends = ['bc', 'glibc', 'gcc', 'sh', 'grep', 'findutils', 'sed', 'make', '
 makedepends.append('texinfo') # for info manual
 makedepends.append('man') # for manpages and info
 source = ['http://downloads.sourceforge.net/sourceforge/e2fsprogs/e2fsprogs-%s.tar.gz' % pkgver, 'e2fsprogs@mke2fs.conf']
+noextract = source[1:]
 sha3sums = ['D182B16983D8EF6FB73A8E6F7A5E6900F2DF0F130EA9A4838E9D74A7E3B6227D4F092EC53F73AED8F249DAF5C3119647747E96D6D1A4B814D70B3D5091E384547265583192F6E7FD', None]
 
 

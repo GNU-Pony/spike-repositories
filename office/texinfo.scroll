@@ -27,6 +27,7 @@ if i_use_pth:
 makedepends.append('texinfo') # for info manual
 makedepends.append('man') # for manpages and info
 source = ['ftp://ftp.gnu.org/pub/gnu/texinfo/texinfo-%s.tar.xz' % pkgver, 'texinfo@5.2-C-n-fix.patch']
+noextract = source[1:]
 sha3sums = ['EFBF1C33FD6B296245ED88BB7EBEBBAD80C3471A0AC882D17E0C438932475DC127773F961BC7D2672C9B1F92AADEB825A97AFC2D9DE3A68EB719CB515BA9C3BC22F9F2FDB737BECA', None]
 
 

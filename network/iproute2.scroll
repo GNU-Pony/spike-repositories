@@ -22,6 +22,7 @@ if i_use_atm_network:
 makedepends = ['glibc', 'gcc', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep', 'gzip', 'util-linux', 'pkg-config']
 if i_use_atm_network:
     makedepends.append('linux-atm: Asynchronous transfer mode networking support')
+options = ['staticlibs', '!makeflags']
 source = ['http://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-%s.tar.xz' % pkgver,
           'iproute2@fhs.patch', 'iproute2@unwanted-link-help.patch']
 noextract = source[1:]

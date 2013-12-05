@@ -18,7 +18,7 @@ license = ['LGPL2.1']
 private = SUPPORTED
 depends = ['glibc']
 makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
-makedepends.append('gzip') # for manpage manual
+makedepends.append('gzip') # for manpages
 source = ['http://www.infradead.org/~tgr/libnl/files/libnl-%s.tar.gz' % pkgver]
 sha3sums = ['85149AF6F54983DF8C647E703F7EA79EF8D17D3ECBFA1230B05D92BA5F9A110D3E17F828496F300A4A4BB446CD3E81DDACC781868DBBEC7ABB17E33E990B5A8017B6A1308A988C8B']
 

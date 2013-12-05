@@ -1,0 +1,63 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
+i_use_mguard   = get('I_USE_MGUARD',   'n').lower().startswith('y') # memory guard
+i_use_bincheck = get('I_USE_BINCHECK', 'n').lower().startswith('y') # library integrity check
+i_use_padlock  = get('I_USE_PADLOCK',  'n').lower().startswith('y') # PadLock Engine of VIA processors
+
+pkgname = 'libgcrypt'
+pkgver = '1.5.3'
+pkgdesc = 'General purpose cryptographic library based on the code from GnuPG'
+upstream = 'http://www.gnupg.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc', 'libgpg-error>=1.10-2']
+makedepends = ['gcc', 'glibc', 'libgpg-error>=1.10-2', 'sh', 'grep', 'make', 'sed', 'coreutils', 'findutils']
+makedepends += ['texinfo', 'gzip'] # for info manual
+options = ['!emptydirs']
+source = ['ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-%s.tar.gz' % pkgver]
+sha3sums = ['5F4D301BF20567B4BFEE2C90FFA4E9362E73AAEAB76E5AE084B4306D7091FE4F7E3F5B9B3F88D072AB44B0BD5DA25C1340927E3838A0DAFB8C0FE69B859131D77CBD46C92076D163']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('info', 'libgcrypt')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=' + _prefix(private), '--disable-static', '--disable-padlock-support']
+    if i_use_mguard:
+        args.append('--enable-m-guard')
+    if i_use_bincheck:
+        args.append('--enable-hmac-binary-check')
+    if not i_use_padlock:
+        args.append('--disable-padlock-support')
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    make('prefix=' + pkgdir + _prefix(private), 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    install('COPYING', _dir + '/COPYING', parents = True, mode = 0o644)
+    install('COPYING.LIB', _dir + '/COPYING.LIB', parents = True, mode = 0o644)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+

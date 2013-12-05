@@ -1,0 +1,44 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'libgssglue'
+pkgver = '0.4'
+pkgdesc = 'Exports a gssapi interface which calls other random gssapi libraries'
+upstream = 'http://www.citi.umich.edu/projects/nfsv4/linux/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD', 'MIT', 'custom (permissive free)']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['pkgconf', 'autoconf', 'glibc', 'gcc']
+source = ['http://www.citi.umich.edu/projects/nfsv4/linux/libgssglue/libgssglue-%s.tar.gz' % pkgver, 'libgssglue@gssapi_mech.conf']
+noextract = source[1:]
+sha3sums = ['89467B18A97FDDEEA62C8282457E720FA617ACC8F78A7BDEFBD42B5E6B6B5F35FEB7AEF1078EBBADFEF3865A93FC92830CD414D3C54C4574C8F7E6D232138E5F9CDE4F8808A782F0', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('/etc/gssapi_mech.conf can be edited to configure this package')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libgssglue-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libgssglue-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = pkgdir + (path('~/.config') if private else '/etc')
+    install(srcdir + '/libgssglue@gssapi_mech.conf', _dir + '/gssapi_mech.conf', parents = True, mode = 0o644)
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses'
+    install('COPYING', _dir + '/' + pkgname + '/COPYING', parents = True, mode = 0o644)
+    

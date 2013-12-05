@@ -9,11 +9,11 @@ i_use_locale = get('I_USE_LOCALE', '*')
 
 pkgname = 'cracklib'
 pkgver = '2.9.0'
-pkgdesc = 'Password checking libraryPassword checking library'
+pkgdesc = 'Password checking library'
 upstream = 'http://sourceforge.net/projects/cracklib'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL2']
+license = ['LGPL2.1']
 private = SUPPORTED
 depends = ['glibc', 'zlib']
 makedepends = ['zlib', 'sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'gcc', 'bash']
@@ -46,5 +46,10 @@ def package(startdir, srcdir, pkgdir, private):
     
     _dir = bash_escape(pkgdir + _prefix(private))
     bash('./util/cracklib-format dicts/cracklib-small | ./util/cracklib-packer %s/share/cracklib/pw_dict' % _dir)
+    
+    _dir = pkgdir + _prefix(private) + '/licenses'
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/LGPL2.1', _dir + '/' + pkgname)
+    
     filter_locale(i_use_locale, pkgdir, _prefix(private))
 

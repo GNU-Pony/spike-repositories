@@ -25,7 +25,7 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd(startdir)
+    cd(srcdir)
     bash('drill -z -s DNSKEY . > root.key')
     bash('cat root-anchors.xml | awk \'BEGIN{ORS=" "}(NR>4){gsub(/<[^>]*>/,"");print tolower($0)}\' | sed \'s/   /\\n/\' > \
 root.ds')
@@ -38,7 +38,7 @@ root.ds')
     bash('sed \'/DNSKEY/s/ ;{id = \'"$(cut -d " "  -f 1 < root.ds)"\' .*//;t;d\' root.key > trusted-key.key')
 
 def package(startdir, srcdir, pkgdir, private):
-    cd(startdir)
+    cd(srcdir)
     install('trusted-key.key', pkgdir + '/etc/trusted-key.key', mode = 0o644, parents = True)
     install('dnssec-anchors@license', pkgdir + '/usr/share/licenses/dnssec-anchors/LICENSE', mode = 0o644, parents = True)
 

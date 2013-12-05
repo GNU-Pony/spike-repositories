@@ -40,7 +40,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/texinfo-%s' % (srcdir, pkgver))
-    patch(startdir + '/texinfo@5.2-C-n-fix.patch', strip = 0, forward = False)
+    patch(srcdir + '/texinfo@5.2-C-n-fix.patch', strip = 0, forward = False)
     args = ['./configure', '--prefix=%s' % _prefix(private)]
     args.append('--enable-threads=%s' % ('pth' if i_use_pth else 'posix'))
     if not i_use_largefiles:

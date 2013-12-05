@@ -36,7 +36,7 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/bzip2-%s' % (srcdir, pkgver))
     if not i_use_largefiles:
         sed(sed_script('^CFLAGS=\\(.*\\)$', 'CFLAGS=\\1 \\$(BIGFILES)'), 'Makefile-libbz2_so')
-    patch(startdir + '/bzip2@1.0.4-bzip2recover.patch')
+    patch(srcdir + '/bzip2@1.0.4-bzip2recover.patch')
     make('-f', 'Makefile-libbz2_so')
     make('bzip2', 'bzip2recover', 'libbz2.a')
 

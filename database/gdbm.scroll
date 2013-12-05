@@ -46,7 +46,7 @@ def build(startdir, srcdir, pkgdir, private):
         # sensitive informations from other applications.
         #     https://bugzilla.redhat.com/show_bug.cgi?id=4457
         #     http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208927
-        patch(startdir + '/gdbm@1.10-zeroheaders.patch')
+        patch(srcdir + '/gdbm@1.10-zeroheaders.patch')
     
     execute('./configure',
             '--prefix=%s' % _pre,

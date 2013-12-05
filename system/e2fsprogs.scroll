@@ -54,7 +54,7 @@ def package(startdir, srcdir, pkgdir, private):
     sed(sed_script('^ET_DIR=.*', 'ET_DIR="%s/share/et"' % _prefix(private)), _pre + '/bin/compile_et')
     
     mkdir_p(pkgdir + '/etc')
-    install(startdir + '/e2fsprogs@mke2fs.conf', pkgdir + '/etc/mke2fs.conf')
+    install(srcdir + '/e2fsprogs@mke2fs.conf', pkgdir + '/etc/mke2fs.conf')
     
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     mkdir_p(_dir)

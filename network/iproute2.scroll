@@ -1,0 +1,56 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_atm_network = get('I_USE_ATM_NETWORK', 'n').lower().startswith('y')
+
+pkgname = 'iproute2'
+pkgver = '3.11.0'
+pkgdesc = 'IP routing utilities'
+upstream = 'http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = UNSUPPORTED # Some work is needed to change filesystem hierarchy
+depends = ['glibc' 'db' 'iptables', 'linux']
+if i_use_atm_network:
+    optdepends = ['linux-atm: Asynchronous transfer mode networking support']
+makedepends = ['glibc', 'gcc', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep', 'gzip', 'util-linux', 'pkg-config']
+if i_use_atm_network:
+    makedepends.append('linux-atm: Asynchronous transfer mode networking support')
+source = ['http://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-%s.tar.xz' % pkgver,
+          'iproute2@fhs.patch', 'iproute2@unwanted-link-help.patch']
+noextract = source[1:]
+sha3sums = ['367662454528B9E40F1A794426BC3B099E66E0D3953336AB5F3F1FA1F4E0BDFE89ADA22DCE263A1CAAD19A665017368989BE9E195C0FB075800C5F977922B2BA41F72DF8841A412F', None, None]
+
+
+def ride(private):
+    echo('Multiple commands and manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/iproute2-%s' % (srcdir, pkgver))
+    patch(srcdir + '/iproute2@fhs.patch')
+    patch(srcdir + '/iproute2@unwanted-link-help.patch')
+    sed(sed_script('-Werror', ''), 'Makefile')
+    execute('./configure')
+    if not i_use_atm_network:
+        sed(sed_script('^TC_CONFIG_ATM:=y$', '',), 'Config')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/iproute2-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    install('include/libnetlink.h', pkgdir + '/usr/include/libnetlink.h', mode = 0o644, parents = True)
+    install('lib/libnetlink.a', pkgdir + '/usr/lib/libnetlink.a', mode = 0o644, parents = True)
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    mkdir_p(_dir)
+    ln_s('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+    if not i_use_man:
+        rm_r('%s/usr/share/man' & pkgdir)
+

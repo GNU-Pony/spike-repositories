@@ -46,4 +46,6 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     install('COPYING', _dir + '/COPYING', parents = True, mode = 0o644)
     install('COPYING.LIB', _dir + '/COPYING.LIB', parents = True, mode = 0o644)
+    
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
 

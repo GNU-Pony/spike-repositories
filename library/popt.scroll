@@ -19,7 +19,7 @@ license = ['custom (permissive free)']
 private = SUPPORTED
 depends = ['glibc']
 makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
-makedepends.append('gzip') # for info manual
+makedepends.append('gzip') # for manpage
 source = ['http://rpm5.org/files/popt/popt-%s.tar.gz' % pkgver]
 sha3sums = ['5C6CF5720B5F6B59B1FD6F8425F22CCCD3707C96FF461E517E251D894589E3567AA66A98F3464CE173D0CF5908B39DA7CBA03610AE9048B3E99415103C91029CF8F278A53D8193B3']
 

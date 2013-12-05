@@ -1,0 +1,74 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_threads = get('I_USE_THREADS', 'y').lower().startswith('y')
+
+pkgname = 'libnl'
+pkgver = '3.2.21'
+pkgdesc = 'Library for applications dealing with netlink sockets'
+upstream = 'http://www.infradead.org/~tgr/libnl/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends.append('gzip') # for manpage manual
+source = ['http://www.infradead.org/~tgr/libnl/files/libnl-%s.tar.gz' % pkgver]
+sha3sums = ['85149AF6F54983DF8C647E703F7EA79EF8D17D3ECBFA1230B05D92BA5F9A110D3E17F828496F300A4A4BB446CD3E81DDACC781868DBBEC7ABB17E33E990B5A8017B6A1308A988C8B']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Installed manpages in section 8:')
+    echo('  genl-ctrl-list')
+    echo('  nl-classid-lookup')
+    echo('  nl-pktloc-lookup')
+    echo('  nl-qdisc-add')
+    echo('  nl-qdisc-delete')
+    echo('  nl-qdisc-list')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libnl-%s' % (srcdir, pkgver))
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + (path('~/.config') if private else '/etc'),
+            '--disable-static']
+    if not i_use_threads:
+        args.append('--disable-pthreads')
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libnl-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    ln('/usr/share/licenses/common/LGPL2.1', pkgdir + _prefix(private) + '/share/licenses/' + pkgname)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

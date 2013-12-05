@@ -1,0 +1,49 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'libgpg-error'
+pkgver = '1.12'
+pkgdesc = 'Support library for libgcrypt'
+upstream = 'http://www.gnupg.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc', 'sh']
+makedepends = ['gcc', 'glibc', 'sh', 'grep', 'make', 'sed', 'coreutils', 'findutils']
+source = ['ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-%s.tar.gz' % pkgver]
+sha3sums = ['8D3C36078C38EED6CD1C5F7D5C58D082BEA228FBCA2894FACD00A5AEB8064671A2B47763BE04E4C1F5F0F4E7ADD0ED45D9E2E197B01F6E8A1BEBBD3F90B814A8EFD8BF2917F63CAD']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Does not look like there is much to do')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=' + _prefix(private)]
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libgcrypt-%s' % (srcdir, pkgver))
+    make('prefix=' + pkgdir + _prefix(private), 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    install('COPYING', _dir + '/COPYING', parents = True, mode = 0o644)
+    install('COPYING.LIB', _dir + '/COPYING.LIB', parents = True, mode = 0o644)
+

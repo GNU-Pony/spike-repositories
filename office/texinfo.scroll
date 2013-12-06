@@ -55,7 +55,7 @@ def check(startdir, srcdir, pkgdir, private):
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/tar-%s' % (srcdir, pkgver))
+    cd('%s/texinfo-%s' % (srcdir, pkgver))
     make('DESTDIR=%s' % pkgdir, 'install')
     
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname

@@ -1,0 +1,91 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
+i_use_pth        = get('I_USE_PTH',        'n').lower().startswith('y')
+i_use_acl        = get('I_USE_ACL',        'y').lower().startswith('y')
+
+pkgname = 'gettext'
+pkgver = '0.18.3.1'
+pkgdesc = 'GNU internationalization library'
+upstream = 'http://www.gnu.org/software/gettext/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libunistring', 'glib2', 'xz', 'bzip2', 'gzip', 'tar', 'git>=1.6', 'expat>=1.95', 'glibc>=2.2']
+if i_use_acl:
+    depends.append('acl')
+if i_use_pth:
+    depends.append('pth')
+makedepends = ['gcc>=2.95', 'make>=3.79.1', 'sh', 'coreutils', 'diffutils',
+               'grep', 'findutils', 'sed', 'make', 'm4', 'gawk', 'libtool']
+makedepends.append('texinfo') # for info manual
+makedepends += depends
+source = ['ftp://ftp.gnu.org/pub/gnu/gettext/gettext-%s.tar.gz' % pkgver]
+sha3sums = ['671E4BA922019AC2F3F478D695A07C9156554488B711353DE9E92A9E217796B44764FF673CEAD5824695816C59820962AFFED3461C24AE10E79B8990E902600665A9A498C47F80ED']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('info', 'gettext')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=%s' % _prefix(private)]
+    if not i_use_largefiles:
+        args.append('--disable-largefile')
+    if not i_use_acl:
+        args.append('--disable-acl')
+    args.append('--enable-threads' + ('pth' if i_use_pth else 'posix'))
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    rm_r(pkgdir + _prefix(private) + '/share/doc/gettext')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -1,0 +1,55 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'sysfsutils'
+pkgver = '2.1.0'
+pkgdesc = 'System utilities based on Sysfs'
+upstream = 'http://linux-diag.sourceforge.net/Sysfsutils.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['glibc', 'gcc', 'sh', 'bash', 'grep', 'findutils', 'sed', 'make', 'coreutils', 'm4']
+makedepends.append('gzip') # for manpage
+source = ['http://downloads.sourceforge.net/sourceforge/linux-diag/sysfsutils-%s.tar.gz' % pkgver]
+sha3sums = ['BB7B3722C030FCE40975F5F2432A15AAFF3871CDE306DEC34C83D13CFBF89CD1E4304C671D7B50215725D344CB21018447163FE25D8268233E1712A78BD363B62AE6AE23CD353F3A7']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('man', '1', 'systool')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sysfsutils-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private), '--mandir=%s/share/man' % _prefix(private))
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sysfsutils-%s' % (srcdir, pkgver))
+    make('checkx')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/sysfsutils-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    rm(pkgdir + _prefix(private) + '/lib/libsysfs.a')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _loc, '%s/LICENSE.%s' % (_dir, _lic.lower()))
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

@@ -1,0 +1,92 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_bash       = get('I_USE_BASH',       'y').lower().startswith('y')
+i_use_html       = get('I_USE_HTML',       'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
+i_use_selinux    = get('I_USE_SELINUX',    'y').lower().startswith('y')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
+i_use_xattr      = get('I_USE_XATTR',      'y').lower().startswith('y')
+
+pkgname = 'glib2'
+pkgver = '2.38.2'
+pkgdesc = 'Common C routines used by GTK+ and other libs'
+upstream = 'http://www.gtk.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2']
+if i_use_html:
+    license.append('custom (permissive free)', 'public (dedication)')
+private = SUPPORTED
+depends = ['pcre', 'glibc', 'libffi']
+optdepends = ['python2: for gdbus-codegen and gtester-report',
+              'elfutils: for gresource inspection tool']
+makedepends = ['pkg-config', 'python2', 'libxslt', 'docbook-xml', 'pcre', 'libffi', 'elfutils',
+               'gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends.append('gzip') # for manpages
+options = ['!emptydirs']
+source = ['http://ftp.gnome.org/pub/GNOME/sources/glib/%s/glib-%s.tar.xz' % ('.'.join(pkgver.split('.')[:2]), pkgver),
+          'glib2@revert-warn-glib-compile-schemas.patch']
+noextract = source[1:]
+sha3sums = ['F0397A595CFE422FDE0266523F19AA87F6FF11DA953C68121A39F5F8BFEA229E0B70F203D7FA815DB7FA51564809F2CAAF1CD25B1197171C76AB1D3E78288742B4CFE14DE9F2D231', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/glib-%s' % (srcdir, pkgver))
+    unpatch(srcdir + '/glib2@revert-warn-glib-compile-schemas.patch', forward = False)
+    export('PYTHON', which('python2'))
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconf=' + (path('~/.config') if private else '/etc'),
+            '--libdir=%s/lib' % _prefix(private),
+            '--with-pcre=system',
+            '--disable-fam']
+    if not i_use_selinux:
+        args.append('--disable-selinux')
+    if not i_use_largefiles:
+        args.append('--disable-largefiles')
+    if not i_use_xattr:
+        args.append('--disable-xattr')
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/glib-%s' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make('completiondir=%s/share/bash-completion/completions' % _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    if i_use_html:
+        cd('docs')
+        make('DESTDIR=' + pkgdir, 'install')
+        cd('..')
+    rm_r(_pre + '/share/gdb')
+    for _s in l(path('%s/share/bash-completion/completions/*' % path_escape(_pre))):
+        chmod(_s, 0, 0o111)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/LGPL2', _dir + '/LICENSE')
+    if i_use_html:
+        install('docs/reference/COPYING', _dir + '/LICENSE.html-doc', mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    if not i_use_bash:
+        rm_r(_pre + '/share/bash-completion')
+    if not i_use_html and os.path.exists(_pre + '/share/gtk-doc'):
+        rm_r(_pre + '/share/gtk-doc')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

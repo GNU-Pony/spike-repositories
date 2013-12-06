@@ -42,7 +42,7 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/tar-%s' % (srcdir, pkgver))
+    cd('%s/nano-%s' % (srcdir, pkgver))
     args = ['./configure', '--prefix=' + _prefix(private), '--sysconfdir=' + _sysconf(private)]
     args += ['--enable-color', '--enable-nanorc', '--enable-multibuffer']
     if not i_use_large_files:
@@ -54,7 +54,7 @@ def build(startdir, srcdir, pkgdir, private):
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/tar-%s' % (srcdir, pkgver))
+    cd('%s/nano-%s' % (srcdir, pkgver))
     make('DESTDIR=%s' % pkgdir, 'install')
     install('doc/nanorc.sample', pkgdir + _sysconf(private) + 'nanorc', parents = True, mode = 0o644)
     

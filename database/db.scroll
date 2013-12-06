@@ -1,0 +1,52 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower('y').startswith('y')
+
+pkgname = 'db'
+pkgver = '5.3.21'
+pkgdesc = 'The Berkeley DB embedded database system'
+upstream = 'http://www.oracle.com/technology/software/products/berkeley-db/index.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['gcc-libs', 'sh']
+makedepends = ['gcc-libs', 'gcc', 'sh', 'grep', 'sed', 'findutils', 'coreutils', 'make', 'm4']
+source = ['http://download.oracle.com/berkeley-db/db-%s.tar.gz' % pkgver]
+sha3sums = ['1995F72EB8DC71E68E3990E4733C49D79DE56275CA65EB6898340907E31936D6539512EE37565D6E58A3A78B99FF98AF7E0D8E5853D2ED415E13C2E0923A8C884CF58CE81405485D']
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    echo('A set off commands have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/db-%s/build_unix' % (srcdir, pkgver))
+    args = ['../dist/configure', '--prefix=' + _prefix(private)]
+    args += ['--enable-shared', '--enable-static']
+    if not i_use_largefiles:
+        args.append('--disable-largefile')
+    args.append('--enable-compat185')
+    args.append('--enable-dbm')
+    args.append('--enable-cxx')
+    execute(args)
+    make('LIBSO_LIBS=-lpthread')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/db-%s/build_unix' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    rm_r(pkgdir + _prefix(private) + '/docs')
+    if os.path.exists(pkgdir + _prefix(private) + '/jar'):
+        rmdir(pkgdir + _prefix(private) + '/jar')
+    _dir = pkgdir + _prefix(private) + '/share/licenses'
+    install('../LICENSE', '%s/LICENSE' % _dir, parents = True, mode = 0o644)
+    

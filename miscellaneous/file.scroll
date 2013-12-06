@@ -1,0 +1,48 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'file'
+pkgver = '5.15'
+pkgdesc = 'File type identification utility'
+upstream = 'http://www.darwinsys.com/file/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['zlib', 'glibc']
+makedepends = ['glibc', 'gcc'. 'zlib', 'sh', 'make', 'sed', 'coreutils', 'm4', 'grep']
+makedepends.append('gzip') # for manpage
+source = ['ftp://ftp.astron.com/pub/file/file-%s.tar.gz' % pkgver]
+sha3sums = ['B3F98856FC874456C3AD6EC30E3017FAFBA5E94D1C873B22692C385A345B28F34A4FEC03677E3664C87CDCA76F906F61EF5B10D4187DACE22AB5C38BF44BA7E345F323812FC36A2F']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('file', '--', input('File of which to identify type: '))
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/file-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private), '--datadir=%s/share/%s' % (_prefix(private), pkgname))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/file-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    install('COPYING', '%s/COPYING' % _dir)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

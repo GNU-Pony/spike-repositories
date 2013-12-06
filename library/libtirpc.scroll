@@ -47,19 +47,3 @@ def package(startdir, srcdir, pkgdir, private):
     if not i_use_man:
         rm_r(pkgdir + _prefix(private) + '/share/man')
 
-
-def post_install(tmpdir, rootdir, installedfiles, private):
-    post_install_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    pre_upgrade_info(rootdir, installedfiles, private)
-
-
-def post_upgrade(tmpdir, rootdir, installedfiles, private):
-    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    pre_uninstall_info(rootdir, installedfiles, private)
-

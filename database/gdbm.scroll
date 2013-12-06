@@ -81,7 +81,7 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = pkgdir + _prefix(private) + '/share/licenses'
     mkdir_p(_dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % (_dir))
-    install('COPYING', '%s/COPYING' & _dir)
+    install('COPYING', '%s/COPYING' % _dir)
     
     if not i_use_info:
         rm_r(pkgdir + _prefix(private) + '/share/info')

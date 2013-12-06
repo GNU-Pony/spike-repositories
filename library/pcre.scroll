@@ -1,0 +1,63 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
+
+pkgname = 'pcre'
+pkgver = '8.33'
+pkgdesc = 'A library that implements Perl 5-style regular expressions'
+upstream = 'http://www.pcre.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD']
+private = SUPPORTED
+depends = ['gcc-libs']
+makedepends = ['gcc', 'gcc-libs', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends.append('gzip') # for manpage
+source = ['ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%s.tar.bz2' % pkgver]
+sha3sums = ['14153C551ED08447FE5FC484B3390A842426E5FD01D2C7497187745FF7B5C839A6CB3911DD53A052315776EA86233AD38C6A77E9C91AE73FC10B4646AA34BFDCF4D504A7ECF5409C']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('A large number of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pcre-%s' % (srcdir, pkgver))
+    execute(['./configure', '--prefix=' + _prefix(private)] + path('--enable-{pcre16,pcre32,jit,utf,unicode-properties}'))
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pcre-%s' % (srcdir, pkgver))
+    make('-j1', 'check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pcre-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    _cdir = _pre + '/share/changelogs/pcre'
+    _ldir = _pre + '/share/licenses/pcre'
+    _ddir = _pre + '/share/doc/pcre'
+    mkdir_p(_ldir)
+    mkdir_p(_cdir)
+    mv(_ddir + '/ChangeLog', _cdir)
+    mv(_ddir + '/NEWS', _cdir)
+    mv(_ddir + '/COPYING', _ldir)
+    mv(_ddir + '/LICENSE', _ldir)
+    mv(_ddir + '/AUTHORS', _ldir)
+    
+    if not i_use_html:
+        rm_r(_pre + '%s/share/doc/pcre/html')
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+

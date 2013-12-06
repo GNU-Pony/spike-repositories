@@ -1,0 +1,93 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info       = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_man        = get('I_USE_MAN',        'y').lower().startswith('y')
+i_use_doc        = get('I_USE_DOC',        'y').lower().startswith('y')
+i_use_secure     = get('I_USE_SECURE',     'y').lower().startswith('y')
+i_use_locale     = get('I_USE_LOCALE',     '*')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
+
+pkgname = 'nano'
+pkgver = '2.2.6'
+pkgdesc = 'Easy to use text editor for the terminal'
+upstream = 'http://www.nano-editor.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+if i_use_info or i_use_man or i_use_doc:
+    license.append('FDL1.2')
+private = SUPPORTED
+depends = ['glibc', 'sh', 'ncurses']
+makedepends = ['libc', 'ncurses', 'gcc', 'sed', 'grep', 'sh', 'findutils', 'make', 'coreutils', 'm4']
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for manpages and info
+source = ['http://www.nano-editor.org/dist/v%/nano-%s.tar.gz' % ('.'.join(pkgver.split('.')[:2]), pkgver)]
+sha3sums = ['593BF2EA150CDCBF28D436F7CFB1F5C6F386DAAE8F30A2857CBE2853A640F376FC2241D1C439BE76038E493D17B7979C04599138AD3982FA0A5934D1CABB4485FFD1180867C3CE61']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+_sysconf = lambda private : (path('~/.config') if private else '/etc')
+
+
+def ride(private):
+    if i_use_info:
+        execute('info', 'nano')
+    else:
+        execute('man', '1', 'nano')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/tar-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=' + _prefix(private), '--sysconfdir=' + _sysconf(private)]
+    args += ['--enable-color', '--enable-nanorc', '--enable-multibuffer']
+    if not i_use_large_files:
+        args.append('--disable-largefile')
+    if i_use_secure:
+        args.append('--disable-wrapping-as-root')
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/tar-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    install('doc/nanorc.sample', pkgdir + _sysconf(private) + 'nanorc', parents = True, mode = 0o644)
+    
+    _pre = pkgdir + _prefix(private)
+    mkdir_p(_pre + '/doc')
+    mv(_pre + '/nano/man-html', _pre + '/' + pkgname)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/' + _lic, '%s/%s' % (_dir, _lic))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_doc:
+        rm_r(pkgdir + _prefix(private) + '/share/doc')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

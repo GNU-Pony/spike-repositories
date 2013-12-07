@@ -50,6 +50,7 @@ def build(startdir, srcdir, pkgdir, private):
             '--enable-pkgconfig',
             '--enable-cmdlib',
             '--enable-applib',
+            '--disable-readline',
             '--without-systemdsystemunitdir',
             '--with-default-pid-dir=%s' % _run(private),
             '--with-default-dm-run-dir=%s' % _run(private),

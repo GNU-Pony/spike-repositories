@@ -58,7 +58,8 @@ def build(startdir, srcdir, pkgdir, private):
             '--with-default-pid-dir=%s' % _run(private),
             '--with-default-dm-run-dir=%s' % _run(private),
             '--with-default-run-dir=%s/lvm' % _run(private),
-            '--with-default-locking-dir=%s/lock/lvm' % _run(private)]
+            '--with-default-locking-dir=%s/lock/lvm' % _run(private),
+            '--with-thin=internal']
     
     if i_use_udev:
         args += ['--enable-udev_sync', '--enable-udev_rules']

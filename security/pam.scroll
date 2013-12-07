@@ -1,0 +1,100 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_locale   = get('I_USE_LOCALE',   '*')
+i_use_db       = get('I_USE_DB',       'y').lower().startswith('y')
+i_use_audit    = get('I_USE_AUDIT',    'y').lower().startswith('y')
+i_use_cracklib = get('I_USE_CRACKLIB', 'y').lower().startswith('y')
+i_use_selinux  = get('I_USE_SELINUX',  'n').lower().startswith('y')
+
+pkgname = 'pam'
+pkgver_linux_pam = '1.1.8'
+pkgver_pam_unix2 = '2.9.1'
+pkgver = '%s_%s' % (pkgver_linux_pam, pkgver_pam_unix2)
+pkgdesc = 'Pluggable Authentication Modules library'
+upstream = 'http://www.kernel.org/pub/linux/libs/pam/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = UNSUPPORTED
+depends = ['glibc>=2.1', 'libtirpc', 'libgssglue', 'zlib']
+if i_use_db:
+    depends.append('db')
+if i_use_audit:
+    depends.append('audit')
+if i_use_cracklib:
+    depends.append('cracklib')
+makedepends = ['gcc', 'flex', 'make', 'sh', 'm4', 'sed', 'grep', 'findutils', 'coreutils']
+makedepends += depends
+options = ['!emptydirs']
+source = ['https://fedorahosted.org/releases/l/i/linux-pam/Linux-PAM-%s.tar.bz2' % pkgver_linux_pam,
+          'ftp://ftp.archlinux.org/other/pam_unix2/pam_unix2-%s.tar.bz2' % pkgver_pam_unix2,
+          'pam@limits.conf', 'pam@pam_unix2-glibc216.patch']
+noextract = source[2:]
+sha3sums = ['F26B2FEA073628DC40205992AA5D161E8D55D98E9212CC00C07AFE60AB0310F9EC814B14DF8DF8CF4B87CC3A8719A5780860385CA2D8521D9BE3FA7F6EB7CCB65E28764F81AB5845',
+            '6B0027E21D74492D504D8363673AB5C1EC8A329D877962AC52B67F0606DCC18126B9B01B5F01EE78A91C9EF37D4CA291DD6EC46BF9F4249844E445D1BDD802FAF32869056D9BB135',
+            None, None]
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/Linux-PAM-%s' % (srcdir, pkgver_linux_pam))
+    
+    args = ['./configure',
+            '--libdir=/lib',
+            '--enable-db=db' if i_use_db else '--enable-db=no']
+    if not i_use_audit:
+        args.append('--disable-audit')
+    if not i_use_cracklib:
+        args.append('--disable-cracklib')
+    if not i_use_selinux:
+        args.append('--disable-selinux')
+    
+    configure(args)
+    make()
+    
+    cd('%s/pam_unix2-%s' % (srcdir, pkgver_pam_unix2))
+    
+    patch(srcdir + '/pam_unix2@pam_unix2-glibc216.patch')
+    
+    args = ['./configure',
+            'CFLAGS=%s -I%s/Linux-PAM-%s/libpam/include/' % (get('CFLAGS', ''), srcdir, pkgver_linux_pam),
+            'LDFLAGS=%s -L%s/Linux-PAM-%s/libpam/.libs/' % (get('LDFLAGS', ''), srcdir, pkgver_linux_pam)]
+    if not i_use_selinux:
+        args.append('--disable-selinux')
+    
+    configure(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/Linux-PAM-%s' % (srcdir, pkgver_linux_pam))
+    make('DESTDIR=' + pkgdir, 'SCONFIGDIR=/etc/security', 'install')
+    
+    chmod(pkgdir + '/sbin/unix_chkpwd', 0o4000, 0o4000)
+    rm(pkgdir + '/etc/security/limits.conf')
+    install(srcdir + '/pam@limits.conf', pkgdir + '/etc/security/limits.conf', mode = 0o644)
+    
+    cd('%s/pam_unix2-%s' % (srcdir, pkgver_pam_unix2))
+    make('DESTDIR=' + pkgdir, 'install')
+    for f in ['acct', 'auth', 'passwd', 'session']:
+        ln('pam_unix.so', pkgdir + ('/lib/security/pam_unix_%s.so' % f))
+    
+    _dir = pkgdir + '/usr/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+    
+    rm_r(pkgdir + '/usr/doc/Linux-PAM')
+    
+    if not i_use_man:
+        rm_r(pkgdir + '/usr/share/man')
+    filter_locale(i_use_locale, pkgdir, '/usr')
+

@@ -19,7 +19,9 @@ license = ['GPL2']
 private = SUPPORTED
 groups = ['base']
 depends = ['glibc', 'pam']
-makedepends = ['check', 'gzip']
+makedepends = ['check', 'gzip', 'sh', 'make', 'coreutils', 'sed', 'grep', 'findutils']
+provides = ['vlock']
+conflicts = ['vlock']
 source = ['ftp://ftp.altlinux.org/pub/people/legion/kbd/kbd-%s.tar.gz' % pkgver,
           'kbd@fix-dvorak-es.patch', 'kbd@fix-euro2.patch']
 noextract = source[1:]

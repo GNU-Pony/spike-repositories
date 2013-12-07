@@ -1,0 +1,82 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+
+pkgname = 'kmod'
+pkgver = '15'
+pkgdesc = 'Linux kernel module handling'
+upstream = 'http://git.kernel.org/?p=utils/kernel/kmod/kmod.git;a=summary'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+extension = 'linux'
+depends = ['glibc', 'zlib', 'xz']
+makedepends = ['gcc', 'zlib', 'xz', 'glibc', 'gzip', 'sh', 'make', 'coreutils', 'sed', 'grep', 'findutils']
+source = ['ftp://ftp.kernel.org/pub/linux/utils/kernel/kmod/kmod-%s.tar.xz' % pkgver, 'kmod@depmod-search.conf']
+noextract = source[1:]
+sha3sums = ['E0E434BF66DBEA96203EDAD185D88698F953A8AAD3F6CF7581F3A3B6F43943F2ACBC649FA60D679CCC71BD4395949B72FF4C9D4FAEB0F97E8350D7B41434C8009714FE14C97D4368', None]
+
+
+_prefix  = lambda private : (path('~/.local')  if private else '/usr')
+_sysconf = lambda private : (path('~/.config') if private else '/etc')
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/kmod-%s' % (srcdir, pkgver))
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--bindir=%s/sbin' % _prefix(private),
+            '--without-html-dir',
+            '--disable-gtk-doc',
+            '--with-xz',
+            '--with-zlib']
+    args.append()
+    args.append()
+    if not i_use_bash:
+        args.append('--without-bashcompletiondir')
+    else
+        args.append('--with-bashcompletiondir=%s/share/bash-completion/completions' % _prefix(private))
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/kmod-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/kmod-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    _dir = _pre + '/sbin/'
+    for tool in ['insmod', 'lsmod', 'rmmod', 'modinfo', 'modprobe', 'depmod']:
+        ln('kmod', _dir + tool)
+    
+    _etc = pkgdir + _sysconf(private)
+    mkdir_p(_pre + '/lib/pkgconfig')
+    mkdir_p(_etc + '/depmod.d')
+    mkdir_p(_etc + '/modprobe.d')
+    
+    install(srcdir + '/kmod@depmod-search.conf', _pre + '/lib/depmod.d/search.conf', parents = True, mode = 0o644)
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

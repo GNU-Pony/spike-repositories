@@ -1,0 +1,81 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man       = get('I_USE_MAN',       'y').lower().startswith('y')
+i_use_locale    = get('I_USE_LOCALE',    '*')
+i_use_kbd_class = get('I_USE_KBD_CLASS', '*')
+
+pkgname = 'kbd'
+pkgver = '2.0.1'
+pkgdesc = 'Keytable files and keyboard and TTY utilities'
+upstream = 'http://www.kbd-project.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+groups = ['base']
+depends = ['glibc', 'pam']
+makedepends = ['check', 'gzip']
+source = ['ftp://ftp.altlinux.org/pub/people/legion/kbd/kbd-%s.tar.gz' % pkgver,
+          'kbd@fix-dvorak-es.patch', 'kbd@fix-euro2.patch']
+noextract = source[1:]
+sha3sums = ['03F320FC79ACAC2C6B761D4AAB0D25EDD38191301BAFE303FA5A13FD4D827A247A2CB6091686B5CAB71A1FADDBAD7FDB357818B2C3CF370AF27DABD7B70848CFAC7D2B8BD49DD386', None, None]
+
+
+_dir = lambda private : '%s/share/zoneinfo' % (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/kbd-%s' % (srcdir, pkgver))
+    
+    pushd('data/keymaps/i386')
+    mv('qwertz/cz.map',         'qwertz/cz-qwertz.map')
+    mv('olpc/es.map',           'olpc/es-olpc.map')
+    mv('olpc/pt.map',           'olpc/pt-olpc.map')
+    mv('dvorak/no.map',         'dvorak/no-dvorak.map')
+    mv('fgGIod/trf.map',        'fgGIod/trf-fgGIod.map')
+    mv('colemak/en-latin9.map', 'colemak/colemak.map')
+    popd()
+    
+    patch(srcdir + '/fix-dvorak-es.patch')
+    patch(srcdir + '/fix-euro2.patch')
+    
+    _pre = _prefix(private)
+    execute('./configure', '--prefix=' + _pre, '--datadir=%s/share/kbd' % _pre, '--mandir=%s/share/man' % _pre)
+    make('KEYCODES_PROGS=yes', 'RESIZECONS_PROGS=yes')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/kbd-%s' % (srcdir, pkgver))
+    make('KEYCODES_PROGS=yes', 'RESIZECONS_PROGS=yes', 'DESTDIR=' + pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+    
+    if not i_use_kbd_class == '*':
+        _dir = pkgdir + _prefix(private) + '/share/kbd/keymaps'
+        i_use_kbd_class = set([c.split('/')[-1] for c in i_use_kbd_class.lower().split(',')])
+        if 'ppc' in i_use_kbd_class:
+            i_use_kbd_class.add('mac')
+        elif 'mac' in i_use_kbd_class:
+            i_use_kbd_class.add('pcc')
+        for c in 'sun ppc mac atari amiga'.split(' '):
+            if c not in i_use_kbd_class:
+                rm_r(_dir + '/' + c)
+        for c in 'qwertz qwerty olpc fgGIod dvorak colemak bepo azerty'.split(' '):
+            if c not in i_use_kbd_class:
+                rm_r(_dir + '/i386' + (c if not c == 'fggiod' else 'fgGIod'))
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private), '/share/kbd/locale')
+

@@ -27,6 +27,10 @@ def ride(private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/hwids-hwids-%s' % (srcdir, pkgver))
+    _dir = pkgdir + _prefix + '/share'
     for ids in ['pci.ids', 'usb.ids']:
-        install(ids, pkgdir + _prefix + '/share/hwdata/' + ids, parents = True, mode = 0o644)
+        install(ids, _dir + '/hwdata/' + ids, parents = True, mode = 0o644)
+    _dir += '/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
 

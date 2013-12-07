@@ -17,7 +17,6 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL2', 'LGPL2.1']
 private = SUPPORTED
 depends = ['glibc']
-optdepends = ['thin-provisioning-tools: for thin provisioning support']
 makedepends = ['thin-provisioning-tools', 'sh', 'glibc', 'gcc', 'coreutils', 'make', 'm4', 'sed', 'grep', 'findutils']
 makedepends.append('gzip') # for manpage
 if i_use_udev:

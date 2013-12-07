@@ -1,0 +1,72 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_readline = get('I_USE_READLINE', 'y').lower().startswith('y')
+
+pkgname = 'bc'
+pkgver = '1.06'
+pkgdesc = 'An arbitrary precision calculator language'
+upstream = 'http://www.gnu.org/software/bc/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+if i_use_readline:
+    depends.append('readline')
+makedepends = ['gcc', 'sh', 'sed', 'grep', 'findutils', 'make', 'coreutils', 'lex'] + depends
+makedepends.append('texinfo') # for info manual
+makedepends.append('gzip') # for info manual and manpage
+source = ['ftp://ftp.gnu.org/gnu/bc/bc-%s.tar.gz' % pkgver, 'bc@build-fix.patch', 'bc@bc-1.06-info-dir-entry.patch']
+noextract = source[1:]
+sha3sums = ['0504F433552CBEE5D12CE29813D11F050C1B0828CBE3C6D98E7A5115DBB098F8AF15ABF8F9BB92D4144BCE86134EF271FC642110D2BF23E15584157EA70E47BE23B634C9CF95EF8B', None, None]
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('bc')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/bc-%s' % (srcdir, pkgver))
+    CFLAGS = get('CFLAGS', '')
+    CFLAGS = CFLAGS.replace('-O', '\0')
+    if '\0' in CFLAGS:
+        CFLAGS_ = CFLAGS.split('\0')
+        CFLAGS_ = [CFLAGS_[0], '-O'.join(CFLAGS_[1:])]
+        if (CFLAGS_[1] + ' ')[0] in 'sg0123456':
+            CFLAGS = CFLAGS_[0] + '-O3' + CFLAGS_[1]
+            export('CFLAGS', CFLAGS)
+    patch(srcdir + '/bc@build-fix.patch', forward = False)
+    patch(srcdir + '/bc@bc-1.06-info-dir-entry.patch', forward = False)
+    args = ['./configure',
+            '--prefix=%s' % _prefix(private),
+            '--infodir=%s/share/info' % _prefix(private),
+            '--mandir=%s/share/man' % _prefix(private),
+            '--with-readline' if i_use_readline else '--without-readline']
+    execute(args)
+    make('LEX=lex')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/bc-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/license/common/' + _lic, '%s/%s' % (_dir, _lic))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

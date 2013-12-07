@@ -1,0 +1,71 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'mpfr'
+_pkgver = '3.1.2'
+_patch  = 4
+pkgver = '%s.p%i' % (_pkgver, _patch)
+pkgdesc = 'Multiple-precision floating-point library'
+upstream = 'http://www.mpfr.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'LGPL3']
+private = SUPPORTED
+depends = ['glibc', 'gmp>=5.0']
+makedepends = ['gmp>=5.0', 'glibc', 'gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+makedepends += ['texinfo', 'gzip'] # for info manual
+source = ['http://www.mpfr.org/mpfr-current/mpfr-%s.tar.xz' % _pkgver, 'mpfr@%s.patch' % _pkgver]
+noextract = source[1:]
+sha3sums = ['B4CFBBFDCE0C8EE86F2F9707CF9071688EADD6A61BF6224357677CA1D1F07C90FD2D2489DAE3FC139D30A89778344D023FCA56B8C8DF6E64F5A2A08B834B0DF920CB794CA6D5AEA1', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['info', 'mpfr'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/mpfr-%s' % (srcdir, pkgver))
+    patch('%s/mpfr@%s.patch' % (srcdir, _pkgver), forward = False)
+    execute('./configure', '--prefix=' + _prefix(private), '--enable-thread-safe', '--enable-shared')
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/mpfr-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/mpfr-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/' + _lic, '%s/%s' % (_dir, _lic))
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

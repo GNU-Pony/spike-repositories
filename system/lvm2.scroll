@@ -1,0 +1,81 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_readline = get('I_USE_READLINE', 'y').lower().startswith('y')
+
+pkgname = 'lvm2'
+pkgver = '2.02.98'
+pkgdesc = 'Logical Volume Manager 2 utilities'
+upstream = 'http://sourceware.org/lvm2/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['bash', 'device-mapper>=%s' % pkgver]
+optdepends = ['thin-provisioning-tools: for thin provisioning support']
+makedepends = ['thin-provisioning-tools', 'sh', 'glibc', 'gcc', 'coreutils', 'make', 'm4', 'sed', 'grep', 'findutils']
+makedepends.append('gzip') # for manpage
+if i_use_readline:
+    depends.append('readline')
+    makedepends.append('readline')
+conflicts = ['lvm']
+options = ['!makeflags']
+source = ['ftp://sources.redhat.com/pub/lvm2/LVM2.%s.tgz' % pkgver]
+sha3sums = ['420E756F03D7CBEE65F1D95871BAAC155A79B64B082D6B74262A3F486FD31C7EA6E0F3DFA7A0D0B220E829AA892868D508DF8E5EC5FCDB9D36940DABB641C183A8506C5B4BCE3D13']
+
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+_sysconf = lambda private : ('/etc' if not private else path('~/.config'))
+_var     = lambda private : ('/var' if not private else path('~/.local/var'))
+_run     = lambda private : ('/run' if not private else ('/dev/shm/~%s/run' % get('USER')))
+
+
+def ride(private):
+    execute('man', '8', 'dmsetup')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/LVM2.%s' % (srcdir, pkgver))
+    unset('LDFLAGS')
+    sed(sed_script('use_lvmetad = 0', 'use_lvmetad = 1'), 'conf/example.conf.in')
+    
+    args = ['./configure',
+            '--prefix=%s' % _prefix(private),
+            '--sysconfdir=%s' % _sysconf(private),
+            '--localstatedir=%s' % _var(private),
+            '--enable-lvmetad',
+            '--enable-dmeventd',
+            '--enable-pkgconfig',
+            '--enable-cmdlib',
+            '--enable-applib',
+            '--enable-readline' if i_use_readline else '--disable-readline',
+            '--without-systemdsystemunitdir',
+            '--with-default-pid-dir=%s' % _run(private),
+            '--with-default-dm-run-dir=%s' % _run(private),
+            '--with-default-run-dir=%s/lvm' % _run(private),
+            '--with-default-locking-dir=%s/lock/lvm' % _run(private)]
+    
+    if i_use_udev:
+        args += ['--enable-udev_sync', '--enable-udev_rules']
+    
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/LVM2.%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install_device-mapper')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _loc, '%s/LICENSE.%s' % (_dir, _lic.lower()))
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

@@ -42,8 +42,6 @@ def build(startdir, srcdir, pkgdir, private):
             '--disable-gtk-doc',
             '--with-xz',
             '--with-zlib']
-    args.append()
-    args.append()
     if not i_use_bash:
         args.append('--without-bashcompletiondir')
     else

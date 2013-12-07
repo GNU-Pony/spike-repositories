@@ -31,6 +31,7 @@ if i_use_cracklib:
     depends.append('cracklib')
 makedepends = ['gcc', 'flex', 'make', 'sh', 'm4', 'sed', 'grep', 'findutils', 'coreutils']
 makedepends += depends
+depends.append('pambase')
 options = ['!emptydirs']
 source = ['https://fedorahosted.org/releases/l/i/linux-pam/Linux-PAM-%s.tar.bz2' % pkgver_linux_pam,
           'ftp://ftp.archlinux.org/other/pam_unix2/pam_unix2-%s.tar.bz2' % pkgver_pam_unix2,

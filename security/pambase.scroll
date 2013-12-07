@@ -1,0 +1,40 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_commit = '1fb7341a8ccf5ef3fe5798332a563473f6df47d0'
+_src = ['system-services', 'system-remote-login', 'system-login', 'system-local-login', 'system-auth', 'other']
+
+pkgname = 'pambase'
+pkgver = '20130928'
+pkgdesc = 'Base PAM configuration for services'
+upstream = 'http://www.archlinux.org'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = UNSUPPORTED
+depends = []
+makedepends = []
+source = ['https://projects.archlinux.org/svntogit/packages.git/snapshot/packages-%s.tar.gz' % _commit]
+sha3sums = ['4914CCA06953B46110D97733B6F0417B25BAB91BC4C03333AB22F3DA911DBDE2B048BB9927E126932440809A5609FD70C496F8783DF4594002226A198C55D478F01C6FC730FF3A9C']
+
+
+def ride(private):
+    echo('PAM settings have been installed to /etc/pam.d/')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/packages-%s/trunk' % (srcdir, _commit))
+    
+    _dir = pkgdir + '/etc/pam.d'
+    mkdir_p(_dir)
+    for s in _src:
+        install(s, _dir + '/' + s, mode = 0o644)
+    
+    _dir = pkgdir + '/usr/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+

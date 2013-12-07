@@ -1,0 +1,55 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_udev = get('I_USE_UDEV', 'y').lower().startswith('y')
+
+pkgname = 'libusbx'
+pkgver = '1.0.17'
+pkgdesc = 'Library that provides generic access to USB device'
+upstream = 'http://libusbx.org'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
+if i_use_udev:
+    depends.append('udev')
+    makedepends.append('udev')
+provides = ['libusb=%s' % pkgver]
+conflicts = ['libusb']
+source = ['http://downloads.sourceforge.net/libusbx/libusbx-%s.tar.bz2' % pkgver]
+sha3sums = ['6E4752EB5F3FA1FCA4D03E3C3EC8A3DD08C72C84242D62715E9F8E8842FFB12DE5317C4117BA7336A1568D9E06D98DA6355E78763066C9CB7F015895B5BA26F873F58E0B83548D89']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Does not seem like there is much to do')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libusbx-%s' % (srcdir, pkgver))
+    args = ['./configure', '--prefix=' + _prefix(private), '--disable-static']
+    args.append('--enable-udev' if i_use_udev else '--disable-udev')
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libusbx-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libusbx-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/LGPL2.1', _dir + '/LICENSE')
+

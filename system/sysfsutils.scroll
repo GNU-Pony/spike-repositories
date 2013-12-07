@@ -35,9 +35,9 @@ def build(startdir, srcdir, pkgdir, private):
     make()
 
 
-def build(startdir, srcdir, pkgdir, private):
+def check(startdir, srcdir, pkgdir, private):
     cd('%s/sysfsutils-%s' % (srcdir, pkgver))
-    make('checkx')
+    make('check')
 
 
 def package(startdir, srcdir, pkgdir, private):

@@ -24,7 +24,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc', 'pam']
-makedepends = ['glibc', 'pan', 'gcc', 'sh', 'make', 'sed', 'coreutils', 'm4']
+makedepends = ['glibc', 'pam', 'gcc', 'sh', 'make', 'sed', 'coreutils', 'm4']
 if i_use_acl:
     depends.append('acl')
     makedepends.append('acl')

@@ -1,0 +1,65 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_locale   = get('I_USE_LOCALE',   '*')
+i_use_nls      = get('I_USE_NLS',      'y').lower().startswith('y')
+i_use_valgrind = get('I_USE_VALGRIND', 'y').lower().startswith('y')
+
+pkgname = 'dialog'
+_pkgver = '1.2-20130928'
+pkgver = _pkgver.replace('-', '_')
+pkgdesc = 'A tool to display dialogue boxes from shell scripts'
+upstream = 'http://invisible-island.net/dialog/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2.1']
+private = SUPPORTED
+depends = ['ncurses']
+makedepends = ['ncurses', 'glibc', 'gcc', 'm4', 'sh', 'sed', 'grep', 'make', 'findutils', 'coreutils']
+if i_use_valgrind:
+    makedepends.append('valgrind')
+option = ['staticlibs']
+source = ['ftp://invisible-island.net/dialog/dialog-%s.tgz' % _pkgver]
+sha3sums = ['50B4680EFA007575369D8767F21C3EB8746F2665663A30DA6136D798C9363F3445FEEEE2E7251E1BD3C87D472CE1DD4CB2FE665DDD1034D31231622ED24988F3EB4A59442C0F9C12']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'dialog')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/dialog-%s' % (srcdir, _pkgver))
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--mandir=%s/share/man' % _prefix(private),
+            '--with-ncursesw',
+            '--enable-nls' if i_use_nls else '--disable-nls',
+            '--with-valgrind' if i_use_valgrind else '--without-valgrind',
+            '--with-no-leaks' if i_use_valgrind else '--without-no-leaks']
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dialog-%s' % (srcdir, _pkgver))
+    make('DESTDIR=' + pkgdir, 'install-full')
+    _pre = pkgdir + _prefix(private);
+    
+    _dir = '%s/share/licenses/%s' % (_pre, pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE' % _dir)
+    
+    if i_use_man:
+        rm_r(_pre + '/share/man')
+    else:
+        execute('gzip', '-9', _pre + '/share/man/man1/dailog.1')
+        execute('gzip', '-9', _pre + '/share/man/man3/dailog.3')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

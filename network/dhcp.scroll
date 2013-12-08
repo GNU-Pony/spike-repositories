@@ -1,0 +1,93 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man = get('I_USE_MAN', 'y').lower().startwith('y')
+
+pkgname = 'dhcp'
+_pkgver = '4.2.5-P1'
+pkgver = _pkgver.replace('-P', '.p')
+pkgdesc = 'A DHCP server, client, and relay agent'
+upstream = 'https://www.isc.org/software/dhcp'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['bash', 'iproute2', 'sh', 'sed', 'grep', 'findutils', 'codeutils', 'make', 'm4', 'glibc', 'gcc']
+if i_use_man:
+    makedepends.append('gzip')
+source = ['ftp://ftp.isc.org/isc/dhcp/%s/dhcp-%s.tar.gz' % (_pkgver, _pkgver),
+          'dhcp@dhcp-4.2.5-client_script-1.patch', 'dhcp@dhcp-4.2.5-missing_ipv6-1.patch']
+noextract = source[1:]
+sha3sums = ['043FF363AD00AC7F1ECA52F1A393CF7B49D0D5912F0960425B8982C4D552539FDC2D01FF731D1A6C29E33C822C1AAB084777D8343B6A76D9271DAF714BF6C17F0D5EE176ADEA8ACD', None, None]
+
+_state   = lambda private : (''     if not private else path('~/.local')) + '/var/lib'
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+_sysconf = lambda private : ('/etc' if not private else path('~/.config'))
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    
+    sed(sed_script('STD_CWARNINGS', '& -D_GNU_SOURCE', '^CFLAGS='), 'configure')
+    patch(srcdir + '/dhcp@dhcp-4.2.5-client_script-1.patch')
+    patch(srcdir + '/dhcp@dhcp-4.2.5-missing_ipv6-1.patch')
+    
+    args = ['./configure', '--prefix=' + _prefix(private), '--sysconfdir=' + _sysconf(private)]
+    for (a, b, c) in [('srv', 'dhcp', 'dhcpd'), ('cli', 'dhclient', 'dhclient')]:
+        for d in ['', '6']:
+            args.append('--with-%s-lease-file=%s/%s/%s%s.leases' % (a, _state(private), b, c, d))
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    make('-C', 'client', 'DESTDIR=' + pkgdir, 'uninstall')
+    _pre = pkgdir + _prefix(private)
+    _etc = pkgdir + _sysconf(private)
+    
+    mv(_etc + '/dhcpd.conf.example', _etc + '/dhcpd.conf')
+    mkdir_p(pkgdir + _state(private) + '/dhcp')
+    
+    if i_use_man:
+        _man = _pre + '/share/man'
+        for _section in os.listidr(_man):
+            _section = _man + '/' + _section
+            for _page in os.listidr(_section):
+                execute('gzip', '-9', _section + '/' + _page)
+    else:
+        rm_r(_pre + '/share/man')
+    
+    install('LICENSE', _pre + '/share/licenses/dhcp/LICENSE', parents = True, mode = 0o644)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_upgrade(tmpdir, rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    f_ = '%s%s/dhcp/dhcpd%%s.leases'
+    f_ %= (rootdir.replace('%', '%%'), _state(private).replace('%', '%%'))
+    for f in [f_ % '', f_ % '6']:
+        if not os.path.exists(f):
+            touch(f)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    f_ = '%s%s/dhcp/dhcpd%%s.leases'
+    f_ %= (rootdir.replace('%', '%%'), _state(private).replace('%', '%%'))
+    for f in [f_ % '', f_ % '6']:
+        if os.path.exists(f):
+            rm(f)
+

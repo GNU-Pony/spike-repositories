@@ -1,0 +1,68 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startwith('y')
+
+pkgname = 'dhclient'
+_pkgver = '4.2.5-P1'
+pkgver = _pkgver.replace('-P', '.p')
+pkgdesc = 'A standalone DHCP client from the dhcp package'
+upstream = 'https://www.isc.org/software/dhcp'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom']
+private = SUPPORTED
+depends = ['bash' 'iproute2', 'gcc']
+makedepends = ['bash', 'iproute2', 'sh', 'sed', 'grep', 'findutils', 'codeutils', 'make', 'm4', 'glibc', 'gcc']
+if i_use_man:
+    makedepends.append('gzip')
+provides = ['dhcp-client']
+source = ['ftp://ftp.isc.org/isc/dhcp/%s/dhcp-%s.tar.gz' % (_pkgver, _pkgver),
+          'dhcp@dhcp-4.2.5-client_script-1.patch', 'dhcp@dhcp-4.2.5-missing_ipv6-1.patch']
+noextract = source[1:]
+sha3sums = ['043FF363AD00AC7F1ECA52F1A393CF7B49D0D5912F0960425B8982C4D552539FDC2D01FF731D1A6C29E33C822C1AAB084777D8343B6A76D9271DAF714BF6C17F0D5EE176ADEA8ACD', None, None]
+
+_state   = lambda private : (''     if not private else path('~/.local')) + '/var/lib'
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+_sysconf = lambda private : ('/etc' if not private else path('~/.config'))
+
+
+def ride(private):
+    execute('man', '8', 'dhclient')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    
+    sed(sed_script('STD_CWARNINGS', '& -D_GNU_SOURCE', '^CFLAGS='), 'configure')
+    patch(srcdir + '/dhcp@dhcp-4.2.5-client_script-1.patch')
+    patch(srcdir + '/dhcp@dhcp-4.2.5-missing_ipv6-1.patch')
+    
+    args = ['./configure', '--prefix=' + _prefix(private), '--sysconfdir=' + _sysconf(private)]
+    for (a, b, c) in [('srv', 'dhcp', 'dhcpd'), ('cli', 'dhclient', 'dhclient')]:
+        for d in ['', '6']:
+            args.append('--with-%s-lease-file=%s/%s/%s%s.leases' % (a, _state(private), b, c, d))
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    make('-C', 'client', 'DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    mkdir_p(pkgdir + _state(private) + '/dhclient')
+    install('client/scripts/linux', _pre + '/usr/sbin/dhclient-script', parents = True, mode = 0o755)
+    
+    if i_use_man:
+        for f in ['dhclient-script.8', 'dhclient.8', 'dhclient.leases.5', 'dhclient.conf.5']:
+            execute('gzip', '-9', _pre + '/share/man/man' + f[-1] + '/' + f)
+    else:
+        rm_r(_pre + '/share/man')
+    
+    install('LICENSE', _pre + '/share/licenses/dhclient/LICENSE', parents = True, mode = 0o644)
+

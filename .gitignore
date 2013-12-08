@@ -1,0 +1,19 @@
+## Non-stage zone
+_/
+
+## Hidden files
+.*
+!.git*
+
+## Backup files
+*~
+\#*\#
+*.bak
+*.swo
+*.swp
+
+## Python generated files
+__pycache__/
+*.pyc
+*.pyo
+

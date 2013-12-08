@@ -16,8 +16,8 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['custom']
 private = SUPPORTED
-depends = ['bash' 'iproute2', 'gcc']
-makedepends = ['bash', 'iproute2', 'sh', 'sed', 'grep', 'findutils', 'codeutils', 'make', 'm4', 'glibc', 'gcc']
+depends = ['bash', 'iproute2', 'gcc']
+makedepends = ['bash', 'iproute2', 'sh', 'sed', 'grep', 'findutils', 'coreutils', 'make', 'm4', 'glibc', 'gcc']
 if i_use_man:
     makedepends.append('gzip')
 provides = ['dhcp-client']

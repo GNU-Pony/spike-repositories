@@ -21,7 +21,7 @@ depends = ['glibc']
 makedepends = ['glibc', 'cc', 'make', 'coreutils']
 if i_use_man:
     makedepends.append('gzip')
-source = ['%s/wireless_tools.${pkgver}.tar.gz' % (_url, pkgver), 'wireless_tools@dense.patch']
+source = ['%s/wireless_tools.%s.tar.gz' % (_url, pkgver), 'wireless_tools@dense.patch']
 noextact = source[1:]
 sha3sums = ['189F9F007ABF67E7CDEABD8255BD63ED8A1C736CF802AC1B8C7C350CC52A4F1FF2A722531B4AFB15DE338B4BAAB4A07AD97678C8B7C0E037FF6D4691AC0318F36B7B97694EFF0577', None]
 

@@ -20,7 +20,7 @@ makedepends = ['make', 'coreutils']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
-optdepends = ['jfbview: default document viewer under TTY'.
+optdepends = ['jfbview: default document viewer under TTY',
               'xpdf: default document viewer under X']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['9E88C5C6E4B426C2A4CAB8C13325E260107A5DB7B6FA98E04E2AF4FC41206F10CBBDB3481FDF14822EEFED70DD6BACA4D6649D589B6004320B0352B5747CBCFC55C662140D7BC97E']

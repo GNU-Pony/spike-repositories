@@ -5,7 +5,7 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_man = get('I_USE_MAN', 'y').lower().startwith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'dhclient'
 _pkgver = '4.2.5-P1'

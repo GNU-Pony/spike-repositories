@@ -1,0 +1,57 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'thin-provisioning-tools'
+pkgver = '0.2.7'
+#pkgver = '0.2.8' # does not compile
+pkgdesc = 'A suite of tools for manipulating the metadata of the dm-thin device-mapper target'
+upstream = 'https://github.com/jthornber/%s' % pkgname
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['expat', 'gcc-libs', 'glibc']
+makedepends = ['gcc', 'boost', 'autoconf'] + depends
+if i_use_man:
+    makedepends.appends('gzip')
+source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['688B92D1DEC73C928A660F69908BDF81541915AAC152D3819B1356DFA37FD9A38D33D0059A8DC2598535C9BFE1BA4F928BB120E957C811604F16C1020E494C07840CD9B9FC2FA9B6']
+#sha3sums = ['69C04BF82F14A906EA527E17DAF8D293B38CAA307D91AB85EE30B67694765B794980FB6BA0D82C908A8FDCBF4D3BC8392D2FFBA6437BD21CC00EB8C78C578AFD93109C08E557B4E1'] # for 0.2.8
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    execute('autoconf')
+    execute('./configure', '--prefix=' + _prefix(private))
+    make('-j1') # Just do not use -j without argument (unlimited), it can freeze your machine
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    _pre = _prefix(private)
+    make('DESTDIR=%s' % pkgdir, 'BINDIR=%s%s/bin' % (pkgdir, _pre), 'MANDIR=%s/share/man' % _pre, 'install')
+    
+    _pre = pkgdir + _pre
+    _dir = _pre + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL3', _dir + '/LICENSE')
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    else:
+        f_ = _pre + '/share/man/man8/thin_%s.8'
+        for f in ['metadata_size', 'rmap', 'restore', 'repair', 'dump', 'check']:
+            execute('gzip', '-9', '--', f_ % f)
+

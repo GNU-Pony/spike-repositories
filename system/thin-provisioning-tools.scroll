@@ -19,7 +19,7 @@ private = SUPPORTED
 depends = ['expat', 'gcc-libs', 'glibc']
 makedepends = ['gcc', 'boost', 'autoconf'] + depends
 if i_use_man:
-    makedepends.appends('gzip')
+    makedepends.append('gzip')
 source = ['%s/archive/v%s.tar.gz' % (upstream, _commit)]
 sha3sums = ['22E6A551292B13BE5A635B911F4F013140624590435202C70AB54900FC76FE6B82F0AECFD1B8D5008616BC03F4137CCD2C856D77C8B1F426B9F448514181C56EEEC1A19E878582B1']
 

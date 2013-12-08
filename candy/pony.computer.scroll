@@ -15,7 +15,7 @@ arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['bash', 'ponysay'. 'coreutils', 'grep', 'sed', 'python3', 'filesystem']
+depends = ['bash', 'ponysay', 'coreutils', 'grep', 'sed', 'python3', 'filesystem']
 optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc']
 makedepends = ['make', 'coreutils', 'sed']
 #if i_use_info:

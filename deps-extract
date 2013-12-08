@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Copyright (C) 2013  Mattias Andrée (maandree@member.fsf.org)
+# 
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+
+if [ $# = 0 ]; then
+  cd ..
+else
+  cd "$1"
+fi
+
+find -name '*.scroll' |
+while read f;
+do
+  echo -e "\033[01;31m$f\033[00m" 1>&2
+  (
+    (
+      cat "$f" |
+      sed -e '/^freedom /d' -e '/^private/d' |
+      sed -e '/dragonsuite/s/.*/get = lambda _, d : "y" if d == "n" else d\ndepends = []\nmakedepends = []\noptdepends = []\ncheckdepends = []/'
+      echo 'for pkg in (depends + makedepends + optdepends + checkdepends): print(pkg.split(": ")[0])'
+    ) | python
+  )
+done |
+cut -d '>' -f 1 |
+cut -d '=' -f 1 |
+cut -d '<' -f 1 |
+sort | uniq |
+sed 's/^/_need_\//'
+

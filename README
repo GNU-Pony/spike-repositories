@@ -1,0 +1,41 @@
+Spike repositories maintainer utilities.
+
+You can create a directory named _ inside
+any directory it will be ignored by Git.
+
+Use _ in the top directory for temporary
+files. Create the directories _have_ and
+_need_ inside _. You can copy the script
+you want to using into _ so that they do
+not disappear when you checkout another
+branch.
+
+
+deps-extract will print all existing
+dependencies in the checkout branch,
+inside the current working directory. No
+version range is printed, just the name
+of the required package. Each line in
+the output start with _need_. If your
+working directory is _ in the top
+directory, you can type
+`./deps-extract .. | xargs touch`,
+when you have verified that nothing is
+weird in the output of `./deps-extract ..`.
+
+provides-extract works in the same
+way as `deps-extract`, except it uses
+_have_ rather than _need_ and prints
+all existing packages, what they are
+variants of and which packages they
+provide.
+
+After running deps-extract and
+provides-extract for each of the
+branches core, extra and more you can
+run `./remaining`, this will print
+the names of all package that are
+dependencies for any package in the
+package repository but is not in the
+package repository itself.
+

@@ -1,0 +1,51 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'acpi'
+pkgver = '1.7'
+pkgdesc = 'Client for battery, power, and thermal readings'
+upstream = 'http://sourceforge.net/projects/acpiclient'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['glibc', 'gcc', 'm4', 'sh', 'sed', 'grep', 'make', 'findutils', 'coreutils']
+if i_use_man:
+    makedepends.append('gzip')
+source = ['http://cznic.dl.sourceforge.net/project/acpiclient/acpiclient/%s/acpi-%s.tar.gz' % (pkgver, pkgver)]
+sha3sums = ['CA8775A2BB9DE283C860C5D6F93AF58D0B42C0EE60AD8503705FB1B2FAC0B13383AFBCBE1AC17E81D654A46B1B061CA62A84894747EFC4B6BFBD46EC9F68760DFC864ACDF4FB6487']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('acpi', '-V')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/acpi-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/acpi-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private);
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+    
+    if i_use_man:
+        rm_r(_pre + '/share/man')
+    else:
+        execute('gzip', '-9', _pre + '/share/man/man1/acpi.1')
+

@@ -22,7 +22,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['LGPL2']
 if i_use_html:
-    license.append('custom (permissive free)', 'public (dedication)')
+    license += ['custom (permissive free)', 'public (dedication)']
 private = SUPPORTED
 depends = ['pcre', 'glibc', 'libffi']
 optdepends = ['python2: for gdbus-codegen and gtester-report',

@@ -28,10 +28,7 @@ sha3sums = ['861D1418A6113B770A0E082583A7176534B5A28011257EC1A6F293D4B85AEBB910B
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
-makeparams = ['PREFIX=%s' % _prefix(private),
-              'PKGNAME=%s' % pkgname,
-              'PY3VERSION=%s' % 3.3,
-              'DESTDIR=%s' % pkgdir]
+makeparams = []
 
 globals()['scroll_argparser_build'] = []
 globals()['scroll_argparser_package'] = []
@@ -43,6 +40,10 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/argparser-%s' % (srcdir, pkgver))
+    makeparams += ['PREFIX=%s' % _prefix(private),
+                   'PKGNAME=%s' % pkgname,
+                   'PY3VERSION=%s' % '3.3',
+                   'DESTDIR=%s' % pkgdir]
     buildparams = globals()['scroll_argparser_build']
     if i_use_info:
         buildparams.append('info')

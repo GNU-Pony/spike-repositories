@@ -6,7 +6,7 @@
 from dragonsuite import *
 import os
 
-i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower('y').startswith('y')
+i_use_largefiles = get('I_USE_LARGEFILES', 'y').lower().startswith('y')
 
 pkgname = 'db'
 pkgver = '5.3.21'

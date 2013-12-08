@@ -17,7 +17,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['MIT']
 private = UNSUPPORTED
-depends = ['libc', 'ca-certificates', 'libssh2', 'openssl', 'zlib', 'sh', 'coreutils'. 'bc', 'sed']
+depends = ['libc', 'ca-certificates', 'libssh2', 'openssl', 'zlib', 'sh', 'coreutils', 'bc', 'sed']
 makedepends = ['libc', 'cc', 'sed', 'bash', 'make', 'sh', 'm4', 'grep', 'findutils', 'sed', 'coreutils']
 makedepends.append('gzip') # for manpages
 source = ['http://curl.haxx.se/download/curl-%s.tar.gz' % pkgver,

@@ -42,7 +42,7 @@ def ride(private):
 
 def package(startdir, srcdir, pkgdir, private):
     _share = '%s%s/share' % (pkgdir, '/usr' if not private else path('~/.local'))
-    _prefix = pkgdir if not private else (pkgdir + path('~/.local')))
+    _prefix = pkgdir if not private else (pkgdir + path('~/.local'))
     mkdir_p('%s/licenses/%s' % (_share, pkgname))
     mkdir_p('%s/doc' % _share)
     mkdir_p('%s/sbin' % _prefix)

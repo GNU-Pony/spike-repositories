@@ -44,7 +44,7 @@ def build(startdir, srcdir, pkgdir, private):
             '--with-zlib']
     if not i_use_bash:
         args.append('--without-bashcompletiondir')
-    else
+    else:
         args.append('--with-bashcompletiondir=%s/share/bash-completion/completions' % _prefix(private))
     execute(args)
     make()

@@ -16,7 +16,7 @@ freedom = SOFTWARE | MEDIA
 license = ['custom (permissive free)']
 private = SUPPORTED
 depends = ['zlib', 'glibc']
-makedepends = ['glibc', 'gcc'. 'zlib', 'sh', 'make', 'sed', 'coreutils', 'm4', 'grep']
+makedepends = ['glibc', 'gcc', 'zlib', 'sh', 'make', 'sed', 'coreutils', 'm4', 'grep']
 makedepends.append('gzip') # for manpage
 source = ['ftp://ftp.astron.com/pub/file/file-%s.tar.gz' % pkgver]
 sha3sums = ['B3F98856FC874456C3AD6EC30E3017FAFBA5E94D1C873B22692C385A345B28F34A4FEC03677E3664C87CDCA76F906F61EF5B10D4187DACE22AB5C38BF44BA7E345F323812FC36A2F']

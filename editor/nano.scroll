@@ -26,7 +26,7 @@ depends = ['glibc', 'sh', 'ncurses']
 makedepends = ['libc', 'ncurses', 'gcc', 'sed', 'grep', 'sh', 'findutils', 'make', 'coreutils', 'm4']
 makedepends.append('texinfo') # for info manual
 makedepends.append('gzip') # for manpages and info
-source = ['http://www.nano-editor.org/dist/v%/nano-%s.tar.gz' % ('.'.join(pkgver.split('.')[:2]), pkgver)]
+source = ['http://www.nano-editor.org/dist/v%s/nano-%s.tar.gz' % ('.'.join(pkgver.split('.')[:2]), pkgver)]
 sha3sums = ['593BF2EA150CDCBF28D436F7CFB1F5C6F386DAAE8F30A2857CBE2853A640F376FC2241D1C439BE76038E493D17B7979C04599138AD3982FA0A5934D1CABB4485FFD1180867C3CE61']
 
 

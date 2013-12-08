@@ -22,7 +22,7 @@ if i_use_man:
     makedepends.append('gzip')
 provides = ['procps']
 conflicts = ['procps']
-source = ['http://downloads.sourceforge.net/project/procps-ng/Production/procps-ng-${pkgver}.tar.xz' % pkgver]
+source = ['http://downloads.sourceforge.net/project/procps-ng/Production/procps-ng-%s.tar.xz' % pkgver]
 sha3sums = ['4F48CDAB1AD3BAA81A66B89F263A8866DE2BC63090A3F1DFC7C712AD9EB437396F687B856EF447BE170ED59AD262A5DB4809363968AC1C032E58AE9356F51FA847FC2E7F04D815A3']
 
 

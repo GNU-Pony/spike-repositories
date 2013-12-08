@@ -16,7 +16,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL2']
 private = SUPPORTED
 depends = ['glibc']
-makedepends = ['glibc', 'gcc'. 'make', 'coreutils']
+makedepends = ['glibc', 'gcc', 'make', 'coreutils']
 if i_use_man:
     makedepends.append('gzip')
 source = ['http://download.savannah.gnu.org/releases/sysvinit/sysvinit-%sdsf.tar.bz2' % pkgver,

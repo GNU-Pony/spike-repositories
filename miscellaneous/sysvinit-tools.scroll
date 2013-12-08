@@ -1,0 +1,67 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'sysvinit-tools'
+pkgver = '2.88'
+pkgdesc = 'System V Init tools"'
+upstream = 'http://savannah.nongnu.org/projects/sysvinit'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['glibc', 'gcc'. 'make', 'coreutils']
+if i_use_man:
+    makedepends.append('gzip')
+source = ['http://download.savannah.gnu.org/releases/sysvinit/sysvinit-%sdsf.tar.bz2' % pkgver,
+          'sysvinit-tools@0001-simplify-writelog.patch',
+          'sysvinit-tools@0002-remove-ansi-escape-codes-from-log-file.patch']
+noextract = source[1:]
+sha3sums = ['8FE88244CEB1754338257D2E888A8EA22F565188D3169EB30A01A6EF3D3E836C15138A1F996B6B774B58850159CDD1D414DCB9E11DB1EFCDBF4BADC673F2C60AEF59831CC5C85761', None, None]
+
+_exec_prefix = lambda private : (path('~/.local') if private else '')
+_prefix      = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sysvinit-%sdsf/src' % (srcdir, pkgver))
+    patch(srcdir + '/sysvinit-tools@0001-simplify-writelog.patch', forward = False)
+    patch(srcdir + '/sysvinit-tools@0002-remove-ansi-escape-codes-from-log-file.patch', forward = False)
+    make('fstab-decode', 'killall5', 'bootlogd')
+    
+    if i_use_man:
+        cd('../man')
+        for f in ['bootlogd.8','pidof.8', 'killall5.8', 'fstab-decode.8']:
+            execute('gzip', '-9', f)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/sysvinit-%sdsf/src' % (srcdir, pkgver))
+    
+    _sbin = pkgdir + _exec_prefix(private) + '/sbin'
+    mkdir(_sbin)
+    install(['fstab-decode', 'killall5', 'bootlogd'], _sbin, mode = 0o755)
+    ln('killall5', _sbin + '/pidof')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    else:
+        cd('../man')
+        _man8 = pkgdir + _exec_prefix(private) + '/share/man/man8'
+        mkdir_p(_man8)
+        install(['bootlogd.8.gz','pidof.8.gz', 'killall5.8.gz', 'fstab-decode.8.gz'], _man8,  mode = 0o644)
+

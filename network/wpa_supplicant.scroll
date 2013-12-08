@@ -1,0 +1,66 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'wpa_supplicant'
+pkgver = '2.0'
+pkgdesc = 'A utility providing key negotiation for WPA wireless networks'
+upstream = 'http://hostap.epitest.fi/wpa_supplicant'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['BSD (GPL2 is not longer an allowed option)']
+private = SUPPORTED
+depends = ['openssl', 'dbus-core', 'readline', 'libnl', 'ncurses', 'zlib']
+makedepends = ['make', 'coreutils', 'pkg-config'] + depends
+if i_use_man:
+    makedepends.append('gzip')
+source = ['http://w1.fi/releases/wpa_supplicant-%s.tar.gz' % pkgver, 'wpa_supplicant@build-configurations']
+noextract = source[1:]
+sha3sums = ['F1F3B5F16EB239A2085EEC199969116D872FF188E7F754A18C98158E577C59A91A8D1A8EE8E588F18E63A950636330B65DDF2C348F02083D35A4E27319837A1EE49866C30903C4D9', None]
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+_sysconf = lambda private : ('/etc' if not private else path('~/.config'))
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/wpa_supplicant-%s/wpa_supplicant' % (srcdir, _pkgver))
+    cp(srcdir + '/wpa_supplicant@build-configurations', '.config')
+    sed(sed_script('/usr/local', '$(PREFIX)'), 'Makefile')
+    make('PREFIX=' + _prefix(private))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/wpa_supplicant-%s/wpa_supplicant' % (srcdir, _pkgver))
+    make('PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    _sys = pkgdir + _sysconf(private)
+    
+    files = ['fi.epitest.hostap.WPASupplicant.service', 'fi.w1.wpa_supplicant1.service']
+    _dir = _pre + '/share/dbus-1/system-services'
+    mkdir_p(_dir)
+    install('wpa_supplicant.conf', _sys + '/wpa_supplicant/wpa_supplicant.conf', parents = True, mode = 0o644)
+    install('dbus/' + files, _pre + '/wpa_supplicant/wpa_supplicant.conf', mode = 0o644)
+    
+    if i_use_man:
+        rm(['doc/docbook/wpa_' + f + '.8' for f in ['priv', 'gui']])
+        for s in ['5', '8']:
+            mkdir_p(_pre + '/share/man/man' + s)
+            files = l(path('doc/docbook/*.' + s))
+            for f in files:
+                execute('gzip', '-9', f)
+            install([f + '.gz' for f in files], _pre + '/share/man/man' + s)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/BSD', _dir + '/LICENSE')
+

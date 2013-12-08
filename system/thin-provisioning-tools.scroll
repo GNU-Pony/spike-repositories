@@ -8,8 +8,8 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'thin-provisioning-tools'
-pkgver = '0.2.7'
-#pkgver = '0.2.8' # does not compile
+pkgver = '0.2.8'
+_commit = 'c00c832378d37c7307da4857d62db32f020dca57' ## commit with merge patch for 0.2.8 that makes to it compile
 pkgdesc = 'A suite of tools for manipulating the metadata of the dm-thin device-mapper target'
 upstream = 'https://github.com/jthornber/%s' % pkgname
 arch = ['x86_64']
@@ -20,9 +20,8 @@ depends = ['expat', 'gcc-libs', 'glibc']
 makedepends = ['gcc', 'boost', 'autoconf'] + depends
 if i_use_man:
     makedepends.appends('gzip')
-source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['688B92D1DEC73C928A660F69908BDF81541915AAC152D3819B1356DFA37FD9A38D33D0059A8DC2598535C9BFE1BA4F928BB120E957C811604F16C1020E494C07840CD9B9FC2FA9B6']
-#sha3sums = ['69C04BF82F14A906EA527E17DAF8D293B38CAA307D91AB85EE30B67694765B794980FB6BA0D82C908A8FDCBF4D3BC8392D2FFBA6437BD21CC00EB8C78C578AFD93109C08E557B4E1'] # for 0.2.8
+source = ['%s/archive/v%s.tar.gz' % (upstream, _commit)]
+sha3sums = ['22E6A551292B13BE5A635B911F4F013140624590435202C70AB54900FC76FE6B82F0AECFD1B8D5008616BC03F4137CCD2C856D77C8B1F426B9F448514181C56EEEC1A19E878582B1']
 
 _prefix  = lambda private : ('/usr' if not private else path('~/.local'))
 
@@ -32,14 +31,14 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    cd('%s/%s-%s' % (srcdir, pkgname, _commit))
     execute('autoconf')
     execute('./configure', '--prefix=' + _prefix(private))
     make('-j1') # Just do not use -j without argument (unlimited), it can freeze your machine
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    cd('%s/%s-%s' % (srcdir, pkgname,  _commit))
     _pre = _prefix(private)
     make('DESTDIR=%s' % pkgdir, 'BINDIR=%s%s/bin' % (pkgdir, _pre), 'MANDIR=%s/share/man' % _pre, 'install')
     

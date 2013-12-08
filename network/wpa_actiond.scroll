@@ -27,12 +27,12 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    cd('%s/wpa_actiond-%s' % (srcdir, _pkgver))
     make('CFLAGS=' + get('CFLAGS', ''), 'LDFLAGS=' + get('LDFLAGS', ''))
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    cd('%s/wpa_actiond-%s' % (srcdir, _pkgver))
     _dir = pkgdir + _prefix(private)
     install('wpa_actiond', _dir + '/bin/wpa_actiond')
     _dir += '/share/licenses/' + pkgname

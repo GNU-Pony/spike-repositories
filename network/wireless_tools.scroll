@@ -1,0 +1,64 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'wireless_tools'
+pkgver = '29'
+pkgdesc = 'Tools allowing to manipulate the wireless extensions'
+_url = 'http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux'
+upstream = _url + '/Tools.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['glibc', 'cc', 'make', 'coreutils']
+if i_use_man:
+    makedepends.append('gzip')
+source = ['%s/wireless_tools.${pkgver}.tar.gz' % (_url, pkgver), 'wireless_tools@dense.patch']
+noextact = source[1:]
+sha3sums = ['189F9F007ABF67E7CDEABD8255BD63ED8A1C736CF802AC1B8C7C350CC52A4F1FF2A722531B4AFB15DE338B4BAAB4A07AD97678C8B7C0E037FF6D4691AC0318F36B7B97694EFF0577', None]
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/wireless_tools.%s' % (srcdir, _pkgver))
+    patch(srcdir + '/wireless_tools@dense.patch', forward = False)
+    make('CFLAGS=%s -I.' % get('CFLAGS', ''), 'LDFLAGS=' + get('LDFLAGS', ''))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/wireless_tools.%s' % (srcdir, _pkgver))
+    _pre = pkgdir + _prefix(private)
+    args = [('DIR', '/bin') ('LIB', '/lib'), ('INC', '/include'), ('MAN', '/share/man')]
+    args = ['INSTALL_%s=%s/%s' % (a, _pre, b) for (a, b) in args]
+    make(args + ['install'])
+    
+    if i_use_man:
+        for _lang in ['cs', 'fr']:
+            _dir = _pre + '/share/man/' + _lang
+            mkdir_p(['%s/man%s' % (_dir, _s) for _s in ['5', '7', '8']])
+            for _page in os.listdir(_lang):
+                execute('gzip', '-9', '%s/%s' % (_lang, _page))
+                install('%s/%s.gz' % (_lang, _page), '%s/man%s/%s.gz' % (_dir, _page[-1], _page))
+        for f in find(_pre + '/share/man'):
+            if os.path.isfile(f):
+                execute('gzip', '-9', '--', f)
+    else:
+        rm_r(_pre + '/share/man')
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+

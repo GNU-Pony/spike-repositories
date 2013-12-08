@@ -13,23 +13,32 @@ else
   cd "$1"
 fi
 
+function _debug()
+{
+  if [ -z "${DEBUG}" ]; then
+    cut -d '>' -f 1 |
+    cut -d '=' -f 1 |
+    cut -d '<' -f 1 |
+    cut -d ':' -f 1 |
+    sort |
+    uniq |
+    sed 's/^/_have_\//'
+  else
+    cat
+  fi
+}
+
 find -name '*.scroll' |
 while read f;
 do
   echo -e "\033[01;31m$f\033[00m" 1>&2
   (
-    (
-      cat "$f" |
-      sed -e '/^freedom /d' -e '/^private/d' |
-      sed -e '/dragonsuite/s/.*/get = lambda _, d : "y" if d == "n" else d\nprovides = []\nvariant = None/'
-      echo 'if variant is not None: print(variant)'
-      echo 'for pkg in ([pkgname] + provides): print(pkg.split(": ")[0])'
-    ) | python
-  )
+    cat "$f" |
+    sed -e '/^freedom /d' -e '/^private/d' |
+    sed -e '/dragonsuite/s/.*/get = lambda _, d : "y" if d == "n" else d\nprovides = []\nvariant = None/'
+    echo 'if variant is not None: print(variant)'
+    echo 'for pkg in ([pkgname] + provides): print(pkg)'
+  ) | python
 done |
-cut -d '>' -f 1 |
-cut -d '=' -f 1 |
-cut -d '<' -f 1 |
-sort | uniq |
-sed 's/^/_have_\//'
+_debug
 

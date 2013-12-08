@@ -39,3 +39,14 @@ dependencies for any package in the
 package repository but is not in the
 package repository itself.
 
+deps-extract and provides-extract
+can be invoked with the environment
+variable DEBUG set to anything that
+is not an empty string (or just
+containing NUL:s). If this is done
+the packages will be printed directly
+after the scroll they are found in,
+rather than after all scrolls, but
+the output will not bit fitted for
+use with `xargs touch`.
+

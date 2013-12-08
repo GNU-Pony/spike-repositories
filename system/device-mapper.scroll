@@ -72,7 +72,7 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
     mkdir_p(_dir)
     for _lic in license:
-        ln('/usr/share/licenses/common/%s' % _loc, '%s/LICENSE.%s' % (_dir, _lic.lower()))
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/LICENSE.%s' % (_dir, _lic.lower()))
     
     if not i_use_man:
         rm_r(pkgdir + _prefix(private) + '/share/man')

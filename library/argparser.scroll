@@ -19,9 +19,9 @@ makedepends = ['coreutils', 'sed', 'make']
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
-optdepends = ['argparser-bash: Bash version'
-              'argparser-c: Native version written in C'
-              'argparser-java: Java version'
+optdepends = ['argparser-bash: Bash version',
+              'argparser-c: Native version written in C',
+              'argparser-java: Java version',
               'argparser-python: Python 3 version']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['861D1418A6113B770A0E082583A7176534B5A28011257EC1A6F293D4B85AEBB910B8E871C1C403981F682AD99DBC3C03C623754CF84B7009CCF576123823FC7C7BD2DB404D7A1E4C']

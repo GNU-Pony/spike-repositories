@@ -1,0 +1,98 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man         = get('I_USE_MAN',         'y').lower().startswith('y')
+i_use_locale      = get('I_USE_LOCALE',      '*')
+i_use_pam         = get('I_USE_PAM',         'y').lower().startswith('y')
+i_use_shadow      = get('I_USE_SHADOW',      'y').lower().startswith('y')
+i_use_root_sudo   = get('I_USE_ROOT_SUDO',   'y').lower().startswith('y')
+i_use_sudo_shell  = get('I_USE_SUDO_SHELL',  'n').lower().startswith('y')
+i_use_secure      = get('I_USE_SECURE',      'y').lower().startswith('y')
+i_use_static      = get('I_USE_STATIC',      'y').lower().startswith('y')
+i_use_tty_tickets = get('I_USE_TTY_TICKETS', 'n').lower().startswith('y')
+i_use_insults     = get('I_USE_INSULTS',     'n').lower().startswith('y')
+i_use_selinux     = get('I_USE_SELINUX',     'n').lower().startswith('y')
+
+pkgname = 'sudo'
+_pkgver = '1.8.8'
+pkgver = _pkgver.replace('p', '.p')
+pkgdesc = 'Give selected users the ability to run some commands and edit some files as root'
+upstream = 'http://www.sudo.ws/sudo/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free, ISC-style)']
+private = UNSUPPORTED # meaningless, root needs to own sudo, and the mountpoint cannot have nosuid
+depends = ['glibc']
+makedepends = ['glibc', 'gcc', 'sh', 'make', 'm4', 'coreutils', 'sed', 'findutils', 'grep', 'gzip']
+if i_use_pam:
+    depends.append('pam')
+    makedepends.append('pam')
+provides = ['daringdo=' + pkgver]
+source = ['http://www.sudo.ws/sudo/dist/sudo-%s.tar.gz' % _pkgver, 'sudo@sudo.pam']
+noextract = source[1:]
+sha3sums = ['F329D39F51DDD13ACB44E373A94EB882F149CCE72C1094A01CC843510A69BD11AACFF8A2536824CD01B313586B482194AD195A0D5DD5D9AE487D11DDE00FCF662CE95DD2C9DCBB31', None]
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sudo-%s' % (srcdir, pkgver))
+    
+    args = ['./configure',
+            '--prefix=/usr',
+            '--enable-shadow' if i_use_shadow else '--disable-shadow',
+            '--enable-root-sudo' if i_use_root_sudo else '--disable-root-sudo',
+            '--enable-log-host',
+            '--enable-noargs-shell' if i_use_sudo_shell else '--disable-noargs-shell',
+            '--disable-zlib',
+            '--enable-hardening' if i_use_secure else '--disable-hardening',
+            '--enable-static' if i_use_static else '--disable-static',
+            '--with-pam' if i_use_pam else '--without-pam',
+            '--with-passprompt=[daringdo] passphrase for %p: ',
+            '--with-env-editor',
+            '--with-passwd-tries=3',
+            '--with-timeout=1', # minutes before sudo asks for passwd again (default in sudo is 5)
+            '--with-password-timeout=1', # passwd prompt timeout in minutes (default in sudo is 5)
+            '--with-tty-tickets' if i_use_tty_tickets else '--without-tty-tickets',
+            '--with-insults' if i_use_insults else '--without-insults',
+            '--with-all-insults',
+            '--with-selinux' if i_use_selinux else '--without-selinux',
+            '--with-logfac=auth']
+    
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/sudo-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/sudo-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    install(srcdir + '/sudo@sudo.pam', pkgdir + '/etc/pam.d/sudo', parents = True, mode = 0o644)
+    install(srcdir + '/doc/LICENSE', pkgdir + '/usr/share/licenses/sudo/LICENSE', parents = True, mode = 0o644)
+    
+    ln('sudo', pkgdir + '/usr/share/licenses/daringdo')
+    ln('sudoedit',   pkgdir + '/usr/bin/daringedit')
+    ln('sudo',       pkgdir + '/usr/bin/daringdo')
+    ln('sudoreplay', pkgdir + '/usr/bin/daringdo-replay')
+    if i_use_man:
+        ln('sudoedit.8.gz',   pkgdir + '/usr/share/man/man8/daringedit.8.gz')
+        ln('sudo.8.gz',       pkgdir + '/usr/share/man/man8/daringdo.8.gz')
+        ln('sudoreplay.8.gz', pkgdir + '/usr/share/man/man8/daringdo-replay.8.gz')
+    
+    if not i_use_man:
+        rm_r(pkgdir + '/usr/share/man')
+    else:
+        for f in ['sudoers.5', 'sudo.conf.5', 'sudoedit.8', 'visudo.8', 'sudoreplay.8', 'sudo_plugin.8', 'sudo.8']:
+            execute('gzip', '-9', pkgdir + '/usr/share/man/man' + f[-1] + '/' + f)
+    filter_locale(i_use_locale, pkgdir, '/usr')
+

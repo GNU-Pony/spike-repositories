@@ -16,7 +16,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['perl']
-makedepends = ['sed' 'coreutils' 'make']
+makedepends = ['sed', 'coreutils', 'make']
 if i_use_man:
     makedepends.append('perl')
     makedepends.append('gzip')

@@ -16,7 +16,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL2']
 private = UNSUPPORTED # Some work is needed to change filesystem hierarchy
-depends = ['glibc' 'db' 'iptables', 'linux']
+depends = ['glibc', 'db', 'iptables', 'linux']
 if i_use_atm_network:
     optdepends = ['linux-atm: Asynchronous transfer mode networking support']
 makedepends = ['glibc', 'gcc', 'db', 'iptables', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep', 'gzip', 'util-linux', 'pkg-config']

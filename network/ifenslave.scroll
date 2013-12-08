@@ -1,0 +1,40 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'ifenslave'
+pkgver = '1.1.0'
+pkgdesc = 'Utility for bonding ethernet interfaces'
+upstream = 'http://www.linuxfoundation.org/en/Net:Bonding'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc', 'linux']
+makedepends = ['glibc', 'gcc', 'linux-api-headers', 'bash']
+source = [('https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/plain/Documentation/networking/ifenslave.c?id=v2.6.39.2', 'ifenslave.c')]
+noextract = ['ifenslave.c']
+sha3sums = ['4915E0473D16659AB4978553B509A24515E7BDFF5B28CA907875D582558D165FDF6F46118651E32D82C3A6211E4184DA2E56AC20382367F4E55A5A2E034A1409A11FE4D9BC93A852']
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+
+
+def ride(private):
+    execute('ifenslave', '--help')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    bash('gcc -Wall -Wstrict-prototypes ${CFLAGS} ${LDFLAGS} ifenslave.c -o ifenslave')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    install('ifenslave', pkgdir + _prefix(private) + '/sbin/ifenslave', parents = True, mode = 0o755)
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+

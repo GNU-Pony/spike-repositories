@@ -1,0 +1,41 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'wpa_actiond'
+pkgver = '1.4'
+pkgdesc = 'Daemon that connects to wpa_supplicant and handles connect and disconnect events'
+upstream = 'http://projects.archlinux.org/wpa_actiond.git'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc', 'wpa_supplicant']
+makedepends = ['glibc', 'gcc', 'make', 'coreutils']
+source = ['ftp://ftp.archlinux.org/other/wpa_actiond/wpa_actiond-%s.tar.xz' % pkgver]
+sha3sums = ['B436229F332B6FE3A11F9CF43DF4C96423C5E58F790BEC5FF608AA0F6A17075CCF3ACEBDF4D1C6C860CF7544289559DC6AA9F1F7265A70BA81C01CBEBB147FD404423B24888499BF']
+
+_prefix  = lambda private : ('/usr' if not private else path('~/.local'))
+
+
+def ride(private):
+    echo('Does not seem like there is much to do, only a deamon, wpa_actiond, is installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    make('CFLAGS=' + get('CFLAGS', ''), 'LDFLAGS=' + get('LDFLAGS', ''))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dhcp-%s' % (srcdir, _pkgver))
+    _dir = pkgdir + _prefix(private)
+    install('wpa_actiond', _dir + '/bin/wpa_actiond')
+    _dir += '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE')
+

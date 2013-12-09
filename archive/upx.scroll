@@ -1,0 +1,66 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'upx'
+pkgver = '3.09'
+pkgdesc = 'High compresion ratio compressor for executable binary files'
+upstream = 'http://upx.sourceforge.net'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'public (dedication)']
+private = SUPPORTED
+depends = ['zlib', 'ucl', 'glibc', 'gcc-libs']
+makedepends = ['gcc', 'make>=3.81', 'sed', 'coreutils'] + depends
+if i_use_man:
+    makedepends += ['perl', 'gzip']
+source = ['%s/download/upx-%s-src.tar.bz2' % (upstream, pkgver),
+          'http://downloads.sourceforge.net/sevenzip/lzma465.tar.bz2'] ## tar bomb
+sha3sums = ['4541273C600322D0335092763BF9455A9CEE2AB85AAC3C2F60B8FCB2A209CoC69A47B0E336DB3FA0422B151855CB5E0A960D314C8974367980CF61BE4646212B53C7E406691BE2B4F',
+            '0FA75FE67DB74C0A55C0345E6DB7E78A396125B3E7C7DC13DA6CEE21D81C25F759202BB4854542C148B65EE812ADA683763A771854C447723F9AD9FC5A873E98FAEED624EC7700BF']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'upx')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/upx-%s-src' % (srcdir, pkgver))
+    
+    mkfiles = ['Makefile', 'doc/Makefile', 'src/Makefile']
+    
+    # No need to have the shell set explicitly, with absolute path, to the default shell
+    sed(sed_script('^SHELL = /bin/sh$', ''), mkfiles)
+    
+    # Be verbose
+    sed(sed_script('^\t@', '\t'), mkfiles)
+    
+    if not i_use_man:
+        sed(sed_script('^.*$', '#&', '-C doc'), 'Makefile')
+    else:
+        sed(sed_script('^BUILT_SOURCES.*$', 'BUILT_SOURCES = upx.1'), 'doc/Makefile')
+    
+    make('PACKAGE=' + pkgname ,'UPX_LZMA_VERSION=0x465', 'UPX_LZMADIR=' + srcdir, 'all')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/upx-%s-src' % (srcdir, pkgver))
+    
+    install('src/upx.out', pkgdir + _prefix(private) + '/bin/upx', parents = True, mode = 0o755)
+    if i_use_man:
+        execute('gzip', '-9', 'doc/upx.1')
+        install('doc/upx.1.gz', pkgdir + _prefix(private) + '/share/man/man1/upx.1.gz', parents = True, mode = 0o644)
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/public', '%s/lzma' % _dir)
+    install('LICENSE', '%s/COPYING' % _dir)
+

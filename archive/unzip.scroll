@@ -1,0 +1,78 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'unzip'
+pkgver = '6.0'
+_pkgver = pkgver.replace('.', '')
+pkgdesc = 'Unpacks .zip archives such as those made by PKZIP'
+upstream = 'http://www.info-zip.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['bzip2', 'glibc', 'bash']
+makedepends = ['bzip2', 'glibc', 'gcc', 'make', 'coreutils', 'sed']
+options = ['!makeflags']
+source = ['http://downloads.sourceforge.net/infozip/unzip%s.tar.gz' % _pkgver, 'unzip@match.patch']
+noextract = source[1:]
+sha3sums = ['FD592E96E757B008278024AA4827D6B89C56D01CF441C8F3AB11624389C7877F76F6A15FB129B5408F81BD8A77F80A18DBD62522C5D7F6E16A6211D0B64B09937B272B99B47D266A', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'unzip')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/unzip%s' % (srcdir, _pkgver))
+    
+    # from Parabola
+    patch('unzip@match.patch')
+    
+    # from Debian
+    CFLAGS = get('CFLAGS', '')
+    CFLAGS += ' -D_FILE_OFFSET_BITS=64'
+    CFLAGS += ' -DACORN_FTYPE_NFS'
+    CFLAGS += ' -DWILD_STOP_AT_DIR'
+    CFLAGS += ' -DLARGE_FILE_SUPPORT'
+    CFLAGS += ' -DUNICODE_SUPPORT'
+    CFLAGS += ' -DUNICODE_WCHAR'
+    CFLAGS += ' -DUTF8_MAYBE_NATIVE'
+    CFLAGS += ' -DNO_LCHMOD'
+    CFLAGS += ' -DDATE_FORMAT=DF_YMD'
+    CFLAGS += ' -DUSE_BZIP2'
+    CFLAGS += ' -DNATIVE'
+    export('CFLAGS', CFLAGS)
+    
+    sed(sed_script('^SHELL', '#&'), 'unix/Makefile')
+    sed(sed_script('^.*$', 'MANDIR = $(prefix)/share/man/man$(manext)', '^MANDIR ='), 'unix/Makefile')
+    
+    # from Debian
+    make('-f', 'unix/Makefile',
+         'LOCAL_ZIP=' + CFLAGS,
+         'prefix=' + _prefix(private),
+         'LF2=',
+         'D_USE_BZ2=-DUSE_BZIP2',
+         'L_BZ2=-lbz2',
+         'unzips')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/unzip%s' % (srcdir, _pkgver))
+    
+    _pre = pkgdir + _prefix(private)
+    make('-f', 'unix/Makefile', 'INSTALL_PROGRAM=' + which('install'), 'prefix=' + _pre, 'install')
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man/')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    install('LICENSE', '%s/LICENSE' % _dir, parents = True, mode = 0o644)
+

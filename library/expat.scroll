@@ -13,7 +13,7 @@ pkgdesc = 'A stream-oriented XML parser for C'
 upstream = 'http://expat.sourceforge.net/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['custom (permissive free)']
+license = ['Expat']
 private = SUPPORTED
 depends = ['libc']
 makedepends = ['cc', 'libc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils']
@@ -43,7 +43,8 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/expat-%s' % (srcdir, pkgver))
     make('DESTDIR=' + pkgdir, 'install')
     _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
-    install('COPYING', _dir + '/COPYING', mode = 0o644, parents = True)
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/Expat', _dir + '/COPYING')
     if not i_use_man:
         rm_r(pkgdir + _prefix(private) + '/share/man')
 

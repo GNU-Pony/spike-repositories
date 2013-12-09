@@ -1,0 +1,66 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_html = get('I_USE_HTML', 'y').lower().startswith('y')
+
+pkgname = 'libunistring'
+pkgver = '0.9.3'
+pkgdesc = 'Library for manipulating Unicode strings and C strings.'
+upstream = 'http://www.gnu.org/software/libunistring/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL3']
+private = SUPPORTED
+depends = ['glibc>=2.2']
+makedepends = ['glibc>=2.2', 'gcc', 'sh', 'sed', 'grep', 'm4', 'make', 'findutils', 'coreutils']
+source = ['ftp://ftp.gnu.org/pub/gnu/libunistring/libunistring-%s.tar.gz' % pkgver]
+sha3sums = ['4097813453BD45DEA90D21442E04E9AB1C97D5646DABCCC2935DC2E923F69C73613D5B8703A453FD56F85978C0959B17BC1488CE0DE8FAC386361C593279855C13B498B74A04BA78']
+
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    execute('info', 'libunistring')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libunistring-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libunistring-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/LGPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_html:
+        rm_r(pkgdir + _prefix(private) + '/share/doc')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -7,6 +7,8 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.  [GNUAllPermissive]
 
+cd "$(dirname "$0")"
+
 comm -13 \
   <(cd _have_/ ; find | sort) \
   <(cd _need_/ ; find | sort) |

@@ -1,0 +1,44 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'ucl'
+pkgver = '1.03'
+pkgdesc = 'Portable lossless data compression library written in ANSI C'
+upstream = 'http://www.oberhumer.com/opensource/ucl'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['cc', 'libc', 'm4', 'sh', 'sed', 'grep', 'make', 'findutils', 'coreutils']
+source = ['%s/download/ucl-%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['84B1D53943FC7806F5D44106D6102B56EA8BD7E46732CFC685F653F7BCBD124DE5BC567F4F91108C3967AEC297D57735C1B083464F3010C168E0FB5201B3E5CAC36D75808FFE4ECA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a library, but there is no documentation')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ucl-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-static',  # enabled by default upstream
+            '--enable-shared') # disabled by default upstream
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ucl-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+

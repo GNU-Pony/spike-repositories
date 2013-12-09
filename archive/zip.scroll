@@ -1,0 +1,50 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'zip'
+pkgver = '3.0'
+_pkgver = pkgver.replace('.', '')
+_major = pkgver.split('.')[0]
+pkgdesc = 'Creates PKZIP-compatible .zip files'
+upstream = 'http://www.info-zip.org/Zip.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['bzip2', 'glibc']
+makedepends = ['bzip2', 'glibc', 'gcc', 'make', 'coreutils', 'sed']
+options = ['!makeflags']
+source = ['http://downloads.sourceforge.net/project/infozip/Zip %s.x (latest)/%s/zip%s.tar.gz' % (_major, pkgver, _pkgver)]
+sha3sums = ['9C20F5D67E60034431D64B7CB65B1F436F715AE235E8EE56E861D8DE244C6578AF833A08991BBD196D74DD61AA5F879174D0798753C779F164D90B9A8B06C4142FBA603FB47135C0']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1', 'zip')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/zip%s' % (srcdir, _pkgver))
+    sed(sed_script('^SHELL', '#&'), 'unix/Makefile')
+    make('-f', 'unix/Makefile', 'LOCAL_ZIP=' get('CFLAGS', ''), 'prefix=' + _prefix(private), 'generic_gcc')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/zip%s' % (srcdir, _pkgver))
+    
+    _pre = pkgdir + _prefix(private)
+    make('-f', 'unix/Makefile', 'INSTALL=' + which('install'), 'prefix=' + _pre, 'MANDIR=%s/share/man/man1' % _pre, 'install')
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man/')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    install('LICENSE', '%s/LICENSE' % _dir, parents = True, mode = 0o644)
+

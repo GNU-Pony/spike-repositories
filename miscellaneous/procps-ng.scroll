@@ -43,7 +43,8 @@ def build(startdir, srcdir, pkgdir, private):
             '--exec-prefix=' + _exec_prefix(private),
             '--sysconfdir=' + _sysconf(private),
             '--enable-skill',
-            '--disable-kill']
+            '--disable-kill',
+            '--disable-pidof']
     
     execute(args)
     make()

@@ -80,7 +80,7 @@ def post_upgrade(tmpdir, rootdir, installedfiles, private):
     f_ = '%s%s/dhcp/dhcpd%%s.leases'
     f_ %= (rootdir.replace('%', '%%'), _state(private).replace('%', '%%'))
     for f in [f_ % '', f_ % '6']:
-        if not os.path.exists(f):
+        if not os.path.lexists(f):
             touch(f)
 
 
@@ -88,6 +88,6 @@ def pre_uninstall(tmpdir, rootdir, installedfiles, private):
     f_ = '%s%s/dhcp/dhcpd%%s.leases'
     f_ %= (rootdir.replace('%', '%%'), _state(private).replace('%', '%%'))
     for f in [f_ % '', f_ % '6']:
-        if os.path.exists(f):
+        if os.path.lexists(f):
             rm(f)
 

@@ -46,7 +46,7 @@ def pre_install(tmpdir, rootdir, private):
     with_usr_games   = os.path.lexists('%s/usr/games' % rootdir) and not _same('/usr/games', '/usr', rootdir)
     with_local_games = os.path.lexists('%s/usr/local/games' % rootdir) and not _same('/usr/local/games', '/usr/local', rootdir)
     with_multilib    = os.path.lexists('%s/usr/libmulti' % rootdir)
-    with_extended    = os.path.lexists('%s/info' % rootdir) and os.path.exists('%s/share' % rootdir)
+    with_extended    = os.path.lexists('%s/info' % rootdir) and os.path.lexists('%s/share' % rootdir)
     with_libraries64 = 'with_libraries64=' + ('yes' if with_libraries64 else 'no')
     with_usr_games   = 'with_usr_games='   + ('yes' if with_usr_games   else 'no')
     with_local_games = 'with_local_games=' + ('yes' if with_local_games else 'no')

@@ -10,7 +10,6 @@ i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 pkgname = 'zip'
 pkgver = '3.0'
 _pkgver = pkgver.replace('.', '')
-_major = pkgver.split('.')[0]
 pkgdesc = 'Creates PKZIP-compatible .zip files'
 upstream = 'http://www.info-zip.org/Zip.html'
 arch = ['x86_64']
@@ -20,7 +19,7 @@ private = SUPPORTED
 depends = ['bzip2', 'glibc']
 makedepends = ['bzip2', 'glibc', 'gcc', 'make', 'coreutils', 'sed']
 options = ['!makeflags']
-source = ['http://downloads.sourceforge.net/project/infozip/Zip %s.x (latest)/%s/zip%s.tar.gz' % (_major, pkgver, _pkgver)]
+source = ['http://downloads.sourceforge.net/infozip/zip%s.tar.gz' % _pkgver]
 sha3sums = ['9C20F5D67E60034431D64B7CB65B1F436F715AE235E8EE56E861D8DE244C6578AF833A08991BBD196D74DD61AA5F879174D0798753C779F164D90B9A8B06C4142FBA603FB47135C0']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')

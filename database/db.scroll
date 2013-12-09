@@ -45,7 +45,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/db-%s/build_unix' % (srcdir, pkgver))
     make('DESTDIR=' + pkgdir, 'install')
     rm_r(pkgdir + _prefix(private) + '/docs')
-    if os.path.exists(pkgdir + _prefix(private) + '/jar'):
+    if os.path.lexists(pkgdir + _prefix(private) + '/jar'):
         rmdir(pkgdir + _prefix(private) + '/jar')
     _dir = pkgdir + _prefix(private) + '/share/licenses'
     install('../LICENSE', '%s/LICENSE' % _dir, parents = True, mode = 0o644)

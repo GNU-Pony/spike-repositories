@@ -86,7 +86,7 @@ def package(startdir, srcdir, pkgdir, private):
         rm_r(_pre + '/share/man')
     if not i_use_bash:
         rm_r(_pre + '/share/bash-completion')
-    if not i_use_html and os.path.exists(_pre + '/share/gtk-doc'):
+    if not i_use_html and os.path.lexists(_pre + '/share/gtk-doc'):
         rm_r(_pre + '/share/gtk-doc')
     filter_locale(i_use_locale, pkgdir, _prefix(private))
 

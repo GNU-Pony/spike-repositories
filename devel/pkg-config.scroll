@@ -1,0 +1,55 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_html = get('I_USE_HTML', 'y').lower().startswith('y')
+
+pkgname = 'pkg-config'
+pkgver = '0.28'
+pkgdesc = 'A system for managing library compile/link flags'
+upstream = 'http://pkgconfig.freedesktop.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+provides = ['pkgconfig=' + pkgver]
+depends = ['glib2', 'glibc', 'pcre']
+makedepends = ['gcc', 'sh', 'sed', 'grep', 'make', 'findutils', 'coreutils'] + depends
+source = ['http://pkgconfig.freedesktop.org/releases/pkg-config-%s.tar.gz' % pkgver]
+sha3sums = ['F85F97C594401B6AB95BD0688D8BC892F8CF3C1D6CF2020FAE2B7F99480579DDE0E6F2093B9906D881C9FC673D1743FAC5E32764B8DBEBED4EE152F37B3FA08E601E3926FC012403']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('man', '1'. 'pkg-config')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pkg-config-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/pkg-config-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pkg-config-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_html:
+        rm_r(pkgdir + _prefix(private) + '/share/doc')
+

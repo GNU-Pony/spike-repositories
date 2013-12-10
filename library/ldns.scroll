@@ -1,0 +1,50 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'ldns'
+pkgver = '1.6.16'
+pkgdesc = 'Fast DNS library supporting recent RFCs'
+upstream = 'http://www.nlnetlabs.nl/projects/ldns/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['nBSD']
+private = SUPPORTED
+depends = ['openssl', 'zlib', 'dnssec-anchors']
+makedepends = ['openssl', 'zlib', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils', 'gzip']
+source = ['http://www.nlnetlabs.nl/downloads/ldns/ldns-%s.tar.gz' % pkgver]
+sha3sums = ['10CB3495FE1688AB8166CAB3F52C5E5194A4010E974983840B423C3A0177620B713D49D833C08458F791B716801AAB19133C0DB9E25C1927C5EFB84E846A4B1EB41BE27069EB6263']
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_var     = lambda private : '/var' if not private else path('~/.local/var')
+
+
+def ride(private):
+    echo('A collection of section 1 manpages are available')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ldns-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _var(private),
+            '--disable-rpath',
+            '--with-drill',
+            '--with-examples')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ldns-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    install('LICENSE', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname), parents = True, mode = 0o644)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

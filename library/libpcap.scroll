@@ -1,0 +1,51 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'libpcap'
+pkgver = '1.5.1'
+pkgdesc = 'A system-independent interface for user-level packet capture'
+upstream = 'http://www.tcpdump.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['glibc', 'libnl', 'libusbx']
+makedepends = ['flex', 'gcc', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils'] + depends
+depends.append('sh')
+source = ['http://www.tcpdump.org/release/libpcap-%s.tar.gz' % pkgver]
+sha3sums = ['47356044FE05C7174D58552E2B03C496E8113E2C30620704FCF289B57A3C94EFA10372B0BF335AE9E87099528E9AA6B1E40C77BF9C5DD980A92CA2A221F61D59F45C6891A0C69A9B']
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man('man', '1', 'pcap-config')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libpcap-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-ipv6', 
+            '--with-libnl')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libpcap-%s' % (srcdir, pkgver))
+    mkdir_p(pkgdir + _prefix(private) + '/bin')
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    # backwards compatibility, programs often look for net/bpf.h -- from Arch linux
+    ln('../pcap-bpf.h', pkgdir + _prefix(private) + '/include/net/bpf.h', parents = True)
+    
+    install('LICENSE', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname), parents = True, mode = 0o644)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

@@ -16,7 +16,8 @@ freedom = SOFTWARE | MEDIA
 license = ['nBSD']
 private = SUPPORTED
 depends = ['openssl', 'zlib', 'dnssec-anchors']
-makedepends = ['openssl', 'zlib', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils', 'gzip']
+optdepens = ['libpcap: for DNS package analyser tool']
+makedepends = ['libpcap', 'openssl', 'zlib', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils', 'gzip']
 source = ['http://www.nlnetlabs.nl/downloads/ldns/ldns-%s.tar.gz' % pkgver]
 sha3sums = ['10CB3495FE1688AB8166CAB3F52C5E5194A4010E974983840B423C3A0177620B713D49D833C08458F791B716801AAB19133C0DB9E25C1927C5EFB84E846A4B1EB41BE27069EB6263']
 

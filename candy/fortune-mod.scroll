@@ -1,0 +1,65 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'fortune-mod'
+pkgver = '1.99.1'
+pkgdesc = 'The Fortune Cookie Program from BSD games'
+upstream = 'http://www.redellipse.net/code/fortune'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['BSD']
+private = SUPPORTED
+depends = ['recode', 'libc']
+makedepends = ['recode', 'libc', 'cc', 'make', 'coreutils', 'sed', 'grep', 'bash']
+source = ['ftp://ftp.archlinux.org/other/fortune-mod/fortune-mod-%s.tar.gz' % pkgver, # arch linux's mirror
+          'fortune-mod@01_all_fortune_all-fix.patch']
+sha3sums = ['6D3C7373EC3E22156C037477023252BD6F414016D824BB244738504947D160DBB92FCD4393C41D8D7EE9D866F486CCE04E546E18EF052256BD434EC6B12E8BB03212F3845094F51C', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('fortune')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/fortune-mod-%s' % (srcdir, pkgver))
+    
+    ## The license (not just the BSD license templete) must be extracted from a source code file
+    sh_grep = 'cat fortune/fortune.c | grep \'^ %*%( %|/%)\''.replace('%', '\\')
+    sh_trunc = 'head -n $(( $( %s | head -n 1 | cut -d : -f 1 ) - 1 ))' % sh_grep
+    bash('%s | %s | sed -e \'s/^ \\* //g\ > LICENSE')
+    
+    ## From arch linux
+    patch('fortune-mod@01_all_fortune_all-fix.patch', forward = False)
+    
+    make('REGEXDEFS=-DHAVE_REGEX_H -DPOSIX_REGEX -DHAVE_STDBOOL',
+         'COOKIEDIR=%s/share/fortune' % _prefix(private),
+         'LOCALDIR=/usr/local/share/fortune',
+         'all',
+         'fortune/fortune.man')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/fortune-mod-%s' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make('FORTDIR=%s/bin' % _pre,
+         'COOKIEDIR=%s/share/fortune' % _pre,
+         'BINDIR=%s/bin' % _pre,
+         'BINMANDIR=%s/share/man/man1' % _pre,
+         'FORTMANDIR=%s/share/man/man6' % _pre,
+         'install')
+    
+    rm(path('%s/share/fortune{,/off}/*.u8' % path_escape(_pre)))
+    install('LICENSE', '%s/share/licenses/%s/LICENSE' % (_pre, pkgname), parents = True, mode = 0o644)
+    
+    if i_use_man:
+        rm_r(_pre + '/share/man')
+

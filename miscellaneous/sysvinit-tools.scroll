@@ -9,7 +9,7 @@ i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'sysvinit-tools'
 pkgver = '2.88'
-pkgdesc = 'System V Init tools"'
+pkgdesc = 'System V Init tools'
 upstream = 'http://savannah.nongnu.org/projects/sysvinit'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA

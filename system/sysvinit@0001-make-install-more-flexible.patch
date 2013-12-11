@@ -1,0 +1,793 @@
+From 053f7d2a57dd95f1a0e9f55e2422ce31467810c4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mattias=20Andr=C3=A9e?= <maandree@operamail.com>
+Date: Wed, 11 Dec 2013 02:47:23 +0100
+Subject: [PATCH] make install more flexible
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Mattias Andrée <maandree@operamail.com>
+---
+ contrib/notify-pam-dead.patch |  23 ++++---
+ contrib/start-stop-daemon.c   |  12 ++--
+ obsolete/bootlogd.init        |   4 +-
+ obsolete/shutdown.c           |   1 +
+ src/Makefile                  | 135 ++++++++++++++++++++++++++++--------------
+ src/bootlogd.c                |  52 ++++++++--------
+ src/dowall.c                  |   2 +-
+ src/halt.c                    |   6 +-
+ src/hddown.c                  |  10 ++--
+ src/init.c                    |  14 ++---
+ src/killall5.c                |  26 ++++----
+ src/paths.h                   |   4 +-
+ src/shutdown.c                |  10 ++--
+ src/sulogin.c                 |   8 +--
+ 14 files changed, 176 insertions(+), 131 deletions(-)
+ create mode 100644 obsolete/shutdown.c
+
+diff --git a/contrib/notify-pam-dead.patch b/contrib/notify-pam-dead.patch
+index ce53ffe..ec5b954 100644
+--- a/contrib/notify-pam-dead.patch
++++ b/contrib/notify-pam-dead.patch
+@@ -85,7 +85,7 @@ Index: src/utmp.c
+  #include "paths.h"
+  
+ +#ifndef _PATH_DEV
+-+# define _PATH_DEV	"/dev/"
+++# define _PATH_DEV	DEVDIR "/"
+ +#endif
+  
+  #if defined(__GLIBC__)
+@@ -198,23 +198,22 @@ Index: src/Makefile
+  # Additional libs for GNU libc.
+ +ifneq ($(findstring -DUSE_PAM,$(CPPFLAGS)),)
+ +  INITLIBS	+= -lpam
+-+  PAMDOTD	= /etc/pam.d
+++  PAMDOTD	= $(SYSCONFDIR)/pam.d
+ +  PAMINIT	= $(PAMDOTD)/init
+ +endif
+ +
+ +# Additional libs for GNU libc.
+- ifneq ($(wildcard /usr/lib*/libcrypt.a),)
++ ifeq ($(WITH_LIB_CRYPT),yes)
+    SULOGINLIBS	+= -lcrypt
+  endif
+-@@ -153,6 +160,11 @@
+- 			$(STRIP) $$i ; \
+- 			$(INSTALL_EXEC) $$i $(ROOT)/usr/bin/ ; \
++@@ -153,5 +160,10 @@
++ 			$(INSTALL_EXEC) $$i -- "$(DESTDIR)$(PREFIX)$(BIN)/" ; \
+  		done
+ +ifneq ($(findstring -DUSE_PAM,$(CPPFLAGS)),)
+-+		$(INSTALL_DIR) $(ROOT)$(PAMDOTD)
+-+		test -s $(ROOT)$(PAMINIT) || \
+-+		$(INSTALL_DATA) init.sample $(ROOT)$(PAMINIT)
+++		$(INSTALL_DIR) -- "$(DESTDIR)$(PAMDOTD)"
+++		test -s "$(DESTDIR)$(PAMINIT)" || \
+++		$(INSTALL_DATA) -- init.sample "$(DESTDIR)$(PAMINIT)"
+ +endif
+- 		# $(INSTALL_DIR) $(ROOT)/etc/
+- 		# $(INSTALL_EXEC) initscript.sample $(ROOT)/etc/
+- 		ln -sf halt $(ROOT)/sbin/reboot
++ 		# $(INSTALL_DIR) -- "$(DESTDIR)$(SYSCONFDIR)/"
++ 		# $(INSTALL_EXEC) -- initscript.sample "$(DESTDIR)$(SYSCONFDIR)/"
++ 		ln -sf -- halt "$(DESTDIR)$(SBIN)/reboot"
+diff --git a/contrib/start-stop-daemon.c b/contrib/start-stop-daemon.c
+index ce286a2..25bd965 100644
+--- a/contrib/start-stop-daemon.c
++++ b/contrib/start-stop-daemon.c
+@@ -239,7 +239,7 @@ pid_is_exec(int pid, const struct stat *esb)
+ 	struct stat sb;
+ 	char buf[32];
+ 
+-	sprintf(buf, "/proc/%d/exe", pid);
++	sprintf(buf, PROCDIR "/%d/exe", pid);
+ 	if (stat(buf, &sb) != 0)
+ 		return 0;
+ 	return (sb.st_dev == esb->st_dev && sb.st_ino == esb->st_ino);
+@@ -252,7 +252,7 @@ pid_is_user(int pid, int uid)
+ 	struct stat sb;
+ 	char buf[32];
+ 
+-	sprintf(buf, "/proc/%d", pid);
++	sprintf(buf, PROCDIR "/%d", pid);
+ 	if (stat(buf, &sb) != 0)
+ 		return 0;
+ 	return (sb.st_uid == uid);
+@@ -266,7 +266,7 @@ pid_is_cmd(int pid, const char *name)
+ 	FILE *f;
+ 	int c;
+ 
+-	sprintf(buf, "/proc/%d/stat", pid);
++	sprintf(buf, PROCDIR "/%d/stat", pid);
+ 	f = fopen(buf, "r");
+ 	if (!f)
+ 		return 0;
+@@ -319,9 +319,9 @@ do_procfs(void)
+ 	struct dirent *entry;
+ 	int foundany, pid;
+ 
+-	procdir = opendir("/proc");
++	procdir = opendir(PROCDIR);
+ 	if (!procdir)
+-		fatal("opendir /proc: %s", strerror(errno));
++		fatal("opendir " PROCDIR ": %s", strerror(errno));
+ 
+ 	foundany = 0;
+ 	while ((entry = readdir(procdir)) != NULL) {
+@@ -332,7 +332,7 @@ do_procfs(void)
+ 	}
+ 	closedir(procdir);
+ 	if (!foundany)
+-		fatal("nothing in /proc - not mounted?");
++		fatal("nothing in " PROCDIR " - not mounted?");
+ }
+ 
+ 
+diff --git a/obsolete/bootlogd.init b/obsolete/bootlogd.init
+index cf7b9eb..370a921 100755
+--- a/obsolete/bootlogd.init
++++ b/obsolete/bootlogd.init
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#!/bin/sh
+ #
+ # bootlogd	One of the first scripts to be executed. Starts or stops
+ #		the bootlogd log program. If this script is called as
+@@ -12,7 +12,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+ DAEMON=/sbin/bootlogd
+ NAME=bootlogd
+ DESC="Bootlog daemon"
+-PIDFILE=/var/run/$NAME.pid
++PIDFILE=/run/$NAME.pid
+ 
+ test -f $DAEMON || exit 0
+ 
+diff --git a/obsolete/shutdown.c b/obsolete/shutdown.c
+new file mode 100644
+index 0000000..587be6b
+--- /dev/null
++++ b/obsolete/shutdown.c
+@@ -0,0 +1 @@
++x
+diff --git a/src/Makefile b/src/Makefile
+index e2b8028..be1546a 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -14,9 +14,9 @@ override CFLAGS += -W -Wall -D_GNU_SOURCE
+ STATIC	=
+ 
+ # For some known distributions we do not build all programs, otherwise we do.
+-BIN	=
+-SBIN	= init halt shutdown runlevel killall5 fstab-decode
+-USRBIN	= last mesg
++_BIN	=
++_SBIN	= init halt shutdown runlevel killall5 fstab-decode
++_USRBIN	= last mesg
+ 
+ MAN1	= last.1 lastb.1 mesg.1
+ MAN5	= initscript.5 inittab.5
+@@ -24,35 +24,49 @@ MAN8	= halt.8 init.8 killall5.8 pidof.8 poweroff.8 reboot.8 runlevel.8
+ MAN8	+= shutdown.8 telinit.8 fstab-decode.8
+ 
+ ifeq ($(DISTRO),)
+-BIN	+= mountpoint
+-SBIN	+= sulogin bootlogd
+-USRBIN	+= utmpdump wall
++_BIN	+= mountpoint
++_SBIN	+= sulogin bootlogd
++_USRBIN	+= utmpdump wall
+ MAN1	+= utmpdump.1 mountpoint.1 wall.1
+ MAN8	+= sulogin.8 bootlogd.8
+ endif
+ 
+ ifeq ($(DISTRO),Debian)
+ CPPFLAGS+= -DACCTON_OFF
+-BIN	+= mountpoint
+-SBIN	+= sulogin bootlogd
++_BIN	+= mountpoint
++_SBIN	+= sulogin bootlogd
+ MAN1	+= mountpoint.1
+ MAN8	+= sulogin.8 bootlogd.8
+ endif
+ 
+ ifeq ($(DISTRO),Owl)
+-USRBIN	+= wall
++_USRBIN	+= wall
+ MAN1	+= wall.1
+ endif
+ 
+ ifeq ($(DISTRO),SuSE)
+ CPPFLAGS+= -DUSE_SYSFS -DSANE_TIO -DSIGINT_ONLYONCE -DUSE_ONELINE
+-BIN	+= mountpoint
+-SBIN	+= sulogin
+-USRBIN	+= utmpdump
++_BIN	+= mountpoint
++_SBIN	+= sulogin
++_USRBIN	+= utmpdump
+ MAN1	+= utmpdump.1 mountpoint.1
+ MAN8	+= sulogin.8
+ endif
+ 
++PREFIX       = /usr
++LOCAL_PERFIX = /usr/local
++DEVDIR       = /dev
++PROCDIR      = /proc
++SYSCONFDIR   = /etc
++SYSDIR       = /sys
++INCLUDEDIR   = $(PREFIX)/include
++BIN          = /bin
++SBIN         = /sbin
++LOGDIR       = /var/log
++RUNDIR       = /run
++CPPDIRS      = DEVDIR PROCDIR SYSCONFDIR SYSDIR INCLUDEDIR PREFIX EXEC_PREFIX BIN SBIN LOGDIR
++CPPFLAGS    += $(foreach D, $(CPPDIRS), '-D$(D)="$($(D))"')
++
+ ID		= $(shell id -u)
+ BIN_OWNER	= root
+ BIN_GROUP	= root
+@@ -65,7 +79,8 @@ else
+   INSTALL_DATA	= install -m 644
+ endif
+ INSTALL_DIR	= install -m 755 -d
+-MANDIR		= /usr/share/man
++DATAROOTDIR     = $(PREFIX)/share
++MANDIR		= $(DATAROOTDIR)/man
+ 
+ ifeq ($(WITH_SELINUX),yes)
+   SELINUX_DEF	=  -DWITH_SELINUX
+@@ -78,11 +93,11 @@ else
+ endif
+ 
+ # Additional libs for GNU libc.
+-ifneq ($(wildcard /usr/lib*/libcrypt.a),)
++ifeq ($(WITH_LIB_CRYPT),yes)
+   SULOGINLIBS	+= -lcrypt
+ endif
+ 
+-all:		$(BIN) $(SBIN) $(USRBIN)
++all:		$(_BIN) $(_SBIN) $(_USRBIN)
+ 
+ #%: %.o
+ #	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+@@ -133,51 +148,81 @@ clean:		cleanobjs
+ 		@echo Type \"make clobber\" to really clean up.
+ 
+ clobber:	cleanobjs
+-		rm -f $(BIN) $(SBIN) $(USRBIN)
++		rm -f $(_BIN) $(_SBIN) $(_USRBIN)
+ 
+ distclean:	clobber
+ 
+ install:
+-		$(INSTALL_DIR) $(ROOT)/bin/ $(ROOT)/sbin/
+-		$(INSTALL_DIR) $(ROOT)/usr/bin/
+-		for i in $(BIN); do \
+-			$(INSTALL_EXEC) $$i $(ROOT)/bin/ ; \
++		$(INSTALL_DIR) -- "$(DESTDIR)$(BIN)/" "$(DESTDIR)$(SBIN)/"
++		$(INSTALL_DIR) -- "$(DESTDIR)$(PREFIX)$(BIN)/"
++		for i in $(_BIN); do \
++			$(INSTALL_EXEC) $$i -- "$(DESTDIR)$(BIN)/" ; \
+ 		done
+-		for i in $(SBIN); do \
+-			$(INSTALL_EXEC) $$i $(ROOT)/sbin/ ; \
++		for i in $(_SBIN); do \
++			$(INSTALL_EXEC) $$i -- "$(DESTDIR)$(SBIN)/" ; \
+ 		done
+-		for i in $(USRBIN); do \
+-			$(INSTALL_EXEC) $$i $(ROOT)/usr/bin/ ; \
++		for i in $(_USRBIN); do \
++			$(INSTALL_EXEC) $$i -- "$(DESTDIR)$(PREFIX)$(BIN)/" ; \
+ 		done
+-		# $(INSTALL_DIR) $(ROOT)/etc/
+-		# $(INSTALL_EXEC) initscript.sample $(ROOT)/etc/
+-		ln -sf halt $(ROOT)/sbin/reboot
+-		ln -sf halt $(ROOT)/sbin/poweroff
+-		ln -sf init $(ROOT)/sbin/telinit
+-		ln -sf /sbin/killall5 $(ROOT)/bin/pidof
+-		if [ ! -f $(ROOT)/usr/bin/lastb ]; then \
+-			ln -sf last $(ROOT)/usr/bin/lastb; \
++		# $(INSTALL_DIR) -- "$(DESTDIR)$(SYSCONFDIR)/"
++		# $(INSTALL_EXEC) -- initscript.sample "$(DESTDIR)$(SYSCONFDIR)/"
++		ln -sf -- halt "$(DESTDIR)$(SBIN)/reboot"
++		ln -sf -- halt "$(DESTDIR)$(SBIN)/poweroff"
++		ln -sf -- init "$(DESTDIR)$(SBIN)/telinit"
++		ln -sf -- "$(SBIN)/killall5" "$(DESTDIR)$(BIN)/pidof"
++		if [ ! -f "$(DESTDIR)$(PREFIX)$(BIN)/lastb" ]; then \
++			ln -sf -- last "$(DESTDIR)$(PREFIX)$(BIN)/lastb"; \
+ 		fi
+-		$(INSTALL_DIR) $(ROOT)/usr/include/
+-		$(INSTALL_DATA) initreq.h $(ROOT)/usr/include/
+-		$(INSTALL_DIR) $(ROOT)$(MANDIR)/man1/
+-		$(INSTALL_DIR) $(ROOT)$(MANDIR)/man5/
+-		$(INSTALL_DIR) $(ROOT)$(MANDIR)/man8/
++		$(INSTALL_DIR) -- "$(DESTDIR)$(INCLUDEDIR)/"
++		$(INSTALL_DATA) -- initreq.h "$(DESTDIR)$(INCLUDEDIR)/"
++		$(INSTALL_DIR) -- "$(DESTDIR)$(MANDIR)/man1/"
++		$(INSTALL_DIR) -- "$(DESTDIR)$(MANDIR)/man5/"
++		$(INSTALL_DIR) -- "$(DESTDIR)$(MANDIR)/man8/"
+ 		for i in $(MAN1); do \
+-			$(INSTALL_DATA) ../man/$$i $(ROOT)$(MANDIR)/man1/; \
++			$(INSTALL_DATA) ../man/$$i -- "$(DESTDIR)$(MANDIR)/man1/"; \
+ 		done
+ 		for i in $(MAN5); do \
+-			$(INSTALL_DATA) ../man/$$i $(ROOT)$(MANDIR)/man5/; \
++			$(INSTALL_DATA) ../man/$$i -- "$(DESTDIR)$(MANDIR)/man5/"; \
+ 		done
+ 		for i in $(MAN8); do \
+-			$(INSTALL_DATA) ../man/$$i $(ROOT)$(MANDIR)/man8/; \
++			$(INSTALL_DATA) ../man/$$i -- "$(DESTDIR)$(MANDIR)/man8/"; \
+ 		done
+-ifeq ($(ROOT),)
++ifeq ($(DESTDIR),)
+ 		#
+ 		# This part is skipped on Debian systems, the
+ 		# debian.preinst script takes care of it.
+-		@if [ ! -p /dev/initctl ]; then \
+-		 echo "Creating /dev/initctl"; \
+-		 rm -f /dev/initctl; \
+-		 mknod -m 600 /dev/initctl p; fi
++		@if [ ! -p "$(DEVDIR)/initctl" ]; then \
++		 echo "Creating $(DEVDIR)/initctl"; \
++		 rm -f "$(DEVDIR)/initctl"; \
++		 mknod -m 600 "$(DEVDIR)/initctl" p; fi
+ endif
++
++
++prepare:
++	sed -i 's:/usr/local:/local:g' ../obsolete/bootlogd.init
++	sed -i 's:/usr:$(PREFIX):g' ../obsolete/bootlogd.init
++	sed -i 's:/local:$(LOCAL_PERFIX):g' ../obsolete/bootlogd.init
++	sed -i 's:/run:$(RUNDIR):g' ../obsolete/bootlogd.init
++	sed -i 's:/etc:$(SYSCONFDIR):g' ../obsolete/bootlogd.init
++	sed -i 's:/var/log:$(LOGDIR):g' ../obsolete/bootlogd.init
++	sed -i 's:/dev:$(DEVDIR):g' ../obsolete/bootlogd.init
++	sed -i 's:/sbin:///sbin:g' ../obsolete/bootlogd.init
++	sed -i 's:/bin:$(BIN):g' ../obsolete/bootlogd.init
++	sed -i 's:///sbin:$(SBIN):g' ../obsolete/bootlogd.init
++	sed -i 's:/sbin:///sbin:g' initscript.sample
++	sed -i 's:/bin:$(BIN):g' initscript.sample
++	sed -i 's:///sbin:$(SBIN):g' initscript.sample
++	sed -i 's:/usr:$(PREFIX):g' initscript.sample
++	sed -i 's:/dev:$(DEVDIR):g' paths.h
++	sed -i 's:/etc:$(SYSCONFDIR):g' paths.h
++	sed -i 's:/run:$(RUNDIR):g' paths.h
++	sed -i 's:/sbin:///sbin:g' paths.h
++	sed -i 's:/bin:$(BIN):g' paths.h
++	sed -i 's:///sbin:$(SBIN):g' paths.h
++	sed -i 's:/var/loh:$(LOGDIR):g' paths.h
++	sed -i 's:/etc:$(SYSCONFDIR):g' initreq.h
++	sed -i 's:/dev:$(DEVDIR):g' initreq.h
++	sed -i 's:/sbin:$(SBIN):g' init.h
++	sed -i 's:/bin:$(BIN):g' init.h
++	sed -i 's:/usr:$(PREFIX):g' init.h
++
+diff --git a/src/bootlogd.c b/src/bootlogd.c
+index 570d382..58cf0a3 100644
+--- a/src/bootlogd.c
++++ b/src/bootlogd.c
+@@ -56,7 +56,7 @@
+ 
+ char *Version = "@(#) bootlogd 2.86 03-Jun-2004 miquels@cistron.nl";
+ 
+-#define LOGFILE	"/var/log/boot"
++#define LOGFILE	LOGDIR "/boot"
+ 
+ char ringbuf[32768];
+ char *endptr = ringbuf + sizeof(ringbuf);
+@@ -82,12 +82,12 @@ struct consdev {
+ 	char	*dev1;
+ 	char	*dev2;
+ } consdev[] = {
+-	{ "ttyB",	"/dev/ttyB%s",		NULL		},
+-	{ "ttySC",	"/dev/ttySC%s",		"/dev/ttsc/%s"	},
+-	{ "ttyS",	"/dev/ttyS%s",		"/dev/tts/%s"	},
+-	{ "tty",	"/dev/tty%s",		"/dev/vc/%s"	},
+-	{ "hvc",	"/dev/hvc%s",		"/dev/hvc/%s"	},
+-	{ NULL,		NULL,			NULL		},
++	{ "ttyB",	DEVDIR "/ttyB%s",	NULL			},
++	{ "ttySC",	DEVDIR "/ttySC%s",	DEVDIR "/ttsc/%s"	},
++	{ "ttyS",	DEVDIR "/ttyS%s",	DEVDIR "/tts/%s"	},
++	{ "tty",	DEVDIR "/tty%s",	DEVDIR "/vc/%s"		},
++	{ "hvc",	DEVDIR "/hvc%s",	DEVDIR "/hvc/%s"	},
++	{ NULL,		NULL,			NULL			},
+ };
+ 
+ /*
+@@ -186,8 +186,8 @@ int findpty(int *master, int *slave, char *name)
+ 	for (i = 'p'; i <= 'z'; i++) {
+ 		for (j = '0'; j <= 'f'; j++) {
+ 			if (j == '9' + 1) j = 'a';
+-			sprintf(pty, "/dev/pty%c%c", i, j);
+-			sprintf(tty, "/dev/tty%c%c", i, j);
++			sprintf(pty, DEVDIR "/pty%c%c", i, j);
++			sprintf(tty, DEVDIR "/tty%c%c", i, j);
+ 			if ((*master = open(pty, O_RDWR|O_NOCTTY)) >= 0) {
+ 				*slave = open(tty, O_RDWR|O_NOCTTY);
+ 				if (*slave >= 0) {
+@@ -255,10 +255,10 @@ int consolename(char *res, int rlen)
+ 		/*
+ 		 *	Old kernel, can find real device easily.
+ 		 */
+-		int r = findtty(res, "/dev", rlen, st.st_rdev);
++		int r = findtty(res, DEVDIR , rlen, st.st_rdev);
+ 		if (0 != r)
+ 			fprintf(stderr, "bootlogd: cannot find console device "
+-				"%d:%d under /dev\n", major(st.st_rdev), minor(st.st_rdev));
++				"%d:%d under " DEVDIR "\n", major(st.st_rdev), minor(st.st_rdev));
+ 		return r;
+ 	}
+ 
+@@ -267,10 +267,10 @@ int consolename(char *res, int rlen)
+ #  define ENOIOCTLCMD	515
+ # endif
+ 	if (ioctl(0, TIOCGDEV, &kdev) == 0) {
+-		int r = findtty(res, "/dev", rlen, (dev_t)kdev);
++		int r = findtty(res, DEVDIR , rlen, (dev_t)kdev);
+ 		if (0 != r)
+ 			fprintf(stderr, "bootlogd: cannot find console device "
+-				"%d:%d under /dev\n", major(kdev), minor(kdev));
++				"%d:%d under " DEVDIR " \n", major(kdev), minor(kdev));
+ 		return r;
+ 	}
+ 	if (errno != ENOIOCTLCMD) return -1;
+@@ -281,13 +281,13 @@ int consolename(char *res, int rlen)
+ 	 *	Read /proc/cmdline.
+ 	 */
+ 	stat("/", &st);
+-	if (stat("/proc", &st2) < 0) {
+-		perror("bootlogd: /proc");
++	if (stat(PROCDIR, &st2) < 0) {
++		perror("bootlogd: " PROCDIR);
+ 		return -1;
+ 	}
+ 	if (st.st_dev == st2.st_dev) {
+-		if (mount("proc", "/proc", "proc", 0, NULL) < 0) {
+-			perror("bootlogd: mount /proc");
++		if (mount("proc", PROCDIR, "proc", 0, NULL) < 0) {
++			perror("bootlogd: mount " PROCDIR);
+ 			return -1;
+ 		}
+ 		didmount = 1;
+@@ -295,17 +295,17 @@ int consolename(char *res, int rlen)
+ 
+ 	n = 0;
+ 	r = -1;
+-	if ((fd = open("/proc/cmdline", O_RDONLY)) < 0) {
+-		perror("bootlogd: /proc/cmdline");
++	if ((fd = open(PROCDIR "/cmdline", O_RDONLY)) < 0) {
++		perror("bootlogd: " PROCDIR "/cmdline");
+ 	} else {
+ 		buf[0] = 0;
+ 		if ((n = read(fd, buf, sizeof(buf) - 1)) >= 0)
+ 			r = 0;
+ 		else
+-			perror("bootlogd: /proc/cmdline");
++			perror("bootlogd: " PROCDIR "/cmdline");
+ 		close(fd);
+ 	}
+-	if (didmount) umount("/proc");
++	if (didmount) umount(PROCDIR);
+ 
+ 	if (r < 0) return r;
+ 
+@@ -531,10 +531,10 @@ int main(int argc, char **argv)
+ 	if (consolename(realcons, sizeof(realcons)) < 0)
+ 		return 1;
+ 
+-	if (strcmp(realcons, "/dev/tty0") == 0)
+-		strcpy(realcons, "/dev/tty1");
+-	if (strcmp(realcons, "/dev/vc/0") == 0)
+-		strcpy(realcons, "/dev/vc/1");
++	if (strcmp(realcons, DEVDIR "/tty0") == 0)
++		strcpy(realcons, DEVDIR "/tty1");
++	if (strcmp(realcons, DEVDIR "/vc/0") == 0)
++		strcpy(realcons, DEVDIR "/vc/1");
+ 
+ 	if ((realfd = open_nb(realcons)) < 0) {
+ 		fprintf(stderr, "bootlogd: %s: %s\n", buf, strerror(errno));
+@@ -557,7 +557,7 @@ int main(int argc, char **argv)
+ 	(void)ioctl(0, TIOCCONS, NULL);
+ #if 1
+ 	/* Work around bug in 2.1/2.2 kernels. Fixed in 2.2.13 and 2.3.18 */
+-	if ((n = open("/dev/tty0", O_RDWR)) >= 0) {
++	if ((n = open(DEVDIR "/tty0", O_RDWR)) >= 0) {
+ 		(void)ioctl(n, TIOCCONS, NULL);
+ 		close(n);
+ 	}
+diff --git a/src/dowall.c b/src/dowall.c
+index 85645c0..56419f6 100644
+--- a/src/dowall.c
++++ b/src/dowall.c
+@@ -39,7 +39,7 @@
+ #include <paths.h>
+ 
+ #ifndef _PATH_DEV
+-# define _PATH_DEV	"/dev/"
++# define _PATH_DEV	DEVDIR "/"
+ #endif
+ #ifndef HOST_NAME_MAX
+ # define HOST_NAME_MAX	255
+diff --git a/src/halt.c b/src/halt.c
+index 499e973..6b88e22 100644
+--- a/src/halt.c
++++ b/src/halt.c
+@@ -160,9 +160,9 @@ void do_shutdown(char *fl, char *tm)
+ 	args[i++] = "now";
+ 	args[i++] = NULL;
+ 
+-	execv("/sbin/shutdown", args);
+-	execv("/etc/shutdown", args);
+-	execv("/bin/shutdown", args);
++	execv(SBIN "/shutdown", args);
++	execv(SYSCONFDIR "/shutdown", args);
++	execv(BIN "/shutdown", args);
+ 
+ 	perror("shutdown");
+ 	exit(1);
+diff --git a/src/hddown.c b/src/hddown.c
+index 45e6630..1be5779 100644
+--- a/src/hddown.c
++++ b/src/hddown.c
+@@ -56,9 +56,9 @@ char *v_hddown = "@(#)hddown.c  1.02  22-Apr-2003  miquels@cistron.nl";
+ #include <byteswap.h>
+ #endif
+ 
+-#define SYS_BLK		"/sys/block"
+-#define SYS_CLASS	"/sys/class/scsi_disk"
+-#define DEV_BASE	"/dev"
++#define SYS_BLK		SYSDIR "/block"
++#define SYS_CLASS	SYSDIR "/class/scsi_disk"
++#define DEV_BASE	DEVDIR
+ #define ISSPACE(c)	(((c)==' ')||((c)=='\n')||((c)=='\t')||((c)=='\v')||((c)=='\r')||((c)=='\f'))
+ 
+ /* Used in flush_cache_ext(), compare with <linux/hdreg.h> */
+@@ -403,8 +403,8 @@ out:
+ }
+ #else /* ! USE_SYSFS */
+ #define MAX_DISKS	64
+-#define PROC_IDE	"/proc/ide"
+-#define DEV_BASE	"/dev"
++#define PROC_IDE	PROCDIR "/ide"
++#define DEV_BASE	DEVDIR
+ 
+ /*
+  *	Find all IDE disks through /proc.
+diff --git a/src/init.c b/src/init.c
+index 27532ad..434d76a 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -112,7 +112,7 @@ CHILD ch_emerg = {		/* Emergency shell */
+ 	"~~",
+ 	"S",
+ 	3,
+-	"/sbin/sulogin",
++	SBIN "/sulogin",
+ 	NULL,
+ 	NULL
+ };
+@@ -139,7 +139,7 @@ int main(int, char **);
+ 
+ /*	Used by re-exec part */
+ int reload = 0;			/* Should we do initialization stuff? */
+-char *myname="/sbin/init";	/* What should we exec */
++char *myname=SBIN "/init";	/* What should we exec */
+ int oops_error;			/* Used by some of the re-exec code. */
+ const char *Signature = "12567362";	/* Signature for re-exec fd */
+ 
+@@ -537,7 +537,7 @@ void console_init(void)
+ 		break;
+ 	}
+ 	if (fd < 0)
+-		console_dev = "/dev/null";
++		console_dev = DEVDIR "/null";
+ 	else
+ 		close(fd);
+ }
+@@ -1128,7 +1128,7 @@ pid_t spawn(CHILD *ch, int *res)
+ 			if ((f = console_open(O_RDWR|O_NOCTTY)) < 0) {
+ 				initlog(L_VB, "open(%s): %s", console_dev,
+ 					strerror(errno));
+-				f = open("/dev/null", O_RDWR);
++				f = open(DEVDIR "/null", O_RDWR);
+ 			}
+ 			dup(f);
+ 			dup(f);
+@@ -2869,10 +2869,10 @@ int main(int argc, char **argv)
+ 
+ #ifdef WITH_SELINUX
+ 	if (getenv("SELINUX_INIT") == NULL) {
+-	  const int rc = mount("proc", "/proc", "proc", 0, 0);
++	  const int rc = mount("proc", PROCDIR, "proc", 0, 0);
+ 	  if (is_selinux_enabled() > 0) {
+ 	    putenv("SELINUX_INIT=YES");
+-	    if (rc == 0) umount2("/proc", MNT_DETACH);
++	    if (rc == 0) umount2(PROCDIR, MNT_DETACH);
+ 	    if (selinux_init_load_policy(&enforce) == 0) {
+ 	      execv(myname, argv);
+ 	    } else {
+@@ -2884,7 +2884,7 @@ int main(int argc, char **argv)
+ 	      }
+ 	    }
+ 	  }
+-	  if (rc == 0) umount2("/proc", MNT_DETACH);
++	  if (rc == 0) umount2(PROCDIR, MNT_DETACH);
+ 	}
+ #endif  
+ 	/* Start booting. */
+diff --git a/src/killall5.c b/src/killall5.c
+index 5937d98..df8fb0f 100644
+--- a/src/killall5.c
++++ b/src/killall5.c
+@@ -215,11 +215,11 @@ int mount_proc(void)
+ 	}
+ 
+ 	/* See if mount succeeded. */
+-	if (stat("/proc/version", &st) < 0) {
++	if (stat(PROCDIR "/version", &st) < 0) {
+ 		if (errno == ENOENT)
+-			nsyslog(LOG_ERR, "/proc not mounted, failed to mount.");
++			nsyslog(LOG_ERR, PROCDIR " not mounted, failed to mount.");
+ 		else
+-			nsyslog(LOG_ERR, "/proc unavailable.");
++			nsyslog(LOG_ERR, PROCDIR " unavailable.");
+ 		exit(1);
+ 	}
+ 
+@@ -248,9 +248,9 @@ void init_nfs(void)
+ 
+ 	nlist = (NFS*)0;
+ 
+-	if (stat("/proc/version", &st) < 0)
++	if (stat(PROCDIR "/version", &st) < 0)
+ 		return;
+-	if ((mnt = setmntent("/proc/mounts", "r")) == (FILE*)0)
++	if ((mnt = setmntent(PROCDIR "/mounts", "r")) == (FILE*)0)
+ 		return;
+ 
+ 	while ((ent = getmntent(mnt))) {
+@@ -272,7 +272,7 @@ void init_nfs(void)
+ 	}
+ 	endmntent(mnt);
+ 
+-	if ((mnt = setmntent("/proc/mounts", "r")) == (FILE*)0)
++	if ((mnt = setmntent(PROCDIR "/mounts", "r")) == (FILE*)0)
+ 		return;
+ 
+ 	while ((ent = getmntent(mnt))) {
+@@ -461,12 +461,12 @@ int readproc(int do_stat)
+ 	int		pid, f;
+ 
+ 	/* Open the /proc directory. */
+-	if (chdir("/proc") == -1) {
+-		nsyslog(LOG_ERR, "chdir /proc failed");
++	if (chdir(PROCDIR) == -1) {
++		nsyslog(LOG_ERR, "chdir " PROCDIR " failed");
+ 		return -1;
+ 	}
+ 	if ((dir = opendir(".")) == NULL) {
+-		nsyslog(LOG_ERR, "cannot opendir(/proc)");
++		nsyslog(LOG_ERR, "cannot opendir(" PROCDIR ")");
+ 		return -1;
+ 	}
+ 
+@@ -603,7 +603,7 @@ int readproc(int do_stat)
+ 		}
+ 
+ 		/* Try to stat the executable. */
+-		snprintf(path, sizeof(path), "/proc/%s/exe", d->d_name);
++		snprintf(path, sizeof(path), PROCDIR "/%s/exe", d->d_name);
+ 
+ 		p->nfs = 0;
+ 
+@@ -739,7 +739,7 @@ PIDQ_HEAD *pidof(char *prog)
+ 			int len;
+ 			if (!p->nfs)
+ 				continue;
+-			snprintf(exe, sizeof(exe), "/proc/%d/exe", p->pid);
++			snprintf(exe, sizeof(exe), PROCDIR "/%d/exe", p->pid);
+ 			if ((len = readlink(exe, path, PATH_MAX)) < 0)
+ 				    continue;
+ 			path[len] = '\0';
+@@ -919,7 +919,7 @@ int main_pidof(int argc, char **argv)
+ 
+ 	/* Check if we are in a chroot */
+ 	if (chroot_check) {
+-		snprintf(tmp, 512, "/proc/%d/root", getpid());
++		snprintf(tmp, 512, PROCDIR "/%d/root", getpid());
+ 		if (stat(tmp, &st) < 0) {
+ 			nsyslog(LOG_ERR, "stat failed for %s!\n", tmp);
+ 			closelog();
+@@ -959,7 +959,7 @@ int main_pidof(int argc, char **argv)
+ 				}
+ 				if (chroot_check) {
+ 					struct stat st2;
+-					snprintf(tmp, 512, "/proc/%d/root",
++					snprintf(tmp, 512, PROCDIR "/%d/root",
+ 						 p->pid);
+ 					if (stat(tmp, &st2) < 0 ||
+ 					    st.st_dev != st2.st_dev ||
+diff --git a/src/paths.h b/src/paths.h
+index 232a944..31a7d8a 100644
+--- a/src/paths.h
++++ b/src/paths.h
+@@ -31,12 +31,12 @@
+ #define NOLOGIN		"/etc/nologin"		/* Stop user logging in. */
+ #define FASTBOOT	"/fastboot"		/* Enable fast boot. */
+ #define FORCEFSCK	"/forcefsck"		/* Force fsck on boot */
+-#define SDPID		"/var/run/shutdown.pid"	/* PID of shutdown program */
++#define SDPID		"/run/shutdown.pid"	/* PID of shutdown program */
+ #define SHELL		"/bin/sh"		/* Default shell */
+ #define SULOGIN		"/sbin/sulogin"		/* Sulogin */
+ #define INITSCRIPT	"/etc/initscript"	/* Initscript. */
+ #define PWRSTAT_OLD	"/etc/powerstatus"	/* COMPAT: SIGPWR reason (OK/BAD) */
+-#define PWRSTAT		"/var/run/powerstatus"	/* COMPAT: SIGPWR reason (OK/BAD) */
++#define PWRSTAT		"/run/powerstatus"	/* COMPAT: SIGPWR reason (OK/BAD) */
+ 
+ #if 0
+ #define INITLVL		"/etc/initrunlvl"	/* COMPAT: New runlevel */
+diff --git a/src/shutdown.c b/src/shutdown.c
+index 7e997da..682a4e4 100644
+--- a/src/shutdown.c
++++ b/src/shutdown.c
+@@ -76,9 +76,9 @@ int got_alrm = 0;
+ 
+ char *clean_env[] = {
+ 	"HOME=/",
+-	"PATH=/bin:/usr/bin:/sbin:/usr/sbin",
++	"PATH=" BIN ":" PREFIX BIN ":" SBIN ":" PREFIX SBIN,
+ 	"TERM=dumb",
+-	"SHELL=/bin/sh",
++	"SHELL=" BIN "/sh",
+ 	NULL,
+ };
+ 
+@@ -124,7 +124,7 @@ void usage(void)
+ {
+ 	fprintf(stderr,
+ 	"Usage:\t  shutdown [-akrhPHfFnc] [-t sec] time [warning message]\n"
+-	"\t\t  -a:      use /etc/shutdown.allow\n"
++	"\t\t  -a:      use " SYSCONFDIR "/shutdown.allow\n"
+ 	"\t\t  -k:      don't really shutdown, only warn.\n"
+ 	"\t\t  -r:      reboot after shutdown.\n"
+ 	"\t\t  -h:      halt after shutdown.\n"
+@@ -330,7 +330,7 @@ void fastdown()
+ 	for(i = 0; i < 3; i++)
+ 		if (!isatty(i)) {
+ 			close(i);
+-			open("/dev/null", O_RDWR);
++			open(DEVDIR "/null", O_RDWR);
+ 		}
+ 	for(i = 3; i < 20; i++) close(i);
+ 	close(255);
+@@ -590,7 +590,7 @@ int main(int argc, char **argv)
+ 
+ 			/* See if this is a user process on a VC. */
+ 			if (ut->ut_type != USER_PROCESS) continue;
+-			sprintf(term, "/dev/%.*s", UT_LINESIZE, ut->ut_line);
++			sprintf(term, DEVDIR "/%.*s", UT_LINESIZE, ut->ut_line);
+ 			if (stat(term, &st) < 0) continue;
+ #ifdef major /* glibc */
+ 			if (major(st.st_rdev) != 4 ||
+diff --git a/src/sulogin.c b/src/sulogin.c
+index 7537654..6882158 100644
+--- a/src/sulogin.c
++++ b/src/sulogin.c
+@@ -54,10 +54,10 @@
+ #define CHECK_DES	1
+ #define CHECK_MD5	1
+ 
+-#define F_PASSWD	"/etc/passwd"
+-#define F_SHADOW	"/etc/shadow"
+-#define BINSH		"/bin/sh"
+-#define STATICSH	"/bin/sash"
++#define F_PASSWD	SYSCONFDIR "/passwd"
++#define F_SHADOW	SYSCONFDIR "/shadow"
++#define BINSH		BIN "/sh"
++#define STATICSH	BIN "/sash"
+ 
+ char *Version = "@(#)sulogin 2.85-3 23-Apr-2003 miquels@cistron.nl";
+ 
+-- 
+1.8.5.1
+

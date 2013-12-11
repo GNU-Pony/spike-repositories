@@ -1,0 +1,72 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_selinux = get('I_USE_SELINUX', 'n').lower().startswith('y')
+
+pkgname = 'sysvinit'
+pkgver = '2.88'
+pkgdesc = 'System V Init, a base for system initialisation with scripts'
+upstream = 'http://savannah.nongnu.org/projects/sysvinit'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = UNSUPPORTED
+depends = ['sysvinit-tools', 'glibc']
+makedepends = ['glibc', 'gcc', 'make', 'coreutils']
+if i_use_selinux:
+    depends.append('selinux')
+    makedepends.append('selinux')
+source = ['http://download.savannah.gnu.org/releases/sysvinit/sysvinit-%sdsf.tar.bz2' % pkgver,
+          'sysvinit@0001-simplify-writelog.patch',
+          'sysvinit@0002-remove-ansi-escape-codes-from-log-file.patch',
+          'sysvinit@0001-make-install-more-flexible.patch']
+noextract = source[1:]
+sha3sums = ['8FE88244CEB1754338257D2E888A8EA22F565188D3169EB30A01A6EF3D3E836C15138A1F996B6B774B58850159CDD1D414DCB9E11DB1EFCDBF4BADC673F2C60AEF59831CC5C85761', None, None, None]
+
+
+_makeargs = ["WITH_LIB_CRYPT=yes"]
+if i_use_selinux:
+    _makeargs.append('WITH_SELINUX=yes')
+_makeargs += ['_SBIN=runlevel shutdown halt init',
+              'MAN5=inittab.5 initscript.5',
+              'MAN8=telinit.8 shutdown.8 runlevel.8 reboot.8 poweroff.8 init.8 halt.8',
+              '_BIN=', '_USRBIN=', 'MAN1=']
+
+
+def ride(private):
+    echo('Cannot do anything, but you can look on manpages if you want.')
+    echo('sysvinit is started in the kernel boot process. Please refer')
+    echo('to the hoofbook [chapter The boot process] for more information.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sysvinit-%sdsf' % (srcdir, pkgver))
+    
+    patch(srcdir + '/sysvinit@0001-simplify-writelog.patch', forward = False, directory = 'src')
+    patch(srcdir + '/sysvinit@0002-remove-ansi-escape-codes-from-log-file.patch', forward = False, directory = 'src')
+    patch(srcdir + '/sysvinit@0001-make-install-more-flexible.patch')
+    
+    make(_makeargs + ['prepare', '-C', 'src'])
+    make(_makeargs)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/sysvinit-%sdsf' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make(_makeargs + ['DESTDIR=' + pkgdir, 'install'])
+    _dir = _pre + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)
+    
+    rmdir(_pre + '/share/man/man1') # empty directory
+    rm(_pre + '/bin/pidof', _pre + '/usr/bin/lastb') # symlinks created by install rule
+    rmdir(_pre + '/bin', _pre + '/usr/bin') # empty directory
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+

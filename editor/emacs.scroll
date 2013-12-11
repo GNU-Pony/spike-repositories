@@ -1,0 +1,220 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_info                   = get('I_USE_INFO',                      'y').lower().startswith('y')
+i_use_man                    = get('I_USE_MAN',                       'y').lower().startswith('y')
+i_use_link_time_optimisation = get('I_USE_LINK_TIME_OPTIMISATION',    'n').lower().startswith('y')
+i_use_x                      = get('I_USE_X',                         'n').lower().startswith('y')
+i_use_gnutls                 = get('I_USE_GNUTLS',                    'y').lower().startswith('y')
+i_use_selinux                = get('I_USE_SELINUX',                   'n').lower().startswith('y')
+i_use_sound                  = get('I_USE_SOUND',                     'n').lower().startswith('y')
+i_use_dbus                   = get('I_USE_DBUS',                      'n').lower().startswith('y')
+i_use_gpm                    = get('I_USE_GPM',                       'n').lower().startswith('y')
+i_use_libxml2                = get('I_USE_LIBXML2',                   'n').lower().startswith('y')
+i_use_gsettings              = get('I_USE_GSETTINGS', get('I_USE_X', 'n')).lower().startswith('y')
+i_use_gconf                  = get('I_USE_GCONF',                     'n').lower().startswith('y')
+i_use_hesiod                 = get('I_USE_HESIOD',                    'n').lower().startswith('y')
+i_use_pop                    = get('I_USE_POP',                       'y').lower().startswith('y')
+i_use_mail_unlink            = get('I_USE_MAIL_UNLINK',               'n').lower().startswith('y')
+i_use_kerberos               = get('I_USE_KERBEROS',                  'n').lower().startswith('y')
+i_use_mmdf                   = get('I_USE_MMDF',                      'n').lower().startswith('y')
+
+# I_USE-flags that have no effect without I_USE_X=yes
+#   Emacs need to be recompiled for new versions of imagemagick if I_USE_X=yes && I_USE_IMAGEMAGICK=yes
+i_use_xpm                    = get('I_USE_XPM',         'y').lower().startswith('y')
+i_use_jpeg                   = get('I_USE_JPEG',        'y').lower().startswith('y')
+i_use_tiff                   = get('I_USE_TIFF',        'y').lower().startswith('y')
+i_use_gif                    = get('I_USE_GIF',         'y').lower().startswith('y')
+i_use_png                    = get('I_USE_PNG',         'y').lower().startswith('y')
+i_use_svg                    = get('I_USE_SVG',         'y').lower().startswith('y')
+i_use_imagemagick            = get('I_USE_IMAGEMAGICK', 'y').lower().startswith('y')
+i_use_xft                    = get('I_USE_XFT',         'y').lower().startswith('y')
+i_use_otf                    = get('I_USE_OFT',         'y').lower().startswith('y')
+i_use_m17n                   = get('I_USE_M17N',        'y').lower().startswith('y')
+i_use_scrollbars             = get('I_USE_SCROLLBARS',  'y').lower().startswith('y') # Use Motif or Xaw3d scroll bars
+i_use_xaw3d                  = get('I_USE_XAW3D',       'y').lower().startswith('y')
+i_use_xim                    = get('I_USE_XIM',         'y').lower().startswith('y')
+i_use_toolkit                = get('I_USE_TOOLKIT', 'lucid').lower().split(',')
+
+_toolkit = None
+if i_use_x:
+    _toolkits = {'gtk' : 'gtk',
+                 'gtk1' : 'gtk',
+                 'gtk2' : 'gtk2',
+                 'gtk3' : 'gtk3',
+                 'gtk+' : 'gtk',
+                 'gtk+1' : 'gtk',
+                 'gtk+2' : 'gtk2',
+                 'gtk+3' : 'gtk3',
+                 'lucid' : 'lucid',
+                 'athena' : 'athena',
+                 'lesstif' : 'motif',
+                 'motif' : 'motif',
+                 '-' : 'no',
+                 'n' : 'no',
+                 'no' : 'no'}
+    _toolkit = 'no'
+    for candidate in i_use_toolkit:
+        if candidate in _toolkits:
+            _toolkit = _toolkits[candidate]
+            break
+
+pkgname = 'emacs'
+pkgver = '24.3'
+pkgdesc = 'The extensible, customisable, self-documenting real-time display editor.'
+upstream = 'http://www.gnu.org/software/emacs/emacs.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3 (for software)']
+if i_use_info:  license.append('FDL1.3 (for info manuals)')
+if i_use_man:   license.append('custom (permissive free; for manpages)')
+private = SUPPORTED
+depends = ['glibc', 'gcc-libs', 'ncurses', 'perl']
+if i_use_gnutls:     depends.append('gnutls')
+if i_use_sound:      depends.append('alsa-lib')
+if i_use_dbus:       depends.append('dbus-core')
+if i_use_gpm:        depends.append('gpm')
+if i_use_libxml2:    depends.append('libxml2')
+if i_use_gsettings:  depends.append('glib2')
+if i_use_gconf:      depends.append('gconf')
+if i_use_hesiod:     depends.append('hesiod')
+if i_use_kerberos:   depends.append('krb5') # heimdal should provide krb5
+if i_use_xaw3d:      depends.append('xaw3d')
+if i_use_mmdf:       depends.append('mmdf')
+if i_use_x:
+    depends.append('libx11')
+    if i_use_xpm:    depends.append('libxpm')
+    if i_use_jpeg:   depends.append('libjpeg')
+    if i_use_tiff:   depends.append('libtiff')
+    if i_use_gif:    depends.append('giflib')
+    if i_use_png:    depends.append('libpng')
+    if i_use_svg:    depends.append('librsvg')
+    if i_use_imagemagick:  depends.append('imagemagick')
+    if i_use_xft:    depends.append('libxft')
+    if i_use_otf:    depends.append('libotf')
+    if i_use_m17n:   depends.append('m17n-lib')
+    if _toolkit in ['gtk', 'gtk2', 'gtk3']:
+        depends.append(_toolkit)
+    elif _toolkit == 'motif':
+        depends.append('motif') # lesstif and openmotif should provide motif
+    elif _toolkit == 'athena':
+        depends.append('libxaw')
+    elif _toolkit == 'lucid':
+        depends.append('libxaw')
+makedepends = ['m4', 'make', 'sed', 'grep', 'findutils', 'sh', 'coreutils', 'texinfo', 'gzip']
+makedepends.append('gcc>=4.5.0' if i_use_link_time_optimisation else 'gcc')
+if i_use_x:
+    makedepends += ['hicolor-icon-theme', 'desktop-file-utils']
+makedepends += depends
+optdepends = ['gnupg: for editing of OpenPGP encryped files',
+              'xz: support for xz and lzma compressed files',
+              'gzip: support for gzip compressed files',
+              'bzip2: support for bzip2 compressed files',
+              'lzip: support for lzip compressed files',
+              'tar: support for tarball archives']
+source = ['ftp://ftp.gnu.org/gnu/emacs/emacs-%s.tar.xz' % pkgver, 'emacs@emacs-24.3-giflib5.patch']
+noextract = source[1:]
+sha3sums = ['75AB26D8C192D42B1E8FBE8CA4657D3ABEE4A11D6FCFDD64241F8C37C4778899D185DDCEC813D9DE728DF0894AB0D1106C3076A3C2F5BC42367049D2C4C48427E2A7A22A6FE0359C', None]
+
+
+_prefix  = lambda private : (path('~/.local')     if private else '/usr')
+_sysconf = lambda private : (path('~/.config')    if private else '/etc')
+_state   = lambda private : (path('~/.local/var') if private else '/var')
+
+
+def ride(private):
+    execute('emacs', '-nw')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/emacs-%s' % (srcdir, pkgver))
+    patch(srcdir + '/emacs@emacs-24.3-giflib5.patch', strip = 0)
+    export('ac_cv_lib_gif_EGifPutExtensionLast', 'yes')
+    x = lambda flag : i_use_x and flag
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _state(private),
+            '--with-x' if i_use_x else '--without-x',
+            '--with-gnutls' if i_use_gnutls else '--without-gnutls',
+            '--with-selinux' if i_use_selinux else '--without-selinux',
+            '--with-sound' if i_use_sound else '--without-sound',
+            '--with-dbus' if i_use_dbus else '--without-dbus',
+            '--with-gpm' if i_use_gpm else '--without-gpm',
+            '--with-xml2' if i_use_libxml2 else '--without-xml2',
+            '--with-gsettings' if i_use_gsettings else '--without-gsettings',
+            '--with-gconf' if i_use_gconf else '--without-gconf',
+            '--with-hesiod' if i_use_hesiod else '--without-hesiod',
+            '--with-pop' if i_use_pop else '--without-pop',
+            '--with-mail-unlink' if i_use_mail_unlink else '--without-mail-unlink',
+            '--with-kerberos' if i_use_kerberos else '--without-kerberos',
+            '--with-kerberos5' if i_use_kerberos else '--without-kerberos5',
+            '--with-mmdf' if i_use_mmdf else '--without-mmdf',
+            '--with-xpm' if x(i_use_xi_use_xpm) else '--without-xpm',
+            '--with-jpeg' if x(i_use_jpeg) else '--without-jpeg',
+            '--with-tiff' if x(i_use_tiff) else '--without-tiff',
+            '--with-gif' if x(i_use_gif) else '--without-gif',
+            '--with-png' if x(i_use_png) else '--without-png',
+            '--with-rsvg' if x(i_use_svg) else '--without-rsvg',
+            '--with-imagemagick' if x(i_use_imagemagick) else '--without-imagemagick',
+            '--with-xft' if x(i_use_xft) else '--without-xft',
+            '--with-libotf' if x(i_use_otf) else '--without-libotf',
+            '--with-m17n-flt' if x(i_use_m17n) else '--without-m17n-flt',
+            '--with-toolkit-scroll-bars' if x(i_use_scrollbars) else '--without-toolkit-scroll-bars',
+            '--with-xaw3d' if x(i_use_xaw3d) else '--without-xaw3d',
+            '--with-xim' if x(i_use_xim) else '--without-xim',
+            '--enable-link-time-optimization' if i_use_link_time_optimisation else '--disable-link-time-optimization']
+    if not i_use_x:
+        args.append('--without-x-toolkit')
+    else:
+        args.append('--with-x-toolkit=' + _toolkit)
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/emacs-%s' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    # fix file conflicts
+    mv(_pre + '/bin/ctags', _pre + '/bin/ctags')
+    mv(_pre + '/share/man/man1/ctags.1.gz', _pre + '/share/man/man1/ctags.emacs.1.gz')
+    rm(_pre + '/share/info/info.info.gz')
+    
+    # fix file permissions
+    execute('find', _pre + '/share/emacs/' + pkgver, '-exec', 'chown', 'root:root', '{}', ';')
+    _dir = pkgdir + _state(private)
+    chmod(_dir + '/games', 0o755)
+    chmod(_dir + '/games/emacs', 0o755)
+    _dir = path_escape(_dir)
+    chown(path('%s/games/emacs/*' % _dir), 'root', 'games')
+    chown(path('%s/games/emacs' % _dir), 'root', 'games')
+    
+    if not i_use_info:
+        rm_r(_pre + '/share/info')
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

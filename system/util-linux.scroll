@@ -1,0 +1,116 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_doc     = get('I_USE_DOC',     'y').lower().startswith('y')
+i_use_bash    = get('I_USE_BASH',    'y').lower().startswith('y')
+i_use_locale  = get('I_USE_LOCALE',  '*')
+i_use_secure  = get('I_USE_SECURE',  'y').lower().startswith('y')
+i_use_selinux = get('I_USE_SELINUX', 'n').lower().startswith('y')
+i_use_audit   = get('I_USE_AUDIT',   'n').lower().startswith('y')
+i_use_udev    = get('I_USE_UDEV',    'y').lower().startswith('y')
+i_use_bell    = get('I_USE_BELL',    'n').lower().startswith('y')
+
+pkgname = 'util-linux'
+pkgver = '2.24'
+pkgdesc = 'Miscellaneous system utilities for Linux'
+upstream = 'http://www.kernel.org/pub/linux/utils/util-linux/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2', 'BSD', 'public']
+private = UNSUPPORTED ## TODO Cannot manage to properly separate {,/usr}/{s,}bin with renaming of them
+depends = ['glibc', 'ncurses', 'pam', 'zlib', 'shadow', 'coreutils']
+if i_use_selinux:  depends.append('selinux')
+if i_use_audit:    depends.append('audit')
+if i_use_udev:     depends.append('udev')
+makedepends = ['gcc', 'sh', 'm4', 'make', 'sed', 'grep', 'findutils', 'python3'] + depends
+provides = ['util-linux-ng=' + pkgver, 'eject']
+conflicts = ['util-linux-ng', 'eject']
+options = ['strip', 'debug']
+source = ['http://www.kernel.org/pub/linux/utils/util-linux/v%s/util-linux-%s.tar.xz' % ('.'.join(pkgver.split('.')[:-1]), pkgver),
+          'util-linux@pam-common', 'util-linux@pam-login', 'util-linux@pam-su', 'util-linux@0001-lsblk-fix-D-segfault.patch',
+          'util-linux@0001-pylibmount-correctly-import-from-pylibmount.so.patch']
+noextract = source[1:]
+sha3sums = ['8DFBE03711E1FF818FA5459273B27AEF43B9A4DD33E4F914959655CFAB33062F3CA81B2BD9E24842C0A7609B11137D7D6DE46844D422D1DB1B9F49B2A08E1650FFF4977B8BB966DF', None, None, None, None, None]
+
+_prefix  = lambda private : (path('~/.local')     if private else '/usr')
+_eprefix = lambda private : (path('~/.local')     if private else '')
+_sysconf = lambda private : (path('~/.config')    if private else '/etc')
+_var     = lambda private : (path('~/.local/var') if private else '/var')
+_run     = lambda private : ('/dev/shm/~' + get('USER', path('~').split('/')[-1]) + '/run' if private else '/run')
+_log     = lambda private : _var(private) + '/log'
+_mail    = lambda private : _var(private) + '/spool/mail'
+
+
+def ride(private):
+    echo('A ridiculously large collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/util-linux-%s' % (srcdir, pkgver))
+    sed(sed_escape('/var/log',         _log(private)), srcdir + '/util-linux@pam-login')
+    sed(sed_escape('/var/spool/mail', _mail(private)), srcdir + '/util-linux@pam-login')
+    patch(srcdir + '/util-linux@0001-lsblk-fix-D-segfault.patch')
+    patch(srcdir + '/util-linux@0001-pylibmount-correctly-import-from-pylibmount.so.patch')
+    
+    _pre = _prefix(private)
+    _epre = _eprefix(private)
+    
+    args = ['./configure',
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _run(private),
+            '--with-python=3',
+            '--disable-reset',
+            '--disable-last',
+            '--enable-raw',
+            '--enable-vipw',
+            '--enable-newgrp',
+            '--enable-chfn-chsh',
+            '--enable-write',
+            '--enable-mesg',
+            '--enable-socket-activation',
+            '--enable-use-tty-group',
+            '--disable-sulogin-emergency-mount',
+            '--endable-pg-bell' if i_use_bell else '--disable-pg-bell',
+            '--enable-login-chown-vcs',
+            '--enable-chsh-only-listed' if not i_use_secure else '--disable-chsh-only-listed',
+            '--enable-chfn-chsh-password' if not i_use_secure else '--disable-chfn-chsh-password',
+            '--with-selinux' if i_use_selinux else '--without-selinux'
+            '--with-audit' if i_use_audit else '--without-audit'
+            '--with-udev' if i_use_udev else '--without-udev',
+            '--without-systemdsystemunitdir']
+    if not i_use_bash:
+        args.append('--disable-bash-completion')
+        args.append('--without-bashcompletiondir')
+    else:
+        args.append('--with-bashcompletiondir=%s/share/bash-completion/completions' % _prefix(private))
+    
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/util-linux-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    chmod(path('%s/bin/{newgrp,ch{sh,fn}}' % path_escape(_pre)), 0o4000, 0o4000)
+    
+    _pamd = pkgdir + _sysconf(private) + '/pam.d'
+    for (s, d) in [('common', 'chfn'), ('common', 'chsh'), ('login', 'login'), ('su', 'su'), ('su', 'su-l')]:
+        install(srcdir + '/util-linux@pam-' + s, _pam + '/pam.d/' + d, parents = True, mode = 0o644)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    for _lic in license:
+        ln('/usr/share/licenses/common/' % _lic, '%s/%s' % (_dir, _lic), parents = True)
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    if not i_use_doc:
+        rm_r(_pre + '/share/doc')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

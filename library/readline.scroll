@@ -1,0 +1,90 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
+pkgname = 'readline'
+_pkgver = '6.2'
+_patch = 4
+pkgver = '%s.%i' % (_pkgver, _patch)
+pkgdesc = 'GNU readline library'
+upstream = 'http://tiswww.case.edu/php/chet/readline/rltop.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'ncurses']
+makedepends = ['gcc', 'm4', 'sh', 'sed', 'grep', 'make', 'findutils', 'coretutils'] + depends
+options = ['!emptydirs']
+source = ['http://ftp.gnu.org/gnu/readline/readline-%s.tar.gz' % _pkgver, 'readline@inputrc']
+patch_ = 'http://ftp.gnu.org/gnu/readline/readline-%s-patches/readline%s-%3i'
+for _p in range(1, _patch + 1):
+    source.append(patch_ % (_pkgver, _pkgver.replace('.', ''), _p))
+noextract = source[1:]
+sha3sums = ['ACEB53094A39BD09318174368EF51CDC08BB1DB09F2D86AECCC89DBCF8FA46B8D2FCE76F21E9410D210ACE67C92CC8BB7B12C0B40192D131CD42E200AC9E5F7045F234D35D2281EF',
+            None,
+            'A196D1A40CA9FDB6D410577926B571B0EA88A959AB15133299B76924E985367C61F3BC0D88019DF4176FF63CC4A720A5134F348C7443FA9C53E76C215F187A0B2502CB0F380EF1DF',
+            'D1DBD5D0B4D9EEA29CDC95A03A50CBCE43A6A5F3215277C67EF50FF201AB573EEAF74E63843B5437E25191E69F8834FEB0975616F077B4294C500396C6B85FE6FF9A3024BA5A5E73',
+            '1E604BD6CAEED1E7BAB28C6D4D3F5EB4C19D7949BB0ADD5BF21410DB967E5D19644C42179F91AA41C07AEBE59DC9F311DB8915B8211645EF18498F1E7559113D25895FDC52498C2A',
+            'DE4A90A467BE99C3C605B44882075DCAC631A3A8C65BC2927502A0EC5738A3C69C9D07F9CC64DCEA6041711A656055E0012007115190E718482776037E82EB4BB002E6CD42ACD36B']
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+
+
+def ride(private):
+    if i_use_info:
+        execute('info', 'readline')
+    else:
+        execute('man', '3', 'readline')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/readline-%s' % (srcdir, _pkgver))
+    
+    for _p in range(1, _patch + 1):
+        patch('%s/readline%s-%3i' % (srcdir, _pkgver.replace('.', ''), _p), forward = False)
+    
+    export('CFLAGS', get('CFLAGS', '') + ' -fPIC')
+    sed(sed_script('-Wl,-rpath,$(libdir) ', ''), 'support/shobj-conf')
+    
+    execute('./configure', '--prefix=' + _prefix(private), '--sysconfdir=' + _sysconf(private))
+    make('SHLIB_LIBS=-lncurses')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/readline-%s' % (srcdir, _pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make('DESTDIR=' + pkgdir, 'install')
+    install(srcdir + '/readline@inputrc', pkgdir + _sysconf(private) + '/inputrc', parents = True, mode = 0o644)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True)
+    
+    if not i_use_info:
+        rm_r(_pre + '/share/info')
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

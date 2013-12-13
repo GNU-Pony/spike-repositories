@@ -23,7 +23,7 @@ makedepends = ['make', 'coreutils', 'sed', 'argparser-java', 'java-environment>=
 if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
-if i_use_bash or is_use_fish or is_use_zsh:
+if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C8CB31E3D3BCF588B3AADEF0DBCD7DEC2DC5E225A49901FE319779544421791034393F69C7A8A8B3ED6CF249F18D8A6A66B83E358FB9EDFBD0E437CE8208A0D6EEDA57284F06A6EE']

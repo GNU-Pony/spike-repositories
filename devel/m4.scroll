@@ -1,0 +1,76 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_pth  = get('I_USE_PTH',  'n').lower().startswith('y')
+
+pkgname = 'm4'
+pkgver = '1.4.17'
+pkgdesc = 'The GNU m4 macro processor'
+upstream = 'http://www.gnu.org/software/m4'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'bash']
+makedepends = ['gcc', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils']
+source = ['ftp://ftp.gnu.org/gnu/m4/m4-%s.tar.xz' % pkgver]
+sha3sums = ['A5281313A9C1A8BA9925142595F0C815B86B7FD09B83ADF9BEA7156FCFF17B22F9099C3C10A96995873C9BD5947B55E8CF9BCE017F5FD33603BD7DCD746E81BA17EBC87D4ECA5DC0']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    if i_use_info:
+        info('m4')
+    else:
+        man(1, 'm4')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/m4-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--with-syscmd-shell=/bin/sh',
+            '--enable-threads' + ('pth' if i_use_pth else 'posix'))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/m4-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/m4-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir, parents = True)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

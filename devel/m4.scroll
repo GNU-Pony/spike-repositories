@@ -19,6 +19,9 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc', 'bash']
 makedepends = ['gcc', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils']
+if i_use_pth:
+    depends.append('pth')
+    makedepends.append('pth')
 source = ['ftp://ftp.gnu.org/gnu/m4/m4-%s.tar.xz' % pkgver]
 sha3sums = ['A5281313A9C1A8BA9925142595F0C815B86B7FD09B83ADF9BEA7156FCFF17B22F9099C3C10A96995873C9BD5947B55E8CF9BCE017F5FD33603BD7DCD746E81BA17EBC87D4ECA5DC0']
 

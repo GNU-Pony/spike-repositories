@@ -1,0 +1,49 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_static = get('I_USE_STATIC', 'y').lower().startswith('y')
+
+pkgname = 'libcap-ng'
+pkgver = '0.7.3'
+pkgdesc = 'A library making programming with POSIX capabilities easier than traditional libcap'
+upstream = 'http://people.redhat.com/sgrubb/libcap-ng/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils']
+source = ['http://people.redhat.com/sgrubb/libcap-ng/libcap-ng-%s.tar.gz' % pkgver]
+sha3sums = ['2EC1BA5518B6F97A500F60388BAC4AC5CBEA4C9A7E8018ABA09B607F2613BCE312C6264BAE0E19C50053EA378B926DEAC8CCA2DC980AA132BE45C34D7551BB3FAB93410B29837DF3']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libcap-ng-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--without-python',
+            '--enable-static' if i_use_static else '--disable-static')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libcap-ng-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE.gpl2' % _dir, parents = True)
+    ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE.lgpl2.1' % _dir, parents = True)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')

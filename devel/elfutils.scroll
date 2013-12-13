@@ -1,0 +1,78 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_valgrind = get('I_USE_VALGRIND', 'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'elfutils'
+pkgver = '0.157'
+pkgdesc = 'Libraries and utilities to handle ELF object files and DWARF debugging information'
+upstream = 'https://fedorahosted.org/elfutils/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL3', 'GPL3', 'GPL2']
+private = SUPPORTED
+depends = ['glibc', 'gcc-libs', 'zlib', 'bzip2', 'xz']
+makedepends = ['gcc', 'gcc-libs', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils']
+if i_use_valgrind:
+    makedepends.append('valgrind')
+provides = ['libelf']
+conflicts = ['libelf']
+options = ['staticlibs']
+source = ['https://fedorahosted.org/releases/e/l/elfutils/%s/elfutils-%s.tar.bz2' % (pkgver, pkgver)]
+sha3sums = ['CF57860EAF8CE3306432193D800A7FA5E40198CBD35B0AE1AF3333F823C2019684B584A389C6CEDF15793A898EA978DE894135F25330174963AB86B45EBFA65E11A16AC37F80E54F']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('There are some commands installed, they support --help, but there is not documentation for the libraries.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/elfutils-%s' % (srcdir, pkgver))
+    export('CFLAGS', get('CFLAGS', '') + ' -g')
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--program-prefix=eu-',
+            '--enable-valgrind' if i_use_valgrind else '--disable-valgrind') # run all tests under valgrind
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/elfutils-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/elfutils-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    rm(path('lib{asm,dw,elf}.a' % path_escape(pkgdir + _prefix(private) + '/lib/')))
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir, parents = True)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE.gpl2' % _dir, parents = True)
+    ln('/usr/share/licenses/common/LGPL3', '%s/LICENSE.lgpl3' % _dir, parents = True)
+    
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'nafe'
+pkgver = '0.1'
+pkgdesc = 'Toolset for conversion between console fonts and text files'
+upstream = 'http://nafe.sourceforge.net'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['make', 'cc']
+source = ['http://downloads.sourceforge.net/project/nafe/nafe/nafe-%s/nafe-%s.tar.gz' % (pkgver, pkgver)]
+sha3sums = ['724C2A1E2075658BF973F5C4056F1214F1F5E273F6374D1AD789C070A4FAE532CEAC86FF584FC3EB773AB6E145876539D8C36B2FCAFDF6E2AB4701835BE0091D7F693E2FBBF997CC']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    pg(_prefix(private) + '/share/doc/misc/' + pkgname)
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/nafe-%s' % (srcdir, pkgver))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/nafe-%s' % (srcdir, pkgver))
+    _pre = pkgdir, _prefix(private)
+    
+    install(['psf2txt', 'txt2psf'], _pre + '/bin', parents = True, mode = 0o755)
+    install('readme.txt', _pre + '/share/doc/misc/' + pkgname, parents = True, mode = 0o644)
+    
+    _dir = '%s/share/licenses/%s' % (_pre, pkgname)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)
+

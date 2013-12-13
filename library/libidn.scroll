@@ -1,0 +1,79 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info  = get('I_USE_INFO',  'y').lower().startswith('y')
+i_use_man   = get('I_USE_MAN',   'y').lower().startswith('y')
+i_use_emacs = get('I_USE_EMACS', 'y').lower().startswith('y')
+i_use_pth   = get('I_USE_PTH',   'n').lower().startswith('y')
+
+pkgname = 'libidn'
+pkgver = '1.28'
+pkgdesc = 'Implementation of the Stringprep, Punycode [puny, not pony, sorry] and IDNA specifications'
+upstream = 'http://www.gnu.org/software/libidn/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'LGPL3']
+if i_use_info or i_use_man:
+    license.append('FDL1.3')
+# C# library and Java library (neither installed by this package) is in GPL2 or (inclusive) LGPL3
+# The author of the Java library has agreed to also distribute it under the Apache2.0
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils', 'pkgconfig', 'texinfo']
+if i_use_pth:
+    depends.append('pth')
+    makedepends.append('pth')
+source = ['http://ftp.gnu.org/gnu/libidn/libidn-%s.tar.gz' % pkgver]
+sha3sums = ['D91DA196C7715D6F2C4F895A29D1BCCB933506620878A4E1BDDC1E47B192CA1813EC20F6BAC39C70CEAF2622349B14F2A1B125F686EF7BE49B8142E5C06F55A862F0A900B62A9CD0']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Does not seem like there is much to do')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libidn-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-threads' + ('pth' if i_use_pth else 'posix'))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libidn-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL3', _dir + '/GPL3', parents = True)
+    ln('/usr/share/licenses/common/LGPL3', _dir + '/LGPL3', parents = True)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_emacs:
+        rm_r(pkgdir + _prefix(private) + '/share/emacs')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -50,3 +50,10 @@ rather than after all scrolls, but
 the output will not bit fitted for
 use with `xargs touch`.
 
+mindeps-extract exists as an alternative
+to deps-extract. mindeps-extract does
+only list minimum requirements, this
+excludes optdepends and checkdepends and
+it defaults all booleanic I_USE-flags
+to 'no' rather than 'yes'.
+

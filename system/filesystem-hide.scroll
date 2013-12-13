@@ -16,6 +16,7 @@ private = UNSUPPORTED
 extension = 'filesystem'
 makedepends = ['make', 'coreutils']
 backup = ['/.hidden']
+options = ['emptydirs']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C7442FF9ED89169D8016EC2CBC75061DFD1E869C8A575F6777546C06A0E3226ED19A3F6535FA59643DDF6D5DBD3B5E7DA4CF3A579443BD0EDDDEDF43BB53865CF26B8F27591DBB46']
 

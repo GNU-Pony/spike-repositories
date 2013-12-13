@@ -17,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['LGPL3', 'GPL3', 'GPL2']
 private = SUPPORTED
 depends = ['glibc', 'gcc-libs', 'zlib', 'bzip2', 'xz']
-makedepends = ['gcc', 'gcc-libs', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils']
+makedepends = ['gcc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils'] + depends
 if i_use_valgrind:
     makedepends.append('valgrind')
 provides = ['libelf']

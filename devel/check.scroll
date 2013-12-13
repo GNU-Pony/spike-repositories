@@ -1,0 +1,81 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_doc    = get('I_USE_DOC',    'n').lower().startswith('y')
+i_use_static = get('I_USE_STATIC', 'n').lower().startswith('y')
+
+pkgname = 'check'
+pkgver = '0.9.11'
+pkgdesc = 'Unit testing framework for C'
+upstream = 'http://check.sourceforge.net/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2.1']
+private = SUPPORTED
+depends = ['awk', 'glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'm4', 'make', 'grep', 'sed', 'findutils', 'coreutils', 'texinfo']
+source = ['http://downloads.sourceforge.net/sourceforge/check/check-%s.tar.gz' % pkgver]
+sha3sums = ['5889D47C4788C3D490AAB786D87C4A903EB1A5A8525006ABA57ED2EEB4D05571E43745EB1D1F490E67E8F573B2D7B12C00D931CEDE487A3B093E93FF3CCF37CA5223C1B62CB87196']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    if i_use_info:
+        info('check')
+    else:
+        man(1, 'checkmk')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/check-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-static' if i_use_static else '--disable-static')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/check-%s' % (srcdir, pkgver))
+    make('-k', 'check')
+    # Takes about 6:30 minutes on a 2,5 GHz CPU.
+    # The test is not parallel is the number of
+    # cores and CPU:s have no impact.
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/check-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE' % _dir, parents = True)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_doc:
+        rm_r(pkgdir + _prefix(private) + '/share/doc/check/example')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

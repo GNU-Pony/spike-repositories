@@ -1,0 +1,70 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_html   = get('I_USE_HTML',   'n').lower().startswith('y')
+i_use_static = get('I_USE_STATIC', 'n').lower().startswith('y')
+
+pkgname = 'gc'
+_pkgver = '7.4.0'
+pkgver_ = ''.join(filter(lambda c : not 'a' <= c <= 'z', _pkgver))
+pkgver = pkgver_ + ('' if _pkgver == pkgver_ else ('.' + _pkgver[-1]))
+pkgdesc = 'A garbage collector for C and C++'
+upstream = 'http://www.hpl.hp.com/personal/Hans_Boehm/gc'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)', 'MIT', 'GPL2']
+private = SUPPORTED
+depends = ['gcc-libs', 'glibc']
+makedepends = ['gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils'] + depends
+source = ['%s/gc_source/gc-%s.tar.gz' % (upstream, _pkgver),
+          '%s/gc_source/libatomic_ops-%s.tar.gz' % (upstream, _pkgver)]
+sha3sums = ['29380BCB9236C56435C7C485C30AE7660B720F552EA142AA5CFF3B0D26B73B4D8D978A940A743FFEB42DC4123E90D61D53E25500E409A9332327BB8E9D8D9F5B73F70F70112C40B7',
+            '803E967748341026512A1AA18641C97480C8BB340902345BDF9765CDA0D957915289A9B904120FA2675B59B0199D487861A2F4F5E1C8BAEF5D708E9006CD50A32BD81700F93C0864']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(3, 'gc')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gc-%s' % (srcdir, pkgver_))
+    ln('../libatomic_ops-%s', 'libatomic_ops')
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-cplusplus',
+            '--enable-static' if i_use_static else '--disable-static')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gc-%s' % (srcdir, pkgver_))
+    _pre = pkgdir + _prefix(private)
+    
+    make('DESTDIR=' + pkgdir, 'install')
+    rm_r(path('%s/README.*' % path_escape(_pre + '/share/gc')))
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/MIT', _dir + '/LICENSE.mit', parents = True)
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE.gpl2', parents = True)
+    with open(_lic, 'rb') as file:
+        file.write('Copyright (c) Hans-J. Boehm, Alan J. Demers &a\n'.encode('utf-8'));
+        file.flush()
+    _cmd = 'cat malloc.c | grep \'^ \\*\''
+    _cmd = '%s | head -n $(( $(%s | grep -n \'^ \\*/\' | cut -d : -f 1) - 1 ))' % (_cmd, _cmd)
+    _cmd += ' | grep -v \'^ \\* Copyright \' | sed -e \'s/^ \\*//\' | sed -e \'s/^ //\''
+    bash(_cmd + ' >> ' + _lic)
+    
+    rm_r(_pre + '/share/gc/gc.man')
+    if i_use_man:
+        sed(sed_script('GC_MALLOC 1L', 'gc 3'), 'doc/gc.man')
+        install('doc/gc.man', _pre + '/share/man/man3/gc.3', parents = True, mode = 0o644)
+    if not i_use_html:
+        rm_r(path('%s/*.html' % path_escape(_pre + '/share/gc')))
+

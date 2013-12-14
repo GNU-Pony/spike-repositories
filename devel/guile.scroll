@@ -1,0 +1,68 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_static = get('I_USE_STATIC', 'n').lower().startswith('y')
+
+pkgname = 'guile'
+pkgver = '2.0.9'
+pkgdesc = 'Portable, embeddable Scheme implementation written in C'
+upstream = 'http://www.gnu.org/software/guile'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'gmp', 'libltdl', 'ncurses>=5.7', 'texinfo', 'libunistring', 'gc', 'libffi']
+makedepends = ['findutils', 'grep', 'sh', 'gcc', 'sed', 'make', 'coreutils', 'm4'] + depends
+source = ['ftp://ftp.gnu.org/gnu/guile/guile-%s.tar.gz' % pkgver]
+sha3sums = ['3B57B47440DB21BD4E028FE4C6446759AC2DC888DB46733B45DA50E8CC41F6DE25271F9B347E5A39AA268D37D7720F2340B16CEFF9EACAD474AE13045D2E7340BF75E258D3599DC8']
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    info('guile')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/guile-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=%s' % _prefix(private),
+            '--disable-error-on-warning',
+            '--enable-static' if i_use_static else '--disable-static')
+    make('LDFLAGS+=-lpthread')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/guile-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True)
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

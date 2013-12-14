@@ -1,0 +1,105 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'binutils'
+pkgver = '2.24'
+pkgdesc = 'A set of programs to assemble and manipulate binary and object files'
+upstream = 'http://www.gnu.org/software/binutils/'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'GPL3', 'LGPL2', 'LGPL3']
+if i_use_info or i_use_man:
+    license.append('FDL1.3')
+private = SUPPORTED
+interactive = True
+checkdepends = ['dejagnu', 'bc']
+depends = ['glibc>=2.18', 'zlib']
+makedepends = ['gcc', 'sh', 'm4', 'texinfo', 'make', 'grep', 'sed', 'findutils', 'coreutils', 'bash'] + depends
+options = ['staticlibs', '!distcc', '!ccache']
+source = ['ftp://ftp.gnu.org/gnu/binutils/binutils-%s.tar.gz' % pkgver]
+sha3sums = ['1B14ED2522BB103BD4A32A24C7C4AFA3F81FBE1B12F81C47B4FA1E6D99617635FC94444FECB7DC9A4B8CD2B3C5568A866EC4B263F86524AB5D062EBC13BD0EA57EF276B2490A8271']
+
+_prefix = lambda private : path('~/.local') if private else '/usr'
+
+
+def ride(private):
+    info('binutils')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/binutils-%s' % (srcdir, pkgver))
+    sed(sed_script('CPPFLAGS', 'CPPFLAGS -O2', 'ac_cpp='), 'libiberty/configure')
+    mkcd('%s/binutils-build' % srcdir)
+    args = ['%s/binutils-%s/configure' % (srcdir, pkgver),
+            '--with-bugurl=https://github.com/GNU-Pony/spike-repositories/issues',
+            '--disable-werror', '--disable-multilib', '--enable-ld=default', '--enable-gold', '--enable-plugins']
+    execute(args)
+    make('configure-host')
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/binutils-build' % srcdir)
+    bash('make LDFLAGS= -k ckeck 2>&1 | tee %s/check-log' % startdir, fail = False)
+    pg('%s/check-log' % startdir)
+    while True:
+        _input = input('Does the log look good? [yes/no/open]  ')
+        if _input == 'yes':
+            break
+        if _input == 'open':
+            pg('%s/check-log' % startdir)
+            continue
+        if _input == 'no':
+            raise Exception('binutils build check failed')
+            pass
+        echo('Invalid input!')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/binutils-build' % srcdir)
+    _pre = pkgdir + _prefix(private)
+    
+    make('prefix=' + _pre, 'install')
+    rm(path('%s/man?/{dlltool,nlmconv,windres,windmc}*' % path_escape(_per + '/share/man')))
+    rm(_pre + '/lib/libbfd.so')
+    rm(_pre + '/lib/libopcodes.so')
+    
+    # /usr/share/info/{configure,standards}.info is installed by
+    # this scroll. I do not know that they are doing here, but
+    # lets roll with it, they are great documents after all.
+    
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/LICENSE.%s' % (_dir, _lic.lower()))
+    
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

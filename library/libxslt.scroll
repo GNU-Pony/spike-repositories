@@ -1,0 +1,64 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
+
+pkgname = 'libxslt'
+pkgver = '1.1.28'
+pkgdesc = 'XML stylesheet transformation library'
+upstream = 'http://xmlsoft.org/XSLT/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['glibc', 'libxml2', 'libgcrypt']
+checkdepends = ['docbook-xml']
+makedepends = ['gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils', 'python2'] + depends
+source = ['ftp://xmlsoft.org/libxslt/libxslt-%s.tar.gz' % pkgver]
+sha3sums = ['9415646960BE0CF9DE3BCCDE8B7AC93C1DDC8A8307CC288AD55B1A550899E6440538B5AC29E451BBCB16B7178F1BCAE41DC6ABE7DC9101800AE9D28E1BC662664D8A7393C0EF4416']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(3, 'libxslt')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libxslt-%s' % (srcdir, pkgver))
+    _py2 = which('python2')
+    sed([sed_script('/usr/bin/python -u', _py2 + ' -u'),
+         sed_script('/usr/bin/python',    _py2)],
+        path('python/tests/*.py'))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--with-python=' + _py2)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libxslt-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libxslt-%s' % (srcdir, pkgver))
+    _data = pkgdir + _prefix(private) + '/share'
+    
+    make('DESTDIR=' + pkgdir, 'install')
+    install('COPYING', _data + '/licenses/' + pkgname + '/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(_data + '/man')
+    if not i_use_html:
+        _dir = _data + '/doc/libxslt-' + pkgver
+        rm_r(_dir + '/html')
+        if len(os.listdir(_dir)):
+            rmdir(_dir)
+

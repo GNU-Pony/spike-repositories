@@ -1,0 +1,53 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_pth = get('I_USE_PTH', 'n').lower().startswith('y')
+
+pkgname = 'libpipeline'
+pkgver = '1.2.5'
+pkgdesc = 'C library for manipulating pipelines of subprocesses in a flexible and convenient way'
+upstream = 'http://libpipeline.nongnu.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc']
+if i_use_pth:
+    depends.append('pth')
+makedepends = ['gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils'] + depends
+source = ['http://download.savannah.gnu.org/releases/libpipeline/libpipeline-%s.tar.gz' % pkgver]
+sha3sums = ['6753E3380C09E385D0339EB6B050A68F66CFD60A73476E6FD6ADEB72F5EDD7C6F04A5D017A19CBE291935855B4860F69DF04C98AA78B407A9BA9826F7266EF14BA6D3F90C4FE154D']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(3, 'libpipeline')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libpipeline-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--enable-threads=' + ('pth' if i_use_pth else 'posix'))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libpipeline-%s' % (srcdir, pkgver))
+    make('-k', 'check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libpipeline-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _dir = pkgdir + _prefix(private) + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True)
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

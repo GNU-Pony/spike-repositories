@@ -1,0 +1,67 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'man-pages'
+pkgver = '3.55'
+_posixver = '2003-a'
+pkgdesc = 'Linux man pages' # man is short for manual so it is man pages and not stallion pages
+upstream = 'http://man7.org/linux/man-pages/index.html'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['public (dedication)',
+           'GPL1',
+           'GPL2',
+           'custom (all permissive)',
+           'custom (permissive free)',
+           'BSD',
+           'nBSD',
+           'sBSD',
+           'MIT',
+           'LDP1']
+if not i_use_man:
+    license[:] = ['public (package is empty per configurations)']
+private = SUPPORTED
+depends = []
+makedepends = ['make', 'coreutils']
+source = ['http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%.tar.xz' % pkgver]
+sha3sums = ['801C2D567A399FEFB253736A094DEC960706FACAEB517D554C6E24096C8E626348C9107CBD023E74CEFE3F12BCB195F2D5549EDF6F120EA6F9760C294F0711F7D546CE4D68759824']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Yeah... this is just a huge collection of man pages')
+    echo('the command `man` is used to open man pages.')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    if not i_use_man_:
+        return
+    
+    cd('%s/man-pages-%s' % (srcdir, pkgver))
+    make('prefix=' + pkgdir + _prefix(private), 'install')
+    cd(pkgdir + _prefix(private) + '/share/man')
+    
+    _copying = pkgdir + _prefix(private) + '/share/licenses/' + pkgname + '/COPYING'
+    touch(_copying, parents = True)
+    with open(_copying, 'rb') as file:
+        file.write('Files included in this package are indiviudally licensed.\n'.encode('utf-8'))
+        file.write('Open the file of interest in a text editor or pager to se\n'.encode('utf-8'))
+        file.write('the copyright information of that file.'.encode('utf-8'))
+        file.flush()
+    
+    _r = lambda section, *pages : rm(['man%s/%s.%s' % (section, page, section) for page in pages])
+    
+    # included in shadow
+    _r(3, 'getspnam')
+    _r(5, 'passwd')
+    
+    # file with nonfree licenses
+    _r(2, 'sysinfo') ## May not be distributed or modified for any purpose, if interpreted strictly
+

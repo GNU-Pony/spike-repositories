@@ -1,0 +1,98 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_pth = get('I_USE_PTH', 'n').lower().startswith('y')
+i_use_gnutls = get('I_USE_GNUTLS', 'n').lower().startswith('y')
+i_use_system_ca_certificates = get('I_USE_SYSTEM_CA_CERTIFICATES', 'n').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'wget'
+pkgver = '1.14'
+pkgdesc = 'A network utility to retrieve files from the Web'
+upstream = 'http://www.gnu.org/software/wget/wget.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libidn', 'glibc', 'zlib', 'pcre', 'util-linux']
+if i_use_gnutls:
+    depends.append('gnutls')
+else:
+    depends.append('openssl')
+if i_use_pth:
+    depends.append('pth')
+optdepends = ['ca-certificates: for the HTTPS protocol']
+checkdepends = ['perl-http-daemon', 'perl-io-socket-ssl']
+makedepends = ['gcc', 'texinfo', 'make', 'm4', 'sh', 'sed', 'grep', 'findutils'] + depends
+source = ['ftp://ftp.gnu.org/gnu/wget/wget-%s.tar.xz' % pkgver, 'wget@pod-fixes.patch']
+noextract = source[1:]
+sha3sums = ['278B8368AB403A4B76854546875B5C6A0FF652A8F9EACE87CFD545ABFB22D3CF915400E60D46C29DAC56F66E6BD34870909E838B5E73B35C60A89F890C0546746B6C7B8744C05456', None]
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+
+
+def ride(private):
+    execute('wget', '--', input('File to download: '))
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/wget-%s' % (srcdir, pkgver))
+    _cacert = '%s/ssl/certs/ca-certificates.crt' % _sysconf(private and not i_use_system_ca_certificates)
+    
+    with open('doc/sample.wgetrc', 'ab') as file:
+        file.write('\n# default root certs location\n'.encode('utf-8'))
+        file.write('ca_certificate=%s\n' % _cacert)
+        file.flush()
+    
+    patch(srcdir + '/wget@pod-fixes.patch', forward = False)
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--enable-threads=' + ('pth' if i_use_pth else 'posix'),
+            '--with-ssl=' + ('gnutls' if i_use_gnutls else 'openssl')]
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/wget-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/wget-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    install('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True, mode = 0o644)
+    
+    if not i_use_info:
+        rm_r('%s/share/info' % _pre)
+    if not i_use_man:
+        rm_r('%s/share/man' % _pre)
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -1,0 +1,45 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+pkgname = 'man-db.cron'
+extension = 'man-db'
+pkgver = '1'
+pkgdesc = 'Daily cronjob for man-db'
+upstream = 'http://www.nongnu.org/man-db'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+depends = ['cron', 'coreutils']
+optdepends = ['util-linux: for I/O scheduling tweaking']
+makedepends = ['sed']
+source = ['man-db.cron@man-db.cron.daily']
+noextract = source[:]
+sha3sums = [None]
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var' if not private else path('~/.local/var')
+
+
+def ride(private):
+    echo('Will run once a day by cron, you can')
+    echo('%s/cron.daily/man-db manual if you desire.' % _sysconf(private))
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    sed(sed_script('/var/cache/man', _state(private) + '/cache/man'), 'man-db.cron@man-db.cron.daily')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _pre = pkgdir + _prefix(private)
+    install('man-db.cron@man-db.cron.daily', _sysconf(private) + '/cron.daily/man-db', parents = True, mode = 0o744)
+    ln('/usr/share/licenses/common/GNUAllPermissive', _pre + '/share/licenses/' + pkgname + '/LICENSE', parents = True)
+

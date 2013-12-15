@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+# Make sure /var/cache/man exists
+if [ ! -d "/var/cache/man" ]; then
+    mkdir -p -- "/var/cache/man"
+    chmod 755 -- "/var/cache/man"
+fi
+
+CMD="mandb --quiet"              # The refresh command
+CMD="nice -n ${NICE:-19} ${CMD}" # Tweak scheduling
+
+# If ionice (from util-linux) is available: use it
+for p in ${PATH/:/ }; do
+    if [ -x "${p}/ionice" ]; then
+	CMD="ionice -c ${IONICE_CLASS:-2} -n ${IONICE_PRIORITY:-7} ${CMD}"
+	break
+    fi
+done
+
+${CMD} # Begin
+
+exit 0
+

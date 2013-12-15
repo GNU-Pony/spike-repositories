@@ -16,7 +16,7 @@ i_use_gmp        = get('I_USE_GMP',        'y').lower().startswith('y')
 i_use_pth        = get('I_USE_PTH',        'n').lower().startswith('y')
 
 pkgname = 'coreutils'
-pkgver = '8.21'
+pkgver = '8.22'
 pkgdesc = 'The basic file, shell and text manipulation utilities of the GNU operating system'
 upstream = 'http://www.gnu.org/software/coreutils'
 arch = ['x86_64']
@@ -40,7 +40,7 @@ if i_use_pth:
 makedepends.append('texinfo') # for info manual
 makedepends.append('gzip') # for manpage and info
 source = ['http://ftp.gnu.org/gnu/coreutils/coreutils-%s.tar.xz' % pkgver]
-sha3sums = ['62FD863063C5B920A0A709ACBB3B45E2B9F97ECCD74540C92B2DD709DD5D9B3528107C3FBBCDF5190B4E773946AA7DC745A78C1850DAF684E12096C3EE2DE6E352EED604ECC72E61']
+sha3sums = ['7B7807B3D0A37D45B105B7B1B90EAEC604D978A2335BE2E881CDC96F83D9C7F4E77FB8A0FDA5F5D5E67358AB236EE4F05E48A2E3CC1536E1A30B1DD66B880EE9551E3308706CDD48']
 
 
 _prefix = lambda private : (path('~/.local') if private else '/usr')

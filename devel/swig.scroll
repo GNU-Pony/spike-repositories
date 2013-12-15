@@ -1,0 +1,48 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'swig'
+pkgver = '2.0.11'
+pkgdesc = 'Generate scripting interfaces to C/C++ code'
+upstream = 'http://www.swig.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'custom']
+private = SUPPORTED
+depends = ['glibc', 'zlib', 'pcre']
+makedepends = ['gcc', 'm4', 'sh', 'sed', 'grep', 'make', 'findutils', 'coreutils'] + depends
+source = ['http://downloads.sourceforge.net/swig/swig-%s.tar.gz' % pkgver]
+sha3sums = ['2E81F4C06AB086C5BC377212C38AEDF2556FD5BAAB5DBF16159712B091854916919CADEB535D758A5E355B6086A52FE51E88E1AACB106ABC10D82D8AA297C09000896419F3CE15C7']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Cannot really help you unless you are interested in `man 1 ccache-swig`')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/swig-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/swig-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE-GPL' % _dir, parents = True)
+    install('LICENSE-UNIVERSITIES', '%s/LICENSE-UNIVERSITIES' % _dir, mode = 0o644)
+    install('LICENSE', '%s/LICENSES' % _dir, mode = 0o644)
+    install('COPYRIGHT', '%s/COPYING' % _dir, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+

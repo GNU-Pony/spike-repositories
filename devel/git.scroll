@@ -1,0 +1,183 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_emacs   = get('I_USE_EMACS',   'y').lower().startswith('y')
+i_use_bash    = get('I_USE_BASH',    'y').lower().startswith('y')
+i_use_keyring = get('I_USE_KEYRING', 'y').lower().startswith('y')
+i_use_locale  = get('I_USE_LOCALE',  '*')
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_html    = get('I_USE_HTML',    'n').lower().startswith('y')
+i_use_gui     = get('I_USE_GUI',     'n').lower().startswith('y')
+
+pkgname = 'git'
+pkgver = '1.8.5.1'
+pkgdesc = 'Blazing fast distributed version control system'
+upstream = 'http://git-scm.com/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['curl', 'expat>=2.0', 'perl-error', 'perl>=5.14.0', 'openssl', 'pcre', 'sh', 'bash']
+optdepends = ['perl-libwww: for git svn',
+              'perl-term-readkey: for git svn',
+              'perl-mime-tools: for git send-email',
+              'perl-net-smtp-ssl: for TLS support in git send-email',
+              'perl-authen-sasl: for TLS support in git send-email',
+              'python2: for various helper scripts',
+              'subversion: for git svn',
+              'cvsps: for git cvsimport']
+makedepends = ['python2', 'make', 'gcc', 'coreutils', 'findutils']
+if i_use_keyring:
+    optdepends.append('gnome-keyring: GNOME keyring credential helper')
+    makedepends.append('libgnome-keyring')
+if i_use_emacs:
+    makedepends.append('emacs')
+if i_use_gui:
+    optdepends.append('tk: for gitk and git gui')
+provides = ['git-core']
+options = ['!emptydirs']
+source = ['http://git-core.googlecode.com/files/git-%s.tar.gz' % pkgver]
+sha3sums = ['584F829B35312D26AA5AD141AF650F198CAA2553C7A6F134D820F4AF3C84506F98B086E6B6BEF80B99AF838CF9D2058B10BA1B9E8C31914EB9E05A41004B67951CA3C4A633506AB7']
+if i_use_man:
+    source.append('http://git-core.googlecode.com/files/git-manpages-%s.tar.gz' % pkgver) # tar bomb
+    sha3sums.append('23F545C9E9ADEEE6206FC812805C3C4736191B606ECD91570B4F4CE9214186B23675E9EC39EF05676D987E89B3781B3D51D5F83E5E4022807D6805B67C70C787F1E186769B58FEC5')
+if i_use_htmldoc:
+    source.append('http://git-core.googlecode.com/files/git-htmldocs-%s.tar.gz' % pkgver) # tar bomb
+    sha3sums.append('64CE4AF3FD999A9D94A967000A267CD78F3B0B9133C6D81DCD9F525C97FE7E90CE5A9AD82F697F9BB10F897752BC1DA3F0CD820E0B1D5C450A880A0FC2AAA3953E79AB004756B4C7')
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    man(1, 'git')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/git-%s' % (srcdir, pkgver))
+    export('PYTHON_PATH', which('python2'))
+    make('prefix=' + _prefix(private),
+         'CFLAGS=' + get('CFLAGS', ''),
+         'LDFLAGS=' + get('LDFLAGS', ''),
+         'USE_LIBPCRE=1',
+         'NO_CROSS_DIRECTORY_HARDLINKS=1',
+         'all')
+    if i_use_emacs:
+        make('-C', 'contrib/emacs', 'prefix=' + _prefix(private))
+    if i_use_keyring:
+        make('-C', 'contrib/credential/gnome-keyring')
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/git-%s' % (srcdir, pkgver))
+    export('PYTHON_PATH', which('python2'))
+    _checkdir = '/dev/shm/spike-build-processes-check-git'
+    mkdir_p(_checkdir)
+    msg('This will take some time; you can always give the Starswirl the Breaded wing a visit.')
+    make('prefix=' + _prefix(private),
+         'CFLAGS=' + get('CFLAGS', ''),
+         'LDFLAGS=' + get('LDFLAGS', ''),
+         'USE_LIBPCRE=1',
+         'NO_CROSS_DIRECTORY_HARDLINKS=1',
+         'NO_SVN_TESTS=y',
+         'DEFAULT_TEST_TARGET=prove',
+         'GIT_PROVE_OPTS=-j1 -Q',
+         'GIT_TEST_OPTS=--root=' + _checkdir,
+         'test')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/git-%s' % (srcdir, pkgver))
+    export('PYTHON_PATH', which('python2'))
+    _pre = pkgdir + _prefix(private)
+    
+    make('prefix=' + _prefix(private),
+         'CFLAGS=' + get('CFLAGS', ''),
+         'LDFLAGS=' + get('LDFLAGS', ''),
+         'USE_LIBPCRE=1',
+         'NO_CROSS_DIRECTORY_HARDLINKS=1',
+         'INSTALLDIRS=vendor',
+         'DESTDIR=' + pkgdr,
+         'install')
+    
+    install('contrib/completion/git-prompt.sh', _pre + '/share/git/git-prompt.sh', parents = True, mode = 0o755)
+    rm_r(_pre + '/lib/perl5')
+    
+    if i_use_bash:
+        _dir = '/share/bash-completion/completions'
+        install('contrib/completion/git-completion.bash', _pre + _dir + '/git', parents = True, mode = 0o644)
+    
+    if i_use_emacs:
+        make('-C', 'contrib/emacs', 'prefix=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    
+    if i_use_keyring:
+        install('contrib/credential/gnome-keyring/git-credential-gnome-keyring',
+                _pre + '/lib/git-core/git-credential-gnome-keyring',
+                parents = True, mode = 0o755)
+    
+    if not i_use_gui:
+        rm(_per + '/bin/gitk')
+        rm(_per + '/libexec/git-core/git-gui--askpass')
+        rm(_per + '/libexec/git-core/git-gui')
+        rm_r(_per + '/share/gitk')  ## TODO  there are locale files in here
+        rm_r(_per + '/share/git-gui')  ## TODO  there are locale files in here
+    
+    ## Install more things from contrib/  ## TODO  there are more things here that can be installed properly
+    rm_r('contrib/gitview') # Non-functional system breaking piece of crap
+    rm_r('contrib/credential/gnome-keyring') # Already (optionally) installed
+    rm_r('contrib/credential/wincred') # Exotic nonfree OS
+    rm_r('contrib/credential/osxkeychain') # Exotic nonfree OS
+    rm('contrib/completion/git-completion.bash') # Already (optionally) installed
+    rm('contrib/completion/git-prompt.sh') # Already installed
+    rm_r('contrib/emacs') # Already (optionally) installed
+    execute(['cp', '-a'] + l(path('contrib/*')) + ['--', _pre + '/share/git'])
+    
+    if i_use_man:
+        _dir = _pre + '/share/man'
+        mkdir_p(_dir)
+        mv(path('%s/man*' % path_escape(srcdir)), _pre)
+    else:
+        rm_r(_pre + '/share/man')
+    
+    if i_use_html:
+        pushd(srcdir)
+        _dir = _pre + '/share/doc/git/html'
+        mkdir_p(_dir)
+        execute('find', '-name', '*.txt', '-delete')
+        execute(['cp', '-a'] + l(path('*.html')) + ['howto', 'technical', '--', _pre + '/share/git'])
+        popd()
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/GPL2', _dir + '/LICENSE', parents = True)
+    
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    try:
+        execute_pipe('getent', 'group', 'git')
+    except:
+        execute('groupadd', '--system', 'git')
+    try:
+        execute_pipe('getent', 'passwd', 'git')
+    except:
+        execute('useradd', '--system', '-c', 'git daemon user', '-g', 'git', '-d', '/', '-s', '/bin/bash', 'git')
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_install(tmpdir, rootdir, installedfiles, private)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    try:
+        execute('userdel', 'git')
+    except:
+        pass
+    try:
+        execute('groupdel', 'git')
+    except:
+        pass
+

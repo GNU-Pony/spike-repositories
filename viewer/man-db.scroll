@@ -18,7 +18,8 @@ pkgdesc = 'A utility for reading man pages'
 upstream = 'http://www.nongnu.org/man-db'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3', 'GPL2', 'LGPL2.1']
+license = ['GPL3', 'GPL2', 'LGPL2.1',
+           'MIT'] # convert-mans
 private = SUPPORTED
 depends = ['glibc', 'bash', 'gdbm', 'zlib', 'groff', 'libpipeline', 'less']
 optdepends = ['gzip: for reading man pages compressed with gzip',
@@ -27,6 +28,7 @@ optdepends = ['gzip: for reading man pages compressed with gzip',
               'lzma: for reading man pages compressed with lzma',
               'lzip: for reading man pages compressed with lzip',
               'sh: for the convert-mans command',
+              'glibc: for the convert-mans command',
               'man-db.cron: for automatic daily database refreshing']
 makedepends = ['gcc', 'zlib', 'gdbm', 'libpipeline', 'make', 'coreutils', 'sh', 'sed', 'grep', 'findutils', 'm4']
 provides = ['man']
@@ -76,7 +78,7 @@ def package(startdir, srcdir, pkgdir, private):
     
     _dir = '%s/share/licenses/%s' % (_pre, pkgname)
     for _lic in license:
-        ln('/usr/share/licenses/common/%s' % _lic, '%s/LICENSE.%s' % (_dir, _lic.lower()), parents = True)
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/LICENSE.%s' % (_dir, _lic.split(' ')[0].lower()), parents = True)
     
     if i_use_man:
         rm_r(_pre + '/share/man')

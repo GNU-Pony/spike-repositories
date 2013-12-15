@@ -51,7 +51,8 @@ def check(startdir, srcdir, pkgdir, private):
     bash('make LDFLAGS= -k ckeck 2>&1 | tee %s/check-log' % startdir, fail = False)
     pg('%s/check-log' % startdir)
     while True:
-        _input = input('Does the log look good? [yes/no/open]  ')
+        msg('Does the log look good?')
+        _input = input('[yes/no/open]  ')
         if _input == 'yes':
             break
         if _input == 'open':
@@ -60,7 +61,7 @@ def check(startdir, srcdir, pkgdir, private):
         if _input == 'no':
             raise Exception('binutils build check failed')
             pass
-        echo('Invalid input!')
+        msg('Invalid input!', True)
 
 
 def package(startdir, srcdir, pkgdir, private):

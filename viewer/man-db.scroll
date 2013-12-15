@@ -1,0 +1,102 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+import os
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_raw_doc = get('I_USE_RAW_DOC', 'n').lower().startswith('y')
+i_use_ps_doc  = get('I_USE_PS_DOC',  'n').lower().startswith('y')
+i_use_locale  = get('I_USE_LOCALE',  '*')
+i_use_pth     = get('I_USE_PTH',     'n').lower().startswith('y')
+
+pkgname = 'man-db'
+pkgver = '2.6.5'
+pkgdesc = 'A utility for reading man pages'
+upstream = 'http://www.nongnu.org/man-db'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'GPL2', 'LGPL2.1']
+private = SUPPORTED
+depends = ['glibc', 'bash', 'gdbm', 'zlib', 'groff', 'libpipeline', 'less']
+optdepends = ['gzip: for reading man pages compressed with gzip',
+              'bzip2: for reading man pages compressed with bzip2',
+              'xz: for reading man pages compressed with xz',
+              'lzma: for reading man pages compressed with lzma',
+              'lzip: for reading man pages compressed with lzip',
+              'sh: for the convert-mans command',
+              'man-db.cron: for automatic daily database refreshing']
+makedepends = ['gcc', 'zlib', 'gdbm', 'libpipeline', 'make', 'coreutils', 'sh', 'sed', 'grep', 'findutils', 'm4']
+provides = ['man']
+source = ['http://savannah.nongnu.org/download/man-db/man-db-%s.tar.xz' % pkgver, 'man-db@convert-mans.sh']
+noextract = source[1:]
+sha3sums = ['59A38F24E228A188BE9FF7CFAEE754EC41AFC589D65D79DD385FEBF8DEEC65ADADAA5CF749F83B003A367E09762A4BCE0F023A7465FF0FD576DB1C9EF44BA15289AAFD362F6A6D93', None]
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var' if not private else path('~/.local/var')
+_docdir  = lambda private : '%s/share/doc/man-db' % _prefix(private)
+_psdir   = lambda private : '%s/share/doc/man-db' % _prefix(private)
+
+
+def ride(private):
+    man(1, 'man')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/man-db-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _state(private),
+            '--enable-mandirs=GNU',
+            '--enable-threads=%s' % ('pth' if i_use_pth else 'posix'),
+            '--disable-setuid',
+            '--with-db=gdbm',
+            '--with-sections=1 n l 8 3 0 2 5 4 9 6 7 0p 1p 2p 3p 4p 5p 6p 7p 8p 9p')
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/man-db-%s' % (srcdir, pkgver))
+    make('-k', 'check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/man-db-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    rm(_pre + '/bin/zsoelim') # part of groff
+    
+    # http://www.linuxfromscratch.org/lfs/view/6.4/chapter06/man-db.html
+    install(srcdir + '/man-db@convert-mans.sh', _pre + '/sbin/convert-mans', parents = True, mode = 0o755)
+    
+    _dir = '%s/share/licenses/%s' % (_pre, pkgname)
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/LICENSE.%s' % (_dir, _lic.lower()), parents = True)
+    
+    if i_use_man:
+        rm_r(_pre + '/share/man')
+    if i_use_ps_doc:
+        rm(pkgdir + _psdir(private) + '/man-db-manual.ps')
+    if i_use_raw_doc:
+        rm(pkgdir + _docdir(private) + '/man-db-manual.txt')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    msg('It is recommended to run:')
+    msg('  sudo mandb --quite', True)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    _dir = rootdir + _state(private) '/cache/man'
+    if os.path.lexists(_dir):
+        try:
+            rm_r(_dir)
+        except:
+            msg('WARNING: unable to remove cache: ' + _dir)
+

@@ -103,5 +103,5 @@ def package(startdir, srcdir, pkgdir, private):
     install('COPYING', _pre + '/share/licenses/curl/COPYING', parents = True, mode = 0o644)
     
     if not i_use_man:
-        rm_r('%s/usr/share/man' & pkgdir)
+        rm_r('%s/usr/share/man' % pkgdir)
 

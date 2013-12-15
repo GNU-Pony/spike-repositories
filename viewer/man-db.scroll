@@ -59,7 +59,7 @@ def build(startdir, srcdir, pkgdir, private):
     make()
 
 
-def build(startdir, srcdir, pkgdir, private):
+def check(startdir, srcdir, pkgdir, private):
     cd('%s/man-db-%s' % (srcdir, pkgver))
     make('-k', 'check')
 

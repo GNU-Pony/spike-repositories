@@ -1,0 +1,43 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'man-pages-posix'
+_pkgver = '2003-a'
+pkgver = _pkgver.replace('-', '.')
+pkgdesc = 'POSIX man pages' # man is short for manual so it is man pages and not stallion pages
+upstream = 'http://man7.org/linux/man-pages/index.html'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['custom (semi-verbatim permissive free)']
+if not i_use_man:
+    license[:] = ['public (package is empty per configurations)']
+private = SUPPORTED
+depends = []
+makedepends = ['make', 'coreutils']
+source = ['http://www.kernel.org/pub/linux/docs/man-pages/man-pages-posix/man-pages-posix-%s.tar.xz' % _pkgver]
+sha3sums = ['4118069D16FE871CE1CEAF3818E64E22C54834C6985983C0E5D577C3038F8D88C0CE47E35A5018BE199F8F0362AA0F067D42071A07FBE2998CAD552A05E4CECEC04F0B48671309A3']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Yeah... this is just a huge collection of man pages')
+    echo('the command `man` is used to open man pages.')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    if not i_use_man_:
+        return
+    
+    cd('%s/man-pages-posix-%s' % (srcdir, _pkgver))
+    make('prefix=' + pkgdir + _prefix(private), 'install')
+    
+    _copying = pkgdir + _prefix(private) + '/share/licenses/' + pkgname + '/COPYING'
+    install('POSIX-COPYRIGHT', _copying, parents = True, mode = 0o644)
+

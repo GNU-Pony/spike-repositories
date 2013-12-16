@@ -1,0 +1,79 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'flex'
+pkgver = '2.5.37'
+pkgdesc = 'Tool for generating text-scanning programs'
+upstream = 'http://flex.sourceforge.net'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['glibc', 'm4', 'sh']
+makedepends = ['glibc', 'gcc', 'sh', 'm4', 'make', 'sed', 'grep', 'findutils', 'coreutils']
+source = ['http://downloads.sourceforge.net/sourceforge/flex/flex-%s.tar.gz' % pkgver, 'flex@lex.sh']
+noextract = source[1:]
+sha3sums = ['4331CAF110446F73115E6704676185D6C7E409F6031DECF2C855716B1BCFA101A50EFEB60CEC5D00635C329F0EC27DE60E16AE2220A2176B6FC935DE116D1936C41D655507B0C6A1', None]
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    if i_use_info:
+        info('flex')
+    else:
+        man(1, 'flex')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/flex-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/flex-%s' % (srcdir, pkgver))
+    sed(['/test-bison-yylloc/d', '/test-bison-yylval/d'], 'tests/Makefile.in')
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/make-%s' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    make('DESTDIR=%s' % pkgdir, 'install')
+    lnstall(srcdir + '/flex@lex.sh', _pre + '/bin/lex', parents = True, mode = 0o755)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    install('COPYING', _dir + '/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_info:
+        rm_r(_pre + '/share/info')
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

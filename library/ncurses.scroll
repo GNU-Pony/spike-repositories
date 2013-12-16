@@ -1,0 +1,145 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_debug    = get('I_USE_DEBUG',    'y').lower().startswith('y')
+i_use_profile  = get('I_USE_PROFILE',  'y').lower().startswith('y')
+i_use_gpm      = get('I_USE_GPM',      'y').lower().startswith('y')
+i_use_screen   = get('I_USE_SCREEN',   'y').lower().startswith('y')
+i_use_nontty   = get('I_USE_NONTTY',   'y').lower().startswith('y')
+i_use_valgrind = get('I_USE_VALGRIND', 'n').lower().startswith('y')
+i_use_dmalloc  = get('I_USE_DMALLOC',  'n').lower().startswith('y')
+i_use_dbmalloc = get('I_USE_DBMALLOC', 'n').lower().startswith('y')
+i_use_kfreebsd = False # get('I_USE_KFREEBSD', 'n').lower().startswith('y')
+
+pkgname = 'ncurses'
+pkgver = '5.9'
+pkgdesc = 'Library for graphical elements in the terminal'
+upstream = 'http://www.gnu.org/software/ncurses/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc', 'glibc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils', 'bash']
+if i_use_gpm:
+    optdepends = ['gpm: for mouse support in the console']
+    makedepends.append('gpm')
+if i_use_valgrind:
+    makedepends.append('valgrind')
+if i_use_dmalloc:
+    depends.append('dmalloc')
+    makedepends.append('dmalloc')
+if i_use_dbmalloc:
+    depends.append('dbmalloc')
+    makedepends.append('dbmalloc')
+provides = ['curses']
+source = ['ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-%s.tar.gz' % pkgver,
+          'ncurses@gfbsd.patch', 'ncurses@nongnu.patch', 'ncurses@rxvt-unicode.patch']
+noextract = source[1:]
+sha3sums = ['491413AD560D0EE02180E1CA7FF1D35F267E68C07A1E60A3649A95C1BD0A8D7E7D06F6A0D089525BF18D9834706FF1DED6DBFAC8F83E5459EB28BC469EEF4D50CF6DE264BC447E59', None, None, None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ncurses-%s' % (srcdir, pkgver))
+    unset('TERMINFO')
+    
+    patch(startdir + '/ncurses@gfbsd.patch')
+    patch(startdir + '/ncurses@nongnu.patch')
+    patch(startdir + '/ncurses@rxvt-unicode.patch')
+    
+    bash('cat README | grep \'^-- [^$]\' | sed -e s/--//g | sed -e \'s/^ //g\' | sed -e \'s/ *$//g\' > LICENSE')
+    
+    args = ['../configure',
+            '--prefix=' + _prefix(private),
+            '--mandir=%s/share/man' % _prefix(private),
+            '--with-terminfo-dirs="/etc/terminfo:/usr/local/share/terminfo:/usr/share/terminfo"',
+            '--with-cxx',
+            '--with-cxx-binding',
+            '--without-ada',
+            '--with-manpages' if i_use_man else '--without-manpages',
+            '--enable-pc-files',
+            '--with-build-ldflags=%s -static' % get('BUILD_LDFLAGS'),
+            '--with-shared',
+            '--with-normal',
+            '--with-debug' if i_use_debug else '--without-debug',
+            '--with-profile' if i_use_profile else '--without-profile'
+            '--with-gpm' if i_use_gpm else '--without-gpm',
+            '--with-sysmouse' if i_use_kfreebsd else '--without-sysmouse',
+            '--without-hashed-db',
+            '--disable-termcap',
+            '--enable-symlinks',
+            '--with-rcs-ids',
+            '--with-manpage-format=normal')
+    
+    # Extensions
+    args += ['--enable-ext-funcs',
+             '--enable-sp-funcs' if i_use_screen else '--disable-sp-funcs',
+             '--disable-term-driver',
+             '--enable-const',
+             '--enable-ext-colors' if i_use_nontty else '--disable-ext-colors',
+             '--enable-ext-mouse' if i_use_nontty else '--disable-ext-mouse',
+             '--enable-sigwinch' if i_use_nontty else '--disable-sigwinch',
+             '--enable-tcap-names']
+    
+    # Experimental
+    args += ['--disable-assumed-color',
+             '--enable-colorfgbg']
+    
+    # Testing/Development
+    args += ['--enable-echo',
+             '--enable-assertions' if i_use_debug else '--disable-assertions',
+             '--with-dmalloc' if i_use_dmalloc else '--without-dmalloc',
+             '--with-dbmalloc' if i_use_dmalloc else '--without-dbmalloc',
+             '--with-valgrind' if i_use_valgrind else '--without-valgrind',
+             '--disable-leaks' if i_use_valgrind else '--enable-leaks']
+    
+    mkcd('ncursesw-build')
+    execute(args + ['--enable-widec', '--includedir=%s/include/ncursesw' % _prefix(private)])
+    make('-j1', 'sources')
+    make()
+    
+    mkcd('../ncurses-build')
+    if get('ARCH') == 'x86_64':
+        args.append('--with-chtype=long')
+    execute(args)
+    make('-j1', 'sources')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ncurses-%s' % (srcdir, pkgver))
+    _pre = pkgdir + _prefix(private)
+    
+    cd('ncursesw-build')
+    make('DESTDIR=' + pkgdir, 'install')
+    for _lib in ['ncurses', 'form', 'panel', 'menu']:
+        with open('%s/lib/lib%s.so' % (_pre, _lib), 'wb') as file:
+            file.write(('INPUT(-l%sw' % _lib).encode('utf-8'))
+            file.flush()
+        ln('%sw.pc' % _lib, '%s/lib/pkgconfig/%s.pc' % (_pre, _lib))
+    _lib = 'ncurses++'
+    ln('%sw.pc' % _lib, '%s/lib/pkgconfig/%s.pc' % (_pre, _lib))
+    with open(_pre + '/lib/libcursesw.so', 'wb') as file:
+        file.write('INPUT(-lncursesw)'.encode('utf-8'))
+        file.flush()
+    ln('libncurses.so', _pre + '/lib/libcurses.so')
+    
+    cd('../ncurses-build')
+    for _lib in ['ncurses', 'form', 'panel', 'menu']:
+        install('lib/lib%s.so.%s' % (_lib, pkgver), '%s/lib/lib%s.so.%s' (_pre, _lib, pkgver), parents = True, mode = 0o755)
+        ln('lib/lib%s.so.%s' % (_lib, pkgver), '%s/lib/lib%s.so.%s' (_pre, _lib, pkgver.split('.')[0]))
+    
+    cd('..')
+    install('LICENSE', _pre + '/share/licenses/' + pkgname + '/LICENSE', parents = True, mode = 0o644)
+

@@ -1,0 +1,53 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'libltdl'
+pkgver = '2.4.2'
+_gccver = '4.8.4'
+pkgdesc = 'System independent dlopen wrapper for GNU libtool"'
+upstream = 'http://www.gnu.org/software/libtool'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['LGPL2.1']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['gcc=' + _gccver, 'glibc']
+source = ['ftp://ftp.gnu.org/pub/gnu/libtool/libtool-%s.tar.xz' % pkgver]
+sha3sums = ['32908E10FB14164D35ABC807C6C8599EBADFF9E11A117B6181AB8233B0D63C9252BE32C5A6E5D0A7F27B602C63FB9DCDCBCA8271638CF415B51DDE83CF0207FB899016A5CB55BB56']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a helper library for libtool with no documentation.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libtool-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libtool-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libtool-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir,
+        'install-libLTLIBRARIES',
+        'install-includeHEADERS',
+        'install-ltdlincludeHEADERS',
+        'install-data-local')
+    
+    rm_r(pkgdir + _private() + '/share/aclocal')
+    rm_r(pkgdir + _private() + '/share/libtool/config')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE' % _dir, parents = True)
+

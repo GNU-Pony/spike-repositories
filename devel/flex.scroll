@@ -19,6 +19,7 @@ license = ['custom (permissive free)']
 private = SUPPORTED
 depends = ['glibc', 'm4', 'sh']
 makedepends = ['glibc', 'gcc', 'sh', 'm4', 'make', 'sed', 'grep', 'findutils', 'coreutils']
+options = ['staticlibs']
 source = ['http://downloads.sourceforge.net/sourceforge/flex/flex-%s.tar.gz' % pkgver, 'flex@lex.sh']
 noextract = source[1:]
 sha3sums = ['4331CAF110446F73115E6704676185D6C7E409F6031DECF2C855716B1BCFA101A50EFEB60CEC5D00635C329F0EC27DE60E16AE2220A2176B6FC935DE116D1936C41D655507B0C6A1', None]

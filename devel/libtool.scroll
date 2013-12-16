@@ -5,16 +5,19 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-pkgname = 'libltdl'
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
+pkgname = 'libtool'
 pkgver = '2.4.2'
 _gccver = '4.8.4'
-pkgdesc = 'System independent dlopen wrapper for GNU libtool"'
+pkgdesc = 'A generic library support script"'
 upstream = 'http://www.gnu.org/software/libtool'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['LGPL2.1']
 private = SUPPORTED
-depends = ['glibc']
+depends = ['glibc', 'sh', 'gcc=' + _gccver, 'tar', 'libltdl=' + pkgver]
 makedepends = ['gcc=' + _gccver, 'glibc', 'texinfo']
 source = ['ftp://ftp.gnu.org/pub/gnu/libtool/libtool-%s.tar.xz' % pkgver]
 sha3sums = ['32908E10FB14164D35ABC807C6C8599EBADFF9E11A117B6181AB8233B0D63C9252BE32C5A6E5D0A7F27B602C63FB9DCDCBCA8271638CF415B51DDE83CF0207FB899016A5CB55BB56']
@@ -23,7 +26,10 @@ _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    echo('This is a helper library for libtool with no documentation.')
+    if i_use_info:
+        info('libtool')
+    else:
+        man(1, 'libtool')
 
 
 def build(startdir, srcdir, pkgdir, private):
@@ -40,13 +46,14 @@ def check(startdir, srcdir, pkgdir, private):
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/libtool-%s' % (srcdir, pkgver))
     make('DESTDIR=' + pkgdir,
-        'install-libLTLIBRARIES',
-        'install-includeHEADERS',
-        'install-ltdlincludeHEADERS',
-        'install-data-local')
+         'install-binSCRIPTS',
+         'install-data-local')
+    if i_use_info:
+        make('DESTDIR=' + pkgdir, 'install-info')
+    if i_use_man:
+        make('DESTDIR=' + pkgdir, 'install-man')
     
-    rm_r(pkgdir + _private() + '/share/aclocal')
-    rm_r(pkgdir + _private() + '/share/libtool/config')
+    rm_r(pkgdir + _private() + '/share/libtool/libltdl')
     
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE' % _dir, parents = True)

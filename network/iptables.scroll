@@ -1,0 +1,68 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'iptables'
+pkgver = '1.4.21'
+pkgdesc = 'Linux kernel packet control tool'
+upstream = 'http://www.netfilter.org/projects/iptables'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2']
+private = SUPPORTED
+depends = ['glibc', 'bash', 'linux']
+makedepends = ['glibc', 'gcc', 'linux-api-headers', 'linux', 'sed', 'make', 'coreutils', 'sh', 'grep']
+source = ['http://www.netfilter.org/projects/iptables/files/iptables-%s.tar.bz2' % pkgver,
+          'iptables@empty.rules', 'iptables@simple_firewall.rules', 'iptables@empty-filter.rules',
+          'iptables@empty-mangle.rules', 'iptables@empty-nat.rules', 'iptables@empty-raw.rules',
+          'iptables@empty-security.rules']
+noextract = source[1:]
+sha3sums = ['2FA53CF2C2AC0587D766E5A75DF6B94DC067C39D55C9F2873EE6252C0874041664456C256A3B183FB876DEA30BDCEF62F6F1263608F522B5A28AED1EC9628211500490A730090E16'] + [None] * 7
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var' if not private else path('~/.config/var')
+
+
+def ride(private):
+    man(8, 'iptables')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/iptables-%s' % (srcdir, pkgver))
+    rm('include/linux/types.h')
+    execute('./configure', # only sys .so files are installed to libexec
+            '--prefix=' + _prefix(private),
+            '--libexecdir=%s/lib/iptables' % _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--with-xtlibdir=%s/lib/iptables' % _prefix(private),
+            '--enable-shared',
+            '--enable-devel',
+            '--enable-libipq',
+            '--enable-bpf-compiler')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/iptables-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _dir = pkgdir + _sysconf(private) + '/iptables'
+    install(srcdir + '/empty.rules', _dir + '/empty.rules', parents = True, mode = 0o644)
+    install(srcdir + '/simple_firewall.rules', _dir + '/simple_firewall.rules', mode = 0o644)
+    
+    _dir = pkgdir + _state(private) + '/lib'
+    _files = path('iptables@empty-{filter,mangle,nat,raw,security}.rules')
+    for _file in _files:
+        install(_file, _dir + '/' + _file.split('@')[1], parents = True, mode = 0o644
+    
+    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)
+    if not i_use_man:
+        rm_r('%s/usr/share/man' & pkgdir)
+

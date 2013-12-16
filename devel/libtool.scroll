@@ -15,7 +15,7 @@ pkgdesc = 'A generic library support script"'
 upstream = 'http://www.gnu.org/software/libtool'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['LGPL2.1']
+license = ['GPL2']
 private = SUPPORTED
 depends = ['glibc', 'sh', 'gcc=' + _gccver, 'tar', 'libltdl=' + pkgver]
 makedepends = ['gcc=' + _gccver, 'glibc', 'texinfo']
@@ -56,5 +56,5 @@ def package(startdir, srcdir, pkgdir, private):
     rm_r(pkgdir + _private() + '/share/libtool/libltdl')
     
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    ln('/usr/share/licenses/common/LGPL2.1', '%s/LICENSE' % _dir, parents = True)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)
 

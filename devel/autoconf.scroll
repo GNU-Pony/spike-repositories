@@ -1,0 +1,61 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
+pkgname = 'autoconf'
+pkgver = '2.69'
+pkgdesc = 'A GNU tool for automatically configuring source code'
+upstream = 'http://www.gnu.org/software/autoconf'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3', 'GPL2', 'custom (exception)']
+private = SUPPORTED
+depends = ['awk', 'm4', 'diffutils', 'bash']
+makedepends = ['sh', 'm4', 'make', 'sed', 'grep', 'findutils', 'coreutils']
+source = ['ftp://ftp.gnu.org/pub/gnu/autoconf/autoconf-%s.tar.xz' % pkgver]
+sha3sums = ['785A6657C137FDE8EA87746FC36AFD635CA7399C07F786137F75418ABD3177834E83B3FBBBA653244D99DFB7AD1E7DD0CA2B22E75E71F50F60E4FC992DF68E1A94577A1C1F092DBE']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    if i_use_info:
+        info('autoconf')
+    else:
+        man(1, 'autoconf')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/autoconf-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=' + _prefix(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/autoconf-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/autoconf-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    
+    # conflicts with binutils
+    rm_r(pkgdir + _private() + '/share/info/standards.info')
+    
+    if not i_use_info:
+        rm_r(pkgdir + _private() + '/share/info')
+    if not i_use_man:
+        rm_r(pkgdir + _private() + '/share/man')
+    
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir, parents = True)
+    ln('/usr/share/licenses/common/GPL2', '%s/LICENSE.gpl2' % _dir, parents = True)
+    install('COPYING.EXCEPTION', '%s/COPYING.EXCEPTION' % _dir, parents = True, mode = 0o644)
+

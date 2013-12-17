@@ -2,8 +2,21 @@ This file enumerates modifications done in scrolls
 that makes the installed software slightly different
 from upstream.  You should be aware of these changes
 when writting non-local scripts and programs.
-Removal of files due to conflicts with other scrolls
-are not enumerated.
+
+The changes of the following types are not enumerated:
+
+*  Removal of files due to conflicts with other
+   scrolls are not enumerated.
+
+*  Runtime bug patches.
+
+*  Compile time error patches.
+
+*  Installation flexibility patches.
+
+*  Init-system daemon files
+
+
 
 
 core/miscellaneous/coreutils (enhancement)

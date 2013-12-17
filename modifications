@@ -17,7 +17,7 @@ core/miscellaneous/coreutils (enhancement)
 extra/miscellaneous/man-pages (liberation)
 
 	man page `sysinfo` in section 2 has been removed
-	because of unfortunate phrasing of in license that
-	makes it nonfree, even though that was probably
+	because of unfortunate phrasing of in its license
+	that makes it nonfree, even though that was probably
 	not the intention.
 

@@ -1,0 +1,23 @@
+This file enumerates modifications done in scrolls
+that makes the installed software slightly different
+from upstream.  You should be aware of these changes
+when writting non-local scripts and programs.
+Removal of files due to conflicts with other scrolls
+are not enumerated.
+
+
+core/miscellaneous/coreutils (enhancement)
+
+	chown is ownership root:nopony and permissions bits
+	2755 instead of root:root and 0755. This allows
+	anypony to set the herd ownership to nopony on any
+	file that the pony as ownership over.
+
+
+extra/miscellaneous/man-pages (liberation)
+
+	man page `sysinfo` in section 2 has been removed
+	because of unfortunate phrasing of in license that
+	makes it nonfree, even though that was probably
+	not the intention.
+

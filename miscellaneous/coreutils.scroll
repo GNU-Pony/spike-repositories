@@ -44,6 +44,7 @@ sha3sums = ['7B7807B3D0A37D45B105B7B1B90EAEC604D978A2335BE2E881CDC96F83D9C7F4E77
 
 
 _prefix = lambda private : (path('~/.local') if private else '/usr')
+_eprefix = lambda private : (path('~/.local') if private else '')
 
 
 def ride(private):
@@ -58,7 +59,10 @@ def build(startdir, srcdir, pkgdir, private):
                    'kill',      # provided by  util-linux
                    'uptime']    # provided by  procps-ng
     
-    args = ['./configure', '--prefix=%s' % _prefix(private), '--libexecdir=%s/libexec' % (_prefix(private))]
+    args = ['./configure',
+            '--prefix=%s' % _prefix(private),
+            '--exec-prefix=%s' % _eprefix(private),
+            '--libexecdir=%s/libexec' % (_eprefix(private))]
     
     if not i_use_largefiles:  args.append('--disable-largefile')
     if not i_use_acl:         args.append('--disable-acl')
@@ -81,6 +85,10 @@ def check(startdir, srcdir, pkgdir, private):
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/coreutils-%s' % (srcdir, pkgver))
     make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _file = pkgdir + _eprefix(private) + '/bin/chown'
+    chgrp(_file, 99) # 99 = nopony
+    chmod(_file, 0o2000, 0o2000)
     
     _licenses = pkgdir + _prefix(private) + '/share/licenses'
     mkdir_p(_licenses)

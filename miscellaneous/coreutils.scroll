@@ -86,9 +86,10 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/coreutils-%s' % (srcdir, pkgver))
     make('DESTDIR=%s' % pkgdir, 'install')
     
-    _file = pkgdir + _eprefix(private) + '/bin/chown'
-    chgrp(_file, 99) # 99 = nopony
-    chmod(_file, 0o2000, 0o2000)
+    _files = pkgdir + _eprefix(private) + '/bin'
+    _files = [_files + '/chown', _files + '/chgrp']
+    chgrp(_files, 99) # 99 = nopony
+    chmod(_files, 0o2000, 0o2000)
     
     _licenses = pkgdir + _prefix(private) + '/share/licenses'
     mkdir_p(_licenses)

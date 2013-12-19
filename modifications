@@ -21,8 +21,8 @@ The changes of the following types are not enumerated:
 
 core/miscellaneous/coreutils (enhancement)
 
-	chown is ownership root:nopony and permissions bits
-	2755 instead of root:root and 0755. This allows
+	chown and chgrp is ownership root:nopony and permissions
+	bits 2755 instead of root:root and 0755. This allows
 	anypony to set the herd ownership to nopony on any
 	file that the pony as ownership over.
 

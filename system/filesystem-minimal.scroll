@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'filesystem-minimal'
-pkgver = '1.0.2'
+pkgver = '1.1'
 pkgdesc = 'Filesystem hierarchy maximal simplification layer'
 upstream = 'https://github.com/GNU-Pony/filesystem'
 arch = ['any']
@@ -17,7 +17,7 @@ extension = 'filesystem'
 makedepends = ['make', 'coreutils']
 options = ['emptydirs']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C7442FF9ED89169D8016EC2CBC75061DFD1E869C8A575F6777546C06A0E3226ED19A3F6535FA59643DDF6D5DBD3B5E7DA4CF3A579443BD0EDDDEDF43BB53865CF26B8F27591DBB46']
+sha3sums = ['AFFC465C124AA5C5DF697E591DE4A54239B95BEC604B7D568BA51005089BF9C80BEA69631A2C4AB39E472B26EAC6A3FE5D4BB15A2C98200F946EA4F2D781F43075C7FDFA7907D070']
 
 _params = []
 

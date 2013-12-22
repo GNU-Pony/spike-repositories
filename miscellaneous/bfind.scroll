@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'bfind'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'find replacement optimised for finding files rather then listing files'
 upstream = 'https://github.com/maandree/bfind'
 arch = ['any']
@@ -21,7 +21,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1A527B8E6F4D8555C5B8FBC50AF208E9AD02D039BD0365AAA97DD621941DEEAA61C6A29FE24288B763C9C814DA9AE0008F7EC0AE1803B8CE4A72873372473B700AEC57D99688389B']
+sha3sums = ['26962470F8E34A012F26DAEAFF429D3CFA95F15259ABCCBD41B0F78B34398497B4D11E0819B7416443DFC598780742739E5861138C906695F088197CEE889BB81E8374749EF176A7']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

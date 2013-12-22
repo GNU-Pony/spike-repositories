@@ -9,7 +9,7 @@ _source = 'https://raw.github.com/GNU-Pony/miscellaneous/0cdfba68ef3878052381bd6
 _script = 'emacs+'
 
 pkgname = _script
-pkgver = '2013.06.26'
+pkgver = '2013.12.22'
 pkgdesc = 'Emacs wrapper for enhanced terminal experience'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']

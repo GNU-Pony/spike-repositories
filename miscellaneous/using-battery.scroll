@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/0cdfba68ef3878052381bd69be2da3ff9983f088'
+_script = 'using-battery'
+
+pkgname = _script
+pkgver = '2013.12.18'
+pkgdesc = 'A command to check if the computer is running on battery power intended for using in the boot-process'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['bash', 'coreutils']
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['B37CE2FF631752AD19532EC2DFD73834E70A18C991E56D4B990FCED54DC97D4FDE250678FD83D4A230571201529CE8D625C213A129BC25DD75DCCE00F83FF2D940699572DE048940',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute('using-battery')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

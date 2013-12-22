@@ -6,24 +6,24 @@
 from dragonsuite import *
 
 _source = 'https://raw.github.com/GNU-Pony/miscellaneous/0cdfba68ef3878052381bd69be2da3ff9983f088'
-_script = 'emacs+'
+_script = 'behead'
 
 pkgname = _script
-pkgver = '2013.06.26'
-pkgdesc = 'Emacs wrapper for enhanced terminal experience'
+pkgver = '2013.12.15'
+pkgdesc = 'A command that prints a file but skips the beginning of it'
 upstream = 'https://github.com/GNU-Pony/miscellaneous'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['WTFPL2']
 private = SUPPORTED
-depends = ['bash', 'emacs']
+depends = ['bash', 'coreutils']
 source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
-sha3sums = ['33977EDA845174546EE3CBB5F4F513ABC5ECB5E97AA11E28E2EC9B728561913766993634590B3BE76508E15A6AF3E31AD612C61DBF4650373B940E31DC6FAE0A7D896D9D313BC12F',
+sha3sums = ['5D2BF9C92D08F46F6D45C3E246DAB9645A245A35B38B5CC417A5170259503669C4658ED8A624EF136FFF8CAA37BA19757A9AD53634BF880E63BD04D69F9FB569CD2F8ACA7CBA1CB0',
             'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
 
 
 def ride(private):
-    execute('emacs+')
+    execute('touch-all')
 
 
 def package(startdir, srcdir, pkgdir, private):

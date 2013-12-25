@@ -22,7 +22,9 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 groups = ['base']
-depends = ['glibc', 'readline>=6.1', 'curses']
+depends = ['glibc', 'curses']
+if i_use_readline:
+    depends.append('readline>=6.1')
 makedepends = ['gcc'] + depends
 provides = ['sh']
 source = ['http://ftp.gnu.org/gnu/bash/bash-%s.tar.gz' % _pkgver,

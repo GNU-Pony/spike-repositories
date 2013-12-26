@@ -5,7 +5,7 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 i_use_pth = get('I_USE_PTH', 'n').lower().startswith('y')
 i_use_gnutls = get('I_USE_GNUTLS', 'n').lower().startswith('y')

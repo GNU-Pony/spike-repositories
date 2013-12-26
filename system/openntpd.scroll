@@ -1,0 +1,66 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'openntpd'
+pkgver = '3.9p1'
+pkgdesc = 'Free, easy to use implementation of the Network Time Protocol'
+upstream = 'http://www.openntpd.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['ICS', 'sBSD', 'custom (all permissive free)', 'nBSD']
+private = UNSUPPORTED # not supported due to requirement of ntp user and ntp group
+depends = ['glibc', 'openssl', 'filesystem']
+makedepends = ['gcc', 'bash', 'shadow', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils'] + depends
+conflicts = ['ntp']
+source = ['ftp://ftp.openbsd.org/pub/OpenBSD/OpenNTPD/openntpd-%s.tar.gz' % pkgver, 'openntpd@linux-adjtimex.patch']
+sha3sums = ['8FD35CD80FE1691793ADBADC864376D089B896BD697976EA0B3E3840D08B2E5E71FB8BFBC2C6E4789246C9C8F2A2CFD5EBDB7439406DE62FCA27109387CC656D3E3FE5DF80723D47', None]
+
+_prefix  = lambda private : path('~/.local')  if private else '/usr'
+_sysconf = lambda private : path('~/.config') if private else '/etc'
+_run     = lambda private : ('/dev/shm/~' + get('USER', path('~').split('/')[-1]) + '/run') if private else '/run'
+
+
+def ride(private):
+    pass
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/openntpd-%s' % (srcdir, _pkgver))
+    patch(srcdir + '/openntpd@linux-adjtimex.patch')
+    execute('autoreconf', '-fi')
+    execute('./configure',
+            '--prefix=%s' % _prefix(private),
+            '--sysconfdir=%s' % _sysconf(private),
+            '--sbindir=%s/sbin' % _prefix(private),
+            '--with-privsep-user=ntp',
+            '--with-privsep-path=%s/openntpd/' % _run(private),
+            '--with-adjtimex')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/openntpd-%s' % (srcdir, _pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    sed(sec_script('%*', '0.0.0.0'), pkgdir + _sysconf(private) + '/ntpd.conf')
+    rm_r(pkgdir + '/var') # /var/empty is provided by filesystem
+    install('LICENSE', pkgdir + _prefix(private) + '/share/licenses/' + pkgname + '/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    bash('getent group ntp &>/dev/null || groupadd -g 87 ntp >/dev/null', fail = False)
+    bash('getent passwd ntp &>/dev/null || useradd -u 87 -g ntp -d /var/lib/ntp -c "Network Time Protocol" -s /bin/false ntp >/dev/null', fail = False)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    bash('getent passwd ntp &>/dev/null && userdel ntp >/dev/null', fail = False)
+    bash('getent group ntp &>/dev/null && groupdel ntp >/dev/null', fail = False)
+

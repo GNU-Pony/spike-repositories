@@ -1,0 +1,96 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+i_use_pam = get('I_USE_PAM', 'y').lower().startswith('y')
+i_use_libedit = get('I_USE_LIBEDIT', 'y').lower().startswith('y') # libedit sucks, you may actually want to disable it
+i_use_kerberos = get('I_USE_KERBEROS', 'y').lower().startswith('y')
+i_use_xauth = get('I_USE_XAUTH', get('I_USE_X', 'y')).lower().startswith('y')
+i_use_system_kerberos = get('I_USE_SYSTEM_KERBEROS', 'y').lower().startswith('y')
+i_use_system_xauth = get('I_USE_SYSTEM_XAUTH', 'y').lower().startswith('y')
+
+pkgname = 'openssh'
+pkgver = '6.4p1'
+pkgdesc = 'Free version of the SSH connectivity tools'
+upstream = 'http://www.openssh.org/portable.html://www.gnu.org/software/wget/wget.html'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)', 'custom (all permissive free)', 'public (dedication)', 'nBSD', 'sBSD', 'MIT']
+private = SUPPORTED
+depends = ['openssl', 'ldns', 'zlib', 'filesystem']
+if i_use_pam:
+    depends.append('pam')
+if i_use_libedit:
+    depends.append('libedit')
+if i_use_kerberos:
+    depends.append('krb5')
+optdepends = ['xorg-xauth: for X11 forwarding', 'x11-ssh-askpass']
+makedepends = ['linux-headers', 'bash', 'gcc', 'make', 'm4', 'sh', 'sed', 'grep', 'findutils'] + depends
+source = ['ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%s.tar.gz' % pkgver, 'openssh@pam', 'openssh@confd']
+noextract = source[1:]
+sha3sums = ['6371501E3D89BE080360D1DA03570BF41619E24AF83BB8BB501CCFDA13CD37F621A7E65DFF28CF27327D65EBF3F4045FE80BA8E951804D041350ECE073E7B20C8C0F7C6FDB06F592'] + [None] * len(noextract)
+
+_prefix  = lambda private : path('~/.local') if private else '/usr'
+_sysconf = lambda private : path('~/.config') if private else '/etc'
+_run     = lambda private : ('/dev/shm/~' + get('USER', path('~').split('/')[-1]) + '/run') if private else '/run'
+
+
+def ride(private):
+    echo('You may want to look at the following manpages: ssh, sftp, scp')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/openssh-%s' % (srcdir, pkgver))
+    execute('./configure',
+            '--prefix=%s' % _prefix(private),
+            '--sysconfdir=%s/ssh' % _sysconf(private),
+            '--with-ldns',
+            '--with-libedit' if i_use_libedit else '--without-libedit',
+            '--with-ssl-engine',
+            '--with-pam' if i_use_pam else '--without-pam',
+            '--with-privsep-user=nobody',
+            '--with-kerberos5=%s' % _prefix(i_use_system_kerberos) if i_use_kerberos else '--without-kerberos5',
+            '--with-xauth=%s/bin/xauth' %  % _prefix(i_use_system_xauth) if i_use_xauth else '--without-xauth',
+            '--with-mantype=man',
+            '--with-md5-passwords',
+            '--with-pid-dir=%s' % _run(private))
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/openssh-%s' % (srcdir, pkgver))
+    bash('make tests || grep %s /etc/passwd | grep -q /bin/false' % get('USER'))
+    # from arch linux: connect.sh fails when run with stupid login shell
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/openssh-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    ln('ssh.1.gz', _pre + '/share/man/man1/slogin.1.gz')
+    install('contrib/findssl.sh', _pre + '/bin/findssl.sh', parents = True, mode = 0o755)
+    install('contrib/ssh-copy-id', _pre + '/bin/ssh-copy-id', parents = True, mode = 0o755)
+    install('contrib/ssh-copy-id.1', _pre + '/share/man/man1/ssh-copy-id.1', parents = True, mode = 0o644)
+    
+    # from arch linux
+    scripts = ['/^#ChallengeResponseAuthentication yes$/c ChallengeResponseAuthentication no',
+               '/^#PrintMotd yes$/c PrintMotd no # pam does that']
+    if i_use_pam:
+        scripts.append('/^#UsePAM no$/c UsePAM yes')
+    sed(scripts, pkgdir + _sysconf(private) + '/ssh/sshd_config')
+    
+    if i_use_pam:
+        install(srcdir + '/openssh@pam', pkgdir + _sysconf(private) + '/pam.d/sshd', parents = True, mode = 0o644)
+    install(srcdir + '/openssh@confd', pkgdir + _sysconf(private) + '/conf.d/sshd', parents = True, mode = 0o644)
+    
+    rm_r(pkgdir + '/var') # /var/empty is provided by filesystem
+    install('LICENSE', _pre + '/share/licenses/' + pkgname + '/COPYING', parents = True)
+    
+    if not i_use_man:
+        rm_r('%s/share/man' % _pre)
+

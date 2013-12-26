@@ -1,0 +1,77 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'krb5'
+pkgver = '1.11.4'
+pkgdesc = 'MIT implementation of the Kerberos network authentication system'
+upstream = 'http://web.mit.edu/kerberos/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+group = ['base']
+depends = ['e2fsprogs', 'libldap', 'keyutils', 'glibc']
+makedepends = ['gcc', 'perl', 'tar', 'sed', 'sh', 'm4', 'grep', 'coreutils', 'findutils', 'make'] + depends
+provides = ['kerberos']
+options = ['!emptydirs']
+backup = ['/var/lib/krb5kdc/kdc.conf']
+source = ['http://web.mit.edu/kerberos/dist/krb5/%s/krb5-%s-signed.tar' % ('.'.join(pkgver.split('.')[:2]), pkgver),
+          'krb5@config_LDFLAGS.patch']
+sha3sums = ['E7F345B7657C525BA7671B0FAEF765EAB279A5E252DA2836A722E1FE257A9CD5A95FF09C35125F90B6E61738ADAF38F91C3D8BBB9D4CC1A1EF8A00CCCF07090875E3C031DECB8A47', None]
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var/lib' if not private else path('~/.local/var/lib')
+
+
+def ride(private):
+    pass
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s')
+    decompress('krb5-1.11.4.tar.gz')
+    cd('krb5-%s/src' % pkgver)
+    patch(srcdir + '/krb5@config_LDFLAGS.patch', strip = 2)
+    sed(sed_scripts('/usr/local', _prefix(private), 'KRB5ROOT=/'), 'util/ac_check_krb5.m4')
+    export('CLAGS', get('CFLAGS', '') + ' -fPIC -fno-strict-aliasing -fstack-protector-all')
+    export('CPPFLAGS', get('CPPFLAGS', '') + ' -I/usr/include/et')
+    execute('./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _state(private),
+            '--enable-shared',
+            '--with-system-et',
+            '--with-system-ss',
+            '--disable-rpath',
+            '--without-tcl',
+            '--enable-dns-for-realm',
+            '--with-ldap',
+            '--without-system-verto')
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/krb5-%s/src' % (srcdir, pkgver))
+    _examples = '%s/share/doc/%s/examples' % (_prefix(private), pkgname)
+    _pre = pkgdir + _prefix(private)
+    make('DESTDIR=%s' % pkgdir, 'EXAMPLEDIR=%s' % _examples, 'install')
+    
+    install(path('plugins/kdb/ldap/libkdb_ldap/kerberos.{ldif,schema}'), pkgdir + _examples, mode = 0o644)
+    install('util/ac_check_krb5.m4', _pre + '/share/aclocal/ac_check_krb5.m4', parents = True, mode = 0o644)
+    execute(['install', '-pDm644', '--', 'config-files/krb5.conf', pkgdir + _sysconf(private) + '/krb5.conf'])
+    execute(['install', '-pDm644', '--', 'config-files/kdc.conf', pkgdir + _state(private) + '/krb5kdc/kdc.conf'])
+    
+    install('../NOTICE', _pre + '/share/licenses/' + pkgname + '/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+

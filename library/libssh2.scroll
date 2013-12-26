@@ -5,8 +5,16 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_man       = get('I_USE_MAN',       'y').lower().startswith('y')
-i_use_libgcrypt = get('I_USE_LIBGCRYPT', 'n').lower().startswith('y')
+i_use_man            = get('I_USE_MAN',            'y').lower().startswith('y')
+i_use_crypto_backend = get('I_USE_CRYPTO_BACKEND', 'openssl').lower().split(',')
+
+_crypto = 'libgcrypt'
+for _candidate in i_use_crypto_backend:
+    if _candidate in ('libgcrypt', 'gcrypt', 'openssl'):
+        _crypto = _candidate
+        break
+if _crypto == 'gcrypt':
+    _crypto = 'libgcrypt'
 
 pkgname = 'libssh2'
 pkgver = '1.4.3'
@@ -16,7 +24,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['nBSD']
 private = SUPPORTED
-depends = ['glibc', 'libgcrypt' if i_use_libgcrypt else 'openssl', 'zlib']
+depends = ['glibc', _crypto, 'zlib']
 makedepends = ['gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils'] + depends
 provides = ['libssh2.so']
 source = ['http://www.libssh2.org/download/libssh2-%s.tar.gz' % pkgver]
@@ -34,7 +42,7 @@ def build(startdir, srcdir, pkgdir, private):
     execute('./configure',
             '--prefix=' + _prefix(private),
             '--with-libz',
-            '--with-libgcrypt' if i_use_libgcrypt else '--with-openssl')
+            '--with-' + _crypto)
     make()
 
 

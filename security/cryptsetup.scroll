@@ -10,13 +10,15 @@ i_use_locale         = get('I_USE_LOCALE',         '*')
 i_use_largefiles     = get('I_USE_LARGEFILES',     'y').lower().startswith('y')
 i_use_fips           = get('I_USE_FIPS',           'n').lower().startswith('y')
 i_use_secure         = get('I_USE_SECURE',         'y').lower().startswith('y')
-i_use_crypto_backend = get('I_USE_CRYPTO_BACKEND', 'gcrypt').lower().split(',')
+i_use_crypto_backend = get('I_USE_CRYPTO_BACKEND', 'libgcrypt').lower().split(',')
 
-_crypto = 'gcrypt'
+_crypto = 'libgcrypt'
 for _candidate in i_use_crypto_backend:
-    if _candidate in ('gcrypt', 'openssl', 'nss', 'kernel', 'nettle'):
+    if _candidate in ('libgcrypt', 'gcrypt', 'openssl', 'nss', 'kernel', 'nettle'):
         _crypto = _candidate
         break
+if _crypto == 'gcrypt':
+    _crypto = 'libgcrypt'
 
 pkgname = 'cryptsetup'
 pkgver = '1.6.0'
@@ -29,12 +31,9 @@ private = SUPPORTED
 group = ['base']
 depends = ['glibc', 'device-mapper', 'popt', 'util-linux', 'linux', 'sed', 'coreutils']
 makedepends = ['glibc', 'popt', 'gcc', 'device-mapper', 'linux', 'sh', 'grep', 'findutils', 'sed', 'make', 'coreutils', 'm4']
-if _crypto == 'gcrypt':
-    depends.append('libgcrypt')
-    makedepends.append('libgcrypt')
-elif not _crypto == 'kernel':
+if not _crypto == 'kernel':
     depends.append(_crypto)
-    makedepends.append('crypto')
+    makedepends.append(_crypto)
 options = ['!emptydirs']
 source = ['http://cryptsetup.googlecode.com/files/cryptsetup-%s.tar.bz2' % pkgver]
 sha3sums = ['30EE990866E89002932B0D299C635A379123F47132D12C68EF30D898A1FBA981932F830AF30576C76138977EAA8257B46C4DA0CCF42B5B868ACB7C9B8B619E5B0550E895ECEAB5C7']
@@ -51,7 +50,7 @@ def build(startdir, srcdir, pkgdir, private):
     args = ['./configure', '--prefix=' + _prefix(private), '--disable-static']
     args.append('--enable-cryptsetup-reencrypt')
     #args.append('--disable-veritysetup')
-    args.append('--with-crypto_backend=' + _crypto)
+    args.append('--with-crypto_backend=' + ('gcrypt' if _crypto == 'libgcrypt' else _crypto))
     if not i_use_largefiles:
         args.append('--disable-largefile')
     if i_use_fips:

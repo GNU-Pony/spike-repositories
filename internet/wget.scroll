@@ -72,7 +72,7 @@ def package(startdir, srcdir, pkgdir, private):
     _pre = pkgdir + _prefix(private)
     
     _dir = _pre + '/share/licenses/' + pkgname
-    install('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True, mode = 0o644)
+    ln('/usr/share/licenses/common/GPL3', _dir + '/LICENSE', parents = True)
     
     if not i_use_info:
         rm_r('%s/share/info' % _pre)

@@ -32,7 +32,7 @@ _state   = lambda private : '/var/lib' if not private else path('~/.local/var/li
 
 
 def ride(private):
-    pass
+    echo('A collection of manpages have been installed')
 
 
 def build(startdir, srcdir, pkgdir, private):

@@ -1,0 +1,146 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_kernel = get('I_USE_KERNEL', 'linux').lower()
+
+_kernel = i_use_kernel.replace('-libre', '')
+if 'solaris' in _kernel:  _kernel = 'solaris'
+elif 'cray'  in _kernel:  _kernel = 'cray'
+elif 'newos' in _kernel:  _kernel = 'newos'
+
+pkgname = 'openssl'
+_pkgver = '1.0.1e'
+pkgver = ''.join(filter(lambda c : not 'a' <= c <= 'z', _pkgver))
+if _pkgver != pkgver:
+    pkgver += '.' + ''.join(filter(lambda c : 'a' <= c <= 'z', _pkgver))
+pkgdesc = 'Toolkit for Secure Sockets Layer and Transport Layer Security'
+upstream = 'https://www.openssl.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['custom (permissive free)']
+private = SUPPORTED
+_kerneldeps = _kernel
+if _kernel == 'linux1':
+    _kerneldeps = 'linux<2'
+elif _kernel == 'linux':
+    _kerneldeps = 'linux>=2'
+depends = ['glibc', 'perl', _kerneldeps]
+optdepends = ['ca-certificates: for verification of servers']
+makedepends = ['gcc', 'sh', 'coreutils', 'make', 'sed', 'm4', 'grep', 'findutils'] + depends
+options = ['!makeflags']
+source = ['https://www.openssl.org/source/openssl-%s.tar.gz' % _pkgver,
+          'openssl@no-rpath.patch', 'openssl@ca-dir.patch',
+          'openssl@openssl-1.0.1e-fix_pod_syntax-1.patch',
+          'openssl@openssl-1.0.1-Check-DTLS_BAD_VER-for-version-number.patch',
+          'openssl@openssl-1.0.1-e_aes_cbc_hmac_sha1.c-fix-rare-bad-record-mac-on-AES.patch']
+noextract = source[1:]
+sha3sums = ['2A518C883F41873C711C0752304686096AAC5CFCF13A3CD7C722AE2CBFEA8446CF71B6C751A1A21F3804477F0FC9CACA04559FC4315F6F624F4746C9A037C056991666A91F48BF15', None, None, None, None, None]
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+
+
+def ride(private):
+    echo('A collection of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/openssl-%s' % (srcdir, _pkgver))
+    
+    sed(sed_script('/etc', _sysconf(private)), srcdir + '/openssl@ca-dir.patch')
+    patch(srcdir + '/openssl@no-rpath.patch', strip = 0, forward = False)
+    patch(srcdir + '/openssl@ca-dir.patch', strip = 0, forward = False)
+    patch(srcdir + '/openssl@openssl-1.0.1e-fix_pod_syntax-1.patch', forward = False)
+    patch(srcdir + '/openssl@openssl-1.0.1-Check-DTLS_BAD_VER-for-version-number.patch', forward = False)
+    patch(srcdir + '/openssl@openssl-1.0.1-e_aes_cbc_hmac_sha1.c-fix-rare-bad-record-mac-on-AES.patch', forward = False)
+    
+    arch = get('ARCH').replace('powerpc', 'pcc')
+    if arch == 'amd64':
+        arch = 'x86_64'
+    kernel = 'bsd' if 'bsd' in _kernel else _kernel
+    target = None
+    
+    if   kernel == 'uclinux64':             target = 'uClinux-dist64'
+    elif kernel == 'uclinux':               target = 'uClinux-dist64' if '64' in arch else 'uClinux-dist'
+    elif (kernel == 'darwin64') or ((kernel == 'darwin') and ('64' in arch)):
+        target = 'darwin64-ppc-cc' if arch.startswith('ppc') else 'darwin64-x86_64-cc'
+    elif kernel == 'darwin':                target = 'darwin-ppc-cc' if arch == 'ppc' else 'darwin-i386-cc'
+    elif kernel == 'gray':                  target = 'gray-' + arch
+    elif kernel == 'cygwin':                target = 'Cygwin'
+    elif kernel == 'newsos4':               target = 'newsos4-gcc'
+    elif kernel == 'bsd':
+        if arch in ('sparc64', 'ia64', 'x86_64'):
+            target = 'BSD-' + arch
+        elif (arch == 'ppc64') or arch.startswith('alpha'):
+            target = 'BSD-generic64'
+        elif '86' in arch:                  target = 'BSD-x86-elf' if 'elf' in arch else 'BSD-x86'
+        else:                               target = 'BSD-generic32'
+    elif kernel == 'solaris':
+        if arch[:5] in ('sun4u', 'sun4v'):  target = 'solaris64-sparcv9-gcc' if '64' in arch else 'solaris-sparcv9-gcc'
+        elif arch in ('sun4m', 'sun4d'):    target = 'solaris-sparcv8-gcc'
+        elif arch.startswith('sun4'):       target = 'solaris-sparcv7-gcc'
+        else:                               target = 'solaris64-x86_64-gcc' if '64' in arch else 'solaris-x86-gcc'
+    elif kernel == 'hurd':                  target = 'hurd-x86'
+    elif kernel == 'linux1':
+        if   arch == 'ia64':                target = 'linux-ia64'
+        elif arch == 'x86_64':              target = 'linux-x86_64'
+        else:                               target = 'linux-aout'
+    elif kernel == 'linux':
+        if   arch.startswith('ppc'):        target = 'linux-ppc'
+        elif arch == 'ia64':                target = 'linux-ia64'
+        elif arch == 'sparc64':             target = 'linux-sparcv9'
+        elif arch.startswith('parisc'):     target = 'linux-generic32'
+        elif arch.startswith('armv1'):      target = 'linux-generic32'
+        elif arch.startswith('armv2'):      target = 'linux-generic32'
+        elif arch.startswith('armv3'):      target = 'linux-generic32'
+        elif arch.startswith('arm'):        target = 'linux-armv4'
+        elif arch == 's390x':               target = 'linux64-s390x'
+        elif arch == 'x86_64':              target = 'linux-x86_64'
+        elif arch == 'sparc':               target = 'linux-generic32'
+        elif arch == 'sun4m':               target = 'linux-sparcv8'
+        elif arch == 'sun4d':               target = 'linux-sparcv8'
+        elif arch.startswith('sun4u'):      target = 'linux-sparcv9'
+        elif arch.endwith('86'):            target = 'linux-elf'
+        elif 'alpha' in arch:
+            if ('6' in arch) or ('7' in arch) or ('8' in arch):
+                target = 'linux-alpha+bwx-gcc'
+            else:
+                target = 'linux-alpha-gcc'
+        else:
+            target = 'linux-generic32'
+    
+    args = ['./Configure',
+            '--prefix=' + _prefix(private),
+            '--openssldir=%s/ssl' % _sysconf(private),
+            '--libdir=lib', 'shared', 'zlib', target]
+    if arch == 'x86_64':
+        args.append(enable-ec_nistp_64_gcc_128) 
+    args += ['-Wa,--noexecstack', get('CFLAGS', ''), get('LDFLAGS', '')]
+    execute(args)
+    execute(['./config', '--test-sanity'], fail = True)
+    make(depend)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/openssl-%s' % (srcdir, _pkgver))
+    unpatch(srcdir + '/openssl@ca-dir.patch', strip = 0, forward = False)
+    make('test')
+    patch(srcdir + '/openssl@ca-dir.patch', strip = 0, forward = False)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/openssl-%s' % (srcdir, pkgver_))
+    make('INSTALL_PREFIX=' + pkgdir, 'MANDIR=%s/share/man' % _prefix(private), 'MANSUFFIX=ssl', 'install')
+    
+    _pre = pkgdir + _prefix(private)
+    install('LICENSE', _pre + '/share/licenses/' + pkgname + '/COPYING', parents = True, mode = 0o644)
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+

@@ -23,7 +23,7 @@ if i_use_pam:
 makedepends = ['help2man', 'gcc', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils', 'bison', 'texinfo']
 makedepends += depends
 provides = ['ftp', 'telnet', 'talk', 'rlogin', 'rsh', 'rcp', 'rexec', 'inetd', 'uucpd', 'syslogd', 'tftp']
-source = ['ftpd.conf', 'telnet.xinetd', 'talk.xinetd', 'rlogin.xinetd', 'rsh.xinetd', 'rlogin.pam', 'rsh.pam']
+source = ['ftpd.conf', 'telnet.xinetd', 'talk.xinetd', 'rlogin.xinetd', 'rsh.xinetd', 'tftp.xinetd', 'rlogin.pam', 'rsh.pam']
 source = ['http://ftp.gnu.org/gnu/inetutils/inetutils-%s.tar.gz' % pkgver] + ['inetutil@' + f for f in source]
 noextract = source[1:]
 sha3sums = ['0770E9C93199584E08A231F68143AD0973669D2496687D57751EABF8CAAB19CE59C6BED17EE8D4FEA58ACE5C665C06C122BF5E43436AFE112C3DAF65908ACB93593B75920F07B2DF'] + [None] * len(noextract)
@@ -39,7 +39,9 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd(srcdir)
-    sed(sed_script('/usr/bin', '%s/bin' % _prefix(private)), path('inetutils@*.xinetd'))
+    sed(sed_script('/usr/bin/',  '%s/bin/'  % _prefix(private)), path('inetutils@*.xinetd'))
+    sed(sed_script('/usr/sbin/', '%s/sbin/' % _prefix(private)), path('inetutils@*.xinetd'))
+    sed(sed_script('/var/',      '%s/'      %  _state(private)), path('inetutils@*.xinetd'))
     cd('inetutils-%s' % pkgver)
     sed(sed_script('_GL_WARN_ON_USE (gets', '//_GL_WARN_ON_USE (gets'), 'lib/stdio.in.h')
     args = ['./configure',
@@ -89,6 +91,7 @@ def package(startdir, srcdir, pkgdir, private):
     install(srcdir + '/inetutils@talk.xinetd',   _etc + '/xinetd.d/talk',   parents = True, mode = 0o644)
     install(srcdir + '/inetutils@rlogin.xinetd', _etc + '/xinetd.d/rlogin', parents = True, mode = 0o644)
     install(srcdir + '/inetutils@rsh.xinetd',    _etc + '/xinetd.d/rsh',    parents = True, mode = 0o644)
+    install(srcdir + '/inetutils@tftp.xinetd',   _etc + '/xinetd.d/tftp',   parents = True, mode = 0o644)
     if i_use_pam:
         install(srcdir + '/inetutils@rlogin.pam', _etc + '/pam.d/rlogin', parents = True, mode = 0o644)
         install(srcdir + '/inetutils@rsh.pam',    _etc + '/pam.d/rsh',    parents = True, mode = 0o644)

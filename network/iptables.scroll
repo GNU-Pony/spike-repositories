@@ -64,5 +64,5 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)
     if not i_use_man:
-        rm_r('%s/usr/share/man' & pkgdir)
+        rm_r('%s/usr/share/man' % pkgdir)
 

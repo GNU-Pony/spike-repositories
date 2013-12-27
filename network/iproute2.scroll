@@ -53,5 +53,5 @@ def package(startdir, srcdir, pkgdir, private):
     mkdir_p(_dir)
     ln_s('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir)
     if not i_use_man:
-        rm_r('%s/usr/share/man' & pkgdir)
+        rm_r('%s/usr/share/man' % pkgdir)
 

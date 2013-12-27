@@ -1,0 +1,117 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_pam  = get('I_USE_PAM',  'y').lower().startswith('y')
+
+pkgname = 'inetutils'
+pkgver = '1.9.1'
+pkgdesc = 'Collection of common network programs'
+upstream = 'http://www.gnu.org/software/inetutils/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'ncurses']
+if i_use_pam:
+    depends.append('pam')
+makedepends = ['help2man', 'gcc', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils', 'coreutils', 'bison', 'texinfo']
+makedepends += depends
+provides = ['ftp', 'telnet', 'talk', 'rlogin', 'rsh', 'rcp', 'rexec', 'inetd', 'uucpd', 'syslogd', 'tftp']
+source = ['ftpd.conf', 'telnet.xinetd', 'talk.xinetd', 'rlogin.xinetd', 'rsh.xinetd', 'rlogin.pam', 'rsh.pam']
+source = ['http://ftp.gnu.org/gnu/inetutils/inetutils-%s.tar.gz' % pkgver] + ['inetutil@' + f for f in source]
+noextract = source[1:]
+sha3sums = ['0770E9C93199584E08A231F68143AD0973669D2496687D57751EABF8CAAB19CE59C6BED17EE8D4FEA58ACE5C665C06C122BF5E43436AFE112C3DAF65908ACB93593B75920F07B2DF'] + [None] * len(noextract)
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var' if not private else path('~/.config/var')
+
+
+def ride(private):
+    echo('A set of manpages have been installed')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    sed(sed_script('/usr/bin', '%s/bin' % _prefix(private)), path('inetutils@*.xinetd'))
+    cd('inetutils-%s' % pkgver)
+    sed(sed_script('_GL_WARN_ON_USE (gets', '//_GL_WARN_ON_USE (gets'), 'lib/stdio.in.h')
+    args = ['./configure',
+            '--prefix=%s' % _prefix(private),
+            '--localstatedir=%s' % _state(private),
+            '--sysconfdir=%s' % _state(private),
+            '--libexec=%s/sbin' % _prefix(private),
+            '--without-wrap',
+            '--with-pam' if i_use_pam else '--without-pam',
+            '--enable-hostname',
+            '--enable-ftp',    '--enable-ftpd',
+            '--enable-telnet', '--enable-telnetd',
+            '--enable-talk',   '--enable-talkd',
+            '--enable-rlogin', '--enable-rlogind',
+            '--enable-rsh',    '--enable-rshd',
+            '--enable-rcp',
+            '--enable-rexec',  '--enable-rexecd',
+            '--enable-inetd',
+            '--enable-uucpd',
+            '--enable-syslogd',
+            '--enable-tftp',   '--enable-tftpd',
+            '--disable-ping',  '--disable-ping6', # provided by iputils
+            '--disable-logger',                   # provided by util-linux
+            '--disable-whois',                    # provided by whois
+            '--disable-ifconfig',                 # provided by net-tools
+            '--disable-traceroute']               # provided by traceroute
+    execute(args)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/inetutils-%s' % (srcdir, pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/inetutils-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    if not private:
+        mv(_pre + '/bin/hostname', pkgdir + '/bin/hostname')
+    
+    _etc = pkgdir + _sysconf(private)
+    install(srcdir + '/inetutils@ftpd.conf',     _etc + '/conf.d/ftpd',     parents = True, mode = 0o644)
+    install(srcdir + '/inetutils@telnet.xinetd', _etc + '/xinetd.d/telnet', parents = True, mode = 0o644)
+    install(srcdir + '/inetutils@talk.xinetd',   _etc + '/xinetd.d/talk',   parents = True, mode = 0o644)
+    install(srcdir + '/inetutils@rlogin.xinetd', _etc + '/xinetd.d/rlogin', parents = True, mode = 0o644)
+    install(srcdir + '/inetutils@rsh.xinetd',    _etc + '/xinetd.d/rsh',    parents = True, mode = 0o644)
+    if i_use_pam:
+        install(srcdir + '/inetutils@rlogin.pam', _etc + '/pam.d/rlogin', parents = True, mode = 0o644)
+        install(srcdir + '/inetutils@rsh.pam',    _etc + '/pam.d/rsh',    parents = True, mode = 0o644)
+    
+    ln('/usr/share/licenses/common/GPL3', '%s/share/licenses/%s/LICENSE' % (_pre, pkgname), parents = True)
+    if not i_use_info:
+        rm_r('%s/share/info' % _pre)
+    if not i_use_man:
+        rm_r('%s/share/man' % _pre)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

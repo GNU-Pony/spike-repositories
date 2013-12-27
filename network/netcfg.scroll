@@ -50,5 +50,5 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     install('LICENSE', '%s/LICENSE' % _dir)
     if not i_use_man:
-        rm_r('%s/usr/share/man' & pkgdir)
+        rm_r('%s/usr/share/man' % pkgdir)
 

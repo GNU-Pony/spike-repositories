@@ -1,0 +1,128 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
+i_use_html     = get('I_USE_HTML',     'y').lower().startswith('y')
+i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
+i_use_x        = get('I_USE_X',        'y').lower().startswith('y')
+i_use_systemd  = get('I_USE_SYSTEMD',  'n').lower().startswith('y')
+i_use_valgrind = get('I_USE_VALGRIND', 'n').lower().startswith('y')
+i_use_selinux  = get('I_USE_SELINUX',  'n').lower().startswith('y')
+i_use_audit    = get('I_USE_AUDIT',    'y').lower().startswith('y')
+i_use_logind   = get('I_USE_LOGIND',   'n').lower().startswith('y')
+i_use_xmldoc   = get('I_USE_XMLDOC',   'n').lower().startswith('y')
+i_use_doxygen  = get('I_USE_DOXYGEN',  'n').lower().startswith('y')
+i_use_kqueue   = get('I_USE_KQUEUE',   'n').lower().startswith('y')
+i_use_epoll    = get('I_USE_EPOLL',    'n').lower().startswith('y')
+i_use_inotify  = get('I_USE_INOTIFY',  'n').lower().startswith('y')
+i_use_socket_namespaces = get('I_USE_SOCKET_NAMESPACES', 'n').lower().startswith('y')
+
+pkgname = 'dbus'
+pkgver = '1.6.18'
+pkgdesc = 'Interapplication message bus system'
+upstream = 'http://www.freedesktop.org/Software/dbus'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL2', 'AFL2.1']
+private = SUPPORTED
+depends = ['expat', 'glibc', 'shadow', 'coreutils']
+if i_use_x:
+    depends.append('libx11')
+    optdepends = ['libx11: for dbus-launch support']
+if i_use_systemd:
+    depends.append('systemd')
+if i_use_logind:
+    depends.append('logind')
+if i_use_selinux:
+    depends.append('selinux')
+    if i_use_audit:
+        depends.append('audit')
+if i_use_kqueue:
+    depends.append('bsd')
+if i_use_epoll or i_use_inotify or i_use_socket_namespaces:
+    depends.append('linux')
+makedepends = ['gcc', 'sh', 'm4', 'sed', 'grep', 'make', 'findutils'] + depends
+if i_use_xmldoc:
+    makedepends.append('xmlto')
+if i_use_doxygen:
+    makedepends.append('doxygen')
+depends.append('filesystem')
+provides = ['dbus-core', 'libdbus']
+source = ['http://dbus.freedesktop.org/releases/dbus/dbus-%s.tar.gz' % pkgver,
+          'dbus@systemd-user-session.patch', 'dbus@memleak.patch', 'dbus@30-dbus']
+noextract = source[1:]
+sha3sums = ['03C6418F2E7C14C38B25A40A9458A6B449992EDE6BBFA4EDB4E1CED84ABE5E27F6359B7D4FAFA9865C35906C89C159E8F051E1F0639F025DB31DF3D4BACF1E97C6E31184C7EC2A54'] + [None] * len(noextract)
+
+_prefix  = lambda private : '/usr' if not private else path('~/.local')
+_sysconf = lambda private : '/etc' if not private else path('~/.config')
+_state   = lambda private : '/var' if not private else path('~/.local/var')
+_run     = lambda private : '/run' id not private else ('/dev/shm/~' + get('USER', path('~').split('/')[-1]) + '/run')
+
+def ride(private):
+    echo('This package provides the daemon `dbus`')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/dbus-%s' % (srcdir, pkgver))
+    if i_use_systemd:
+        patch(srcdir + '/dbus@systemd-user-session.patch')
+    patch(srcdir + '/dbus@memleak.patch')
+    args = ['./configure',
+            '--prefix=' + _prefix(private),
+            '--sysconfdir=' + _sysconf(private),
+            '--localstatedir=' + _state(private),
+            '--with-valgrind' if i_use_valgrind else '--without-valgrind',
+            '--with-x' if i_use_x else '--without-x',
+            '--enable-x11-autolaunch' if i_use_x else '--disable-x11-autolaunch',
+            '--with-dbus-user=dbus',
+            '--with-system-pid-file=%s/dbus/pid' % _run(private),
+            '--with-system-socket=%s/dbus/system_bus_socket' % _run(private),
+            '--with-console-auth-dir=%s/console/' % _run(private),
+            '--enable-systemd' if i_use_systemd else '--disable-systemd',
+            '--enable-logind' if i_use_logind else '--disable-logind',
+            '--enable-selinux' if i_use_selinux else '--disable-selinux',
+            '--enable-libaudit' if i_use_selinux and i_use_audit else '--disable-libaudit'
+            '--disable-verbose-mode',
+            '--disable-static',
+            '--disable-tests',
+            '--disable-asserts',
+            '--enable-xml-docs' if i_use_xmldoc else '--disable-xml-docs',
+            '--enable-doxygen-docs' if i_use_doxygen else '--disable-doxygen-docs',
+            '--disable-dnotify',
+            '--enable-inotify' if i_use_inotify else '--disable-inotify',
+            '--enable-epoll' if i_use_epoll else '--disable-epoll',
+            '--enable-kqueue' if i_use_kqueue else '--disable-kqueue',
+            '--enable-inotify' if i_use_socket_namespaces else '--disable-inotify']
+    if i_use_systemd:
+        args.append('--with-systemdsystemunitdir=%s/lib/systemd/system' % _prefix(private))
+    else:
+        args.append('--without-systemdsystemunitdir')
+    execute(args)
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dbus-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    rm_r(pkgdir + '/var/run')
+    
+    if i_use_x:
+        _etc = pkgdir + _sysconf(private)
+        install(srcdir + '/dbus@30-dbus', _etc + '/X11/xinit/xinitrc.d/30-dbus', parents = True, mode = 0o755)
+    
+    _dir = '%s/share/licenses/%s' % (_pre, pkgname)
+    mkdir_p(_dir)
+    for _lic in license:
+        ln('/usr/share/licenses/common/' + _lic, '%s/LICENSE.%s' % (_dir, _lic.lower()))
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    if not i_use_html:
+        rm(path('%s/*.{html,png,svg}') % path_escape(_pre + '/share/doc/dbus'))
+

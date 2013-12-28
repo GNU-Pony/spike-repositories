@@ -1,0 +1,70 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info   = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_man    = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_locale = get('I_USE_LOCALE', '*')
+
+pkgname = 'help2man'
+pkgver = '1.43.3'
+pkgdesc = 'Conversion tool to create man files'
+upstream = 'http://www.gnu.org/software/help2man/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'perl', 'perl-locale-gettext']
+makedepends = ['gcc', 'glibc', 'perl', 'sh', 'm4', 'sed', 'grep', 'coretuils', 'make', 'findutils']
+source = ['http://ftp.gnu.org/gnu/help2man/help2man-%s.tar.gz' % pkgver]
+sha3sums = ['D0D4F892D6C835FB99A5FDB5C40380E1D8054C127166E91CCB0E6E84CB9D96667FCB75B902144C2E60A1AB51DBF949D6F00C18F0B5C2E464AB5935363B1D9E9CC3237282A6A6B51A']
+
+_prefix = lambda private : (path('~/.local') if private else '/usr')
+
+
+def ride(private):
+    if i_use_info:
+        execute('info', 'grep', 'invoking')
+    else:
+        execute('man', '1', 'grep')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/help2man-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    make()
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/help2man-%s' % (srcdir, pkgver))
+    make('DESTDIR=%s' % pkgdir, 'install')
+    
+    _licenses = pkgdir + _prefix(private) + '/share/licenses'
+    mkdir_p(_licenses)
+    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    
+    if not man:
+        rm_r(pkgdir + _prefix(private) + '/share/man')
+    if not i_use_info:
+        rm_r(pkgdir + _prefix(private) + '/share/info')
+    filter_locale(i_use_locale, pkgdir, _prefix(private))
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

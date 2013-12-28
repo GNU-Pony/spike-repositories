@@ -1,0 +1,54 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'perl-error'
+pkgver = '0.17021'
+pkgdesc = 'Perl error/exception handling in an OO-ish way'
+upstream = 'http://search.cpan.org/dist/Error/'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['PerlArtistic', 'GPL1']
+private = SUPPORTED
+depends = ['perl']
+checkdepends = ['perl-test-pod', 'perl-test-pod-coverage']
+makedepends = ['perl', 'make']
+options = ['!emptydirs']
+source = ['http://search.cpan.org/CPAN/authors/id/S/SH/SHLOMIF/Error-%s.tar.gz' % pkgver]
+sha3sums = ['88400A6FF255FDEF948D25198F742868FE2F5B418B1435D5C556225DBB5355A78B7FD80CCC1B40929361B34372B90C4FE5ED2F7D6BC76E102791999A247536AAF1EE7D9E8F0BD95C']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man('3pm', 'Error')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/Error-%s' % (srcdir, pkgver))
+    execute('perl', 'Makefile.PL', 'INSTALLDIRS=vendor', 'PREFIX=%s' % _prefix(private))
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/Error-%s' % (srcdir, pkgver))
+    make('test')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/Error-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    rm_r(_pre + '/lib')
+    
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/share/licenses/%s/%s' % (_pre, pkgname, _lic), parents = True)
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+

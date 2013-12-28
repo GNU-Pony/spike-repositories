@@ -1,0 +1,58 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'perl-locale-gettext'
+pkgver = '1.05'
+pkgdesc = 'Permits access from Perl to the gettext family of functions'
+upstream = 'http://search.cpan.org/dist/gettext/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['PerlArtistic', 'GPL1']
+private = SUPPORTED
+depends = ['gettext', 'perl', 'libc']
+makedepends = ['perl', 'make', 'coreutils', 'cc', 'libc']
+options = ['!emptydirs']
+source = ['http://search.cpan.org/CPAN/authors/id/P/PV/PVANDRY/gettext-%s.tar.gz' % pkgver,
+          'perl-locale-gettext@compatibility-with-POSIX-module.patch']
+noextract = source[1:]
+sha3sums = ['81C7EE6D713DDDBC766C1F2130FCEA152A13128DE7AADEC3DE805EEC32B3FDB591716972251320A4D2FC3FE8CC5811B3F493333240FAC7C9749F1B444C5B69805C4D6C8B7E66CDBF', None]
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man('3pm', 'Locale::gettext')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    patch(srcdir + '/perl-locale-gettext@compatibility-with-POSIX-module.patch')
+    export('PERL_MM_USE_DEFAULT', '1')
+    execute('perl', 'Makefile.PL', 'INSTALLDIRS=vendor', 'PREFIX=%s' % _prefix(private))
+    make()
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    make('test')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gettext-%s' % (srcdir, pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    rm(_pre + '/lib/perl5/vendor_perl/auto/Locale/gettext/.packlist')
+    rm(_pre + '/lib/perl5/core_perl/perllocal.pod')
+    
+    for _lic in license:
+        ln('/usr/share/licenses/common/%s' % _lic, '%s/share/licenses/%s/%s' % (_pre, pkgname, _lic), parents = True)
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+

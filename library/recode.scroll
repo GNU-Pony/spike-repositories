@@ -11,7 +11,7 @@ i_use_dmalloc  = get('I_USE_DMALLOC',  'n').lower().startswith('y')
 i_use_locale   = get('I_USE_LOCALE',   '*')
 
 pkgname = 'recode'
-_pkgver = '3.6'
+pkgver = '3.6'
 pkgdesc = 'Converts files between various character sets and usages'
 upstream = 'http://recode.progiciels-bpi.ca'
 arch = ['x86_64']
@@ -23,7 +23,7 @@ makedepends = ['gcc', 'glibc', 'sh', 'm4', 'sed', 'grep' ,'findutils',
                'make', 'coreutils', 'libtool', 'autoconf', 'texinfo']
 source = ['https://github.com/pinard/Recode/archive/v%s.tar.gz' % pkgver,
           'http://ftp.de.debian.org/debian/pool/main/r/recode/recode_3.6-17.diff.gz',
-          'recode@as-if.patch', 'recode@gettextfix.diff')]
+          'recode@as-if.patch', 'recode@gettextfix.diff']
 noextract = source[2:]
 sha3sums = ['C22E52541199C5C4C9F024FD0F49C3C03D6CE2DAAB0F1F3F4B2836D97DE5FFEA5D1C6A6F0F8EB16B4093CCEE7F9AAD4C191F415A0D83D70CC9B90D8C751AA42702D47DF1FE02ABD2',
             '9785C79118F35FE7BA47EAAF49C4F3078C42D3BDAB20718E03533F3226EDB54516515F9498FFC8693D48C2860DBC7DD51F0F194989F93DBA40877D9D97C0FB529126EAA6175B64EE',

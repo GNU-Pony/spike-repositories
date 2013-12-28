@@ -95,7 +95,7 @@ def post_install(tmpdir, rootdir, installedfiles, private):
 
 
 def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    _dir = rootdir + _state(private) '/cache/man'
+    _dir = rootdir + _state(private) + '/cache/man'
     if os.path.lexists(_dir):
         try:
             rm_r(_dir)

@@ -29,7 +29,7 @@ if not i_use_man:
 private = SUPPORTED
 depends = []
 makedepends = ['make', 'coreutils']
-source = ['http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%.tar.xz' % pkgver]
+source = ['http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%s.tar.xz' % pkgver]
 sha3sums = ['801C2D567A399FEFB253736A094DEC960706FACAEB517D554C6E24096C8E626348C9107CBD023E74CEFE3F12BCB195F2D5549EDF6F120EA6F9760C294F0711F7D546CE4D68759824']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')

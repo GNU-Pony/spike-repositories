@@ -19,6 +19,7 @@ license = ['custom (permissive free)']
 private = SUPPORTED
 depends = ['glibc', 'm4', 'sh']
 makedepends = ['glibc', 'gcc', 'sh', 'm4', 'make', 'sed', 'grep', 'findutils', 'coreutils']
+provides = ['lex']
 options = ['staticlibs']
 source = ['http://downloads.sourceforge.net/sourceforge/flex/flex-%s.tar.gz' % pkgver, 'flex@lex.sh']
 noextract = source[1:]

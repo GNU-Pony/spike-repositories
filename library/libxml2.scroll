@@ -1,0 +1,72 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man     = get('I_USE_MAN',     'y').lower().startswith('y')
+i_use_html    = get('I_USE_HTML',    'y').lower().startswith('y')
+i_use_threads = get('I_USE_THREADS', 'y').lower().startswith('y')
+
+pkgname = 'libxml2'
+pkgver = '2.9.1'
+pkgdesc = 'XML parsing library'
+upstream = 'http://www.xmlsoft.org/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['MIT', 'custom (all permissive free)']
+private = SUPPORTED
+depends = ['glibc', 'zlib', 'readline', 'ncurses', 'xz']
+makedepends = ['sed', 'python2', 'make', 'coreutils', 'gcc', 'sh', 'm4', 'grep', 'sed', 'findutils'] + depends
+source = ['ftp://ftp.xmlsoft.org/libxml2/libxml2-%s.tar.gz' % _pkgver, 'http://www.w3.org/XML/Test/xmlts20080827.tar.gz']
+sha3sums = ['E82975A432A486F36EEE254998C79769F1EDA709DD4AF73617DE4D8BD5C9A908BCDF056D1E1A06560130E65801F4F4015951D94BFEB0F55622C31D4C7DBC462C2ECEB24AC658FD46']
+## http://www.w3.org/XML/Test/xmlts20080827.tar.gz appears to be proprietary and is therefore not utilised
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    pass
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libxml2-%s' % (srcdir, _pkgver))
+    _py2 = which('python2')
+    sed([sed_script('/usr/bin/python -u', '%s -u' % _py2),
+         sed_script('/usr/bin/python$', _py2)],
+        path('python/tests/*.py'))
+    execute('./configure',
+            '--prefix=%s' % _prefix(private),
+            '--with-threads' if i_use_threads else '--without-threads',
+            '--with-history',
+            '--with-python=%s' % _py2)
+    make()
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/libxml2-%s' % (srcdir, _pkgver))
+    make('check')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libxml2-%s' % (srcdir, _pkgver))
+    make('DESTDIR=' + pkgdir, 'install')
+    _pre = pkgdir + _prefix(private)
+    
+    if _prefix(private) != '/usr':
+        mv(pkgdir + '/usr/lib', _pre)
+    
+    _dir = _pre + '/share/licenses/' + pkgname
+    ln('/usr/share/licenses/common/MIT', _dir + '/LICENSE.mit', parents = True)
+    custom = '\n'.join[line[3:] for line in behead('trio.h', 6)[:9]]
+    with open(_dir + '/LICENSE.custom', 'wb') as file:
+        file.write(custom.encode('utf-8'))
+        file.flush()
+    
+    if not i_use_man:
+        rm_r(_pre + '/share/man')
+    if not i_use_html:
+        rm_r(_pre + '/share/gtk-doc')
+        rm_r(_pre + '/share/doc/libxml2-2.9.1/html')
+

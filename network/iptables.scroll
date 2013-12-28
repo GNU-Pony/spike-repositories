@@ -59,7 +59,7 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = pkgdir + _state(private) + '/lib'
     _files = path('iptables@empty-{filter,mangle,nat,raw,security}.rules')
     for _file in _files:
-        install(_file, _dir + '/' + _file.split('@')[1], parents = True, mode = 0o644
+        install(_file, _dir + '/' + _file.split('@')[1], parents = True, mode = 0o644)
     
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     ln('/usr/share/licenses/common/GPL2', '%s/LICENSE' % _dir, parents = True)

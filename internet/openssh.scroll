@@ -54,7 +54,7 @@ def build(startdir, srcdir, pkgdir, private):
             '--with-pam' if i_use_pam else '--without-pam',
             '--with-privsep-user=nobody',
             '--with-kerberos5=%s' % _prefix(i_use_system_kerberos) if i_use_kerberos else '--without-kerberos5',
-            '--with-xauth=%s/bin/xauth' %  % _prefix(i_use_system_xauth) if i_use_xauth else '--without-xauth',
+            '--with-xauth=%s/bin/xauth' %  _prefix(i_use_system_xauth) if i_use_xauth else '--without-xauth',
             '--with-mantype=man',
             '--with-md5-passwords',
             '--with-pid-dir=%s' % _run(private))

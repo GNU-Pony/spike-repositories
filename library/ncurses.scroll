@@ -80,7 +80,7 @@ def build(startdir, srcdir, pkgdir, private):
             '--disable-termcap',
             '--enable-symlinks',
             '--with-rcs-ids',
-            '--with-manpage-format=normal')
+            '--with-manpage-format=normal']
     
     # Extensions
     args += ['--enable-ext-funcs',

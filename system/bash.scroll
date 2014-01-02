@@ -162,5 +162,5 @@ def post_upgrade(tmpdir, rootdir, installedfiles, private):
 def pre_uninstall(tmpdir, rootdir, installedfiles, private):
     pre_uninstall_info(rootdir, installedfiles, private)
     if private:
-        uninstall_alternative(rootdir, 'sh', 'bash')
+        uninstall_alternative(rootdir, installedfiles, 'sh', 'bash')
 

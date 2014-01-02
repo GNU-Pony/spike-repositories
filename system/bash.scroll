@@ -131,6 +131,10 @@ def package(startdir, srcdir, pkgdir, private):
     for f in ['rc', '_profile', '_logout']:
         install('bash@pony.bash' + f, pkgdir + _skel(private) + '/.bash' + f, parents = True, mode = 0o644)
     
+    if not private:
+        ln('/etc/alternatives.providers/sh/bash', '/bin/sh', parents = True)
+        ln('/bin/bash', '/etc/alternatives.providers/sh/bash', parents = True)
+    
     _licenses = pkgdir + _prefix(private) + '/share/licenses'
     ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname), parents = True)
     
@@ -143,6 +147,8 @@ def package(startdir, srcdir, pkgdir, private):
 
 def post_install(tmpdir, rootdir, installedfiles, private):
     post_install_info(rootdir, installedfiles, private, i_use_info)
+    if private:
+        install_alternative(rootdir, 'sh', 'bash')
 
 
 def pre_upgrade(tmpdir, rootdir, installedfiles, private):
@@ -155,4 +161,6 @@ def post_upgrade(tmpdir, rootdir, installedfiles, private):
 
 def pre_uninstall(tmpdir, rootdir, installedfiles, private):
     pre_uninstall_info(rootdir, installedfiles, private)
+    if private:
+        uninstall_alternative(rootdir, 'sh', 'bash')
 

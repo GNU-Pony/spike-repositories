@@ -22,7 +22,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 groups = ['base']
-depends = ['glibc', 'curses']
+depends = ['glibc', 'curses', 'filesystem']
 if i_use_readline:
     depends.append('readline>=6.1')
 makedepends = ['gcc'] + depends

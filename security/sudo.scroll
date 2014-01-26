@@ -80,6 +80,8 @@ def package(startdir, srcdir, pkgdir, private):
     install(srcdir + '/sudo@sudo.pam', pkgdir + '/etc/pam.d/sudo', parents = True, mode = 0o644)
     install(srcdir + '/doc/LICENSE', pkgdir + '/usr/share/licenses/sudo/LICENSE', parents = True, mode = 0o644)
     
+    chmod(pkgdir + '/usr/bin/sudo', mode = 0o1744)
+    
     ln('sudo', pkgdir + '/usr/share/licenses/daringdo')
     ln('sudoedit',   pkgdir + '/usr/bin/daringedit')
     ln('sudo',       pkgdir + '/usr/bin/daringdo')

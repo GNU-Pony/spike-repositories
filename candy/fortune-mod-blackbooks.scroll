@@ -1,0 +1,40 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_ver = '3'
+pkgname = 'fortune-mod-blackbooks'
+pkgver = '20140124'
+pkgdesc = "Fortune quotes from Black Books"
+upstream = "http://en.wikiquote.org/wiki/Black_Books"
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['CC-by-sa-3.0']
+private = SUPPORTED
+extension = 'fortune-mod'
+depends = []
+makedepends = ['fortune-mod', 'make', 'coreutils', 'sed', 'grep', 'wikiquote-fortune>=1.2']
+source = ["https://github.com/maandree/wikiquote-fortune-collection/archive/%s.tar.gz" % _ver]
+sha3sums = ['7A0BCDF1E26B262AA0B408ECBB9474F8087E6B84CE5FDD7CCCB988F57404D87DC3049806160690D55F304E030CB27EC187E6DAFE8A11815362C2C71144D84E6E98ECCC7F5927A1AA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['fortune', 'blackbooks'])
+
+
+def build(startdir, srcdir, pkgdir, private)
+    cd("%s/wikiquote-fortune-collection-%s" % (srcdir, _ver))
+    make('SHOWS=blackbooks', 'SCRIPTS=')
+
+
+def package(startdir, srcdir, pkgdir, private)
+    cd("%s/wikiquote-fortune-collection-%s" % (srcdir, _ver))
+    cd('quotes/blackbooks')
+    _dir = pkgdir + _prefix(private) + '/share/fortune'
+    install(['blackbooks', 'blackbooks.dat'], _dir, parents = True, mode = 0o644)
+

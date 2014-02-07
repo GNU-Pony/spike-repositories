@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'wikiquote-fortune'
+pkgver = '1'
+pkgdesc = 'Generate fortune cookies from Wikiquote'
+upstream = 'https://github.com/maandree/wikiquote-fortune'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['bash', 'wget', 'grep', 'sed']
+makedepends = ['coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['FA3B3853874B0C4E61B8FC97882524A891BDBD1F2B1E1104ED54242A2CE9862766675ECF500BD3F6E96C4032F449658B2D0803358E701A34BEE95BDAB64023F44ECD2F20F063A68D']
+
+
+def ride(private):
+    echo('usage: wikiquote-fortune SHOW_NAME')
+    echo('Be sure that you do not have any file')
+    echo('named \'quotes\' or \'version\' in the')
+    echo('working directory.')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install('COPYING', '%s/COPYING' % _dir, parents = True, mode = 0o644)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    
+    _dir = '%s/share/doc' % (_prefix)
+    install('README', '%s/%s' % (_dir, pkgname), parents = True, mode = 0o644)
+    
+    _script = 'wikiquote-fortune'
+    install(_script, '%s/bin/%s' % (_prefix, _script), parents = True, mode = 0o755)
+

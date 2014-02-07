@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'wikiquote-fortune'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'Generate fortune cookies from Wikiquote'
 upstream = 'https://github.com/maandree/wikiquote-fortune'
 arch = ['any']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['bash', 'wget', 'grep', 'sed']
 makedepends = ['coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['84FB154228109B88AB90F9311F686AD0E9284DCFFFA2169826D0CA72467670A2819C3C126858D96F23482CCD1C552A021E0B4BA81FEBBF67175190478DB641C6A6CA10685549A972']
+sha3sums = ['7475C583CC72F1FE50519171831DB43F2631AE8A837CC21ABD7AA6815AAA1CB76311EB71913F5070DF12D26F7312EF48F0B6CB0D8362345748BE505111B4FB18633ECEEB6ADFDB41']
 
 
 def ride(private):

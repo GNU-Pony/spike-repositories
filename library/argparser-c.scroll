@@ -8,7 +8,7 @@ from dragonsuite import *
 patches = 'argparser'
 _patch = 'C'
 pkgname = '%s-%s' % (patches, _patch.lower())
-pkgver = '5.0'
+pkgver = '5.1'
 pkgdesc = 'Native version of argparser written in C'
 upstream = 'https://github.com/maandree/argparser'
 arch = ['x86_64']

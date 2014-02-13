@@ -5,6 +5,8 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
 pkgname = 'pinkie-pie'
 pkgver = '1.1'
 pkgdesc = 'Madame Pinkie Pie: ponified fortune cookies'
@@ -12,9 +14,13 @@ upstream = 'https://github.com/maandree/pinkie-pie'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['public']
+if i_use_info:
+    license.append("GNUAllPermissive")
 private = SUPPORTED
 depends = ['sh', 'fortune-mod', 'ponypipe']
 makedepends = ['make', 'coreutils']
+if i_use_info:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['EE3A5C919B152B04580A34DCC59CF0DD6B1C212EACA2A496E2EF6B87B7F78B78ADF222487E7F54444403CFC40FD299B7DF030127F14B3E412992710CAB06A0F96C28D4F56758E865']
 
@@ -26,11 +32,15 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
-    make()
+    if i_use_info:
+        cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
+        make()
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install-command']
+    if i_use_info:
+        params.append('install-info')
+    make(params)
 

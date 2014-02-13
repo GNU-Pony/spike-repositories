@@ -6,8 +6,8 @@
 from dragonsuite import *
 
 pkgname = 'pinkie-pie'
-pkgver = '1.0.2'
-pkgdesc = 'Madam Pinkie Pie: ponified fortune cookies'
+pkgver = '1.1'
+pkgdesc = 'Madame Pinkie Pie: ponified fortune cookies'
 upstream = 'https://github.com/maandree/pinkie-pie'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
@@ -16,17 +16,18 @@ private = SUPPORTED
 depends = ['sh', 'fortune-mod', 'ponypipe']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BA7844B94EA8BCAE43888E17D4F241E1DDDA5B4F4B64C2BFDE7A14840AD089C7EF0A723A69E2686617E5F2C806B07E0682C8F3A7B2281CB4F6AF2D8E627E2426F4CBD2858D23A0CE']
+sha3sums = ['EE3A5C919B152B04580A34DCC59CF0DD6B1C212EACA2A496E2EF6B87B7F78B78ADF222487E7F54444403CFC40FD299B7DF030127F14B3E412992710CAB06A0F96C28D4F56758E865']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute('pinkie-pie')
+    execute('pinkie')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/pinkie-pie-%s' % (srcdir, pkgver))
+    make()
 
 
 def package(startdir, srcdir, pkgdir, private):

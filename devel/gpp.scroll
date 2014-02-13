@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'gpp'
-pkgver = '1.1'
+pkgver = '1.1.1'
 pkgdesc = 'Bash based preprocessor for anything'
 upstream = 'https://github.com/maandree/gpp'
 arch = ['any']
@@ -19,9 +19,8 @@ depends = ['python>=3', 'bash']
 makedepends = ['make', 'coreutils', 'python3']
 if i_use_info:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['05D7F25E553668415561F5BE783E4C8143597DC380FD7AB81B831E6A995CF470845D5A99E83E52AF7FC3844ABEB82CB47002C2A80F3A68061B0346E2E80BEF9D720DFD9BE31A5ADA']
+sha3sums = ['9C90B18FADDE32334E5F66AE10AB783A397C21A4A15749F0AF54B9F845C22B6A23DD819F066E9E950D4DECCF7D164A5FA9A990E1184241E2AFBAB1531F245483DD30798E02EFD429']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

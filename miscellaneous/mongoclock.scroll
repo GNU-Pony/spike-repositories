@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'mongoclock'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'Just a humongous clock for the terminal'
 upstream = 'https://github.com/maandree/mongoclock'
 arch = ['any']
@@ -21,7 +21,7 @@ if i_use_info:
     makedepends.append('texinfo')
     makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['6CA8AAF56FF806DAF919F6D92197AC5E3437327F5E2B5D56DC2F26E8A5F8F42DC22E35C48F359AA230AC87684240C7D4CC6822102E982667F892101822F06ABC79FE99E43630A7D3']
+sha3sums = ['3238A3728A11FF997E8EF390D892988761590EF72E797B03ABABCD5FE115E0244E4BE5DE2AF0676CB48C929210D99F6B492B5E9CC26A3B6F00988E04D89B398128EF3E9224B1D0EA']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

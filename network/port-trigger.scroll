@@ -5,34 +5,49 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
 pkgname = 'port-trigger'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'Run programs when somepony makes a connection to a specific port'
 upstream = 'https://github.com/maandree/port-trigger'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
+if i_use_info:
+    license.append('FDL1.3')
 private = SUPPORTED
 depends = ['java-runtime']
 makedepends = ['make', 'coreutils', 'sed', 'java-environment']
+if i_use_info:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BE861BF47B64A5BF4E9F3F492EF120EDCAD01A81DF8482BB9B68D64AE57B383012E4CF4629F565EF7B92EAAD30DBC02E308FE3E8B940EBE0708E1D173F983750CAE882D8386B3A33']
+sha3sums = ['CC40D22EA7EB7D92F9AA433B76EAFE8C0CC698565D61C7BE9D3C650202371C62DCDB3DEC90E1A7648C43A12BA932769C9F50D4F9A500E33B2C6107A50DE775EF7D95393A59EB2350']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['porttrigger'])
+    execute(['info', 'port-trigger'])
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/porttrigger-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/porttrigger-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-command')
+    params.append('install-license')
+    if i_use_info:
+        params.append('install-info')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

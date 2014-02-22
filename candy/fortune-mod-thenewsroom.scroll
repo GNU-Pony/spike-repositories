@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-thenewsroom'
-pkgver = '20140207'
+pkgver = '20140213'
 pkgdesc = "Fortune quotes from The Newsroom"
 upstream = "http://en.wikiquote.org/wiki/The_Newsroom"
 arch = ['any']

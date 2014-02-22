@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-theshield'
-pkgver = '20130729'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from The Shield"
 upstream = "http://en.wikiquote.org/wiki/The_Shield"
 arch = ['any']

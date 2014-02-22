@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-southpark'
-pkgver = '20140103'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from South Park"
 upstream = "http://en.wikiquote.org/wiki/South_Park"
 arch = ['any']

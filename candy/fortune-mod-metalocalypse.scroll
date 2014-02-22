@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-metalocalypse'
-pkgver = '20131227'
+pkgver = '20140211'
 pkgdesc = "Fortune quotes from Metalocalypse"
 upstream = "http://en.wikiquote.org/wiki/Metalocalypse"
 arch = ['any']

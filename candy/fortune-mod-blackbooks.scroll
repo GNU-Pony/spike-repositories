@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-blackbooks'
-pkgver = '20140124'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Black Books"
 upstream = "http://en.wikiquote.org/wiki/Black_Books"
 arch = ['any']

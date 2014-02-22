@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-darkwingduck'
-pkgver = '20131114'
+pkgver = '20140209'
 pkgdesc = "Fortune quotes from Darkwing Duck"
 upstream = "http://en.wikiquote.org/wiki/Darkwing_Duck"
 arch = ['any']

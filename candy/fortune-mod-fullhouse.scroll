@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-fullhouse'
-pkgver = '20140205'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Full House"
 upstream = "http://en.wikiquote.org/wiki/Full_House"
 arch = ['any']

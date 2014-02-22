@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-sabrina'
-pkgver = '20131113'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Sabrina, the Teenage Witch"
 upstream = "http://en.wikiquote.org/wiki/Sabrina,_the_Teenage_Witch"
 arch = ['any']

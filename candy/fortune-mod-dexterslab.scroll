@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-dexterslab'
-pkgver = '20140125'
+pkgver = '20140209'
 pkgdesc = "Fortune quotes from Dexter's Laboratory"
 upstream = "http://en.wikiquote.org/wiki/Dexter's_Laboratory"
 arch = ['any']

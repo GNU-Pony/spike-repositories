@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-arresteddevelopment'
-pkgver = '20140109'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Arrested Development"
 upstream = "http://en.wikiquote.org/wiki/Arrested_Development"
 arch = ['any']

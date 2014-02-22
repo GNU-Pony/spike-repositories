@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-tgagaapp'
-pkgver = '20100810'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Two Guys, a Girl and a Pizza Place"
 upstream = "http://en.wikiquote.org/wiki/Two_Guys,_a_Girl_and_a_Pizza_Place"
 arch = ['any']

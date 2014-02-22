@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-chappelle'
-pkgver = '20140127'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from Chappelle's Show"
 upstream = "http://en.wikiquote.org/wiki/Chappelle's_Show"
 arch = ['any']

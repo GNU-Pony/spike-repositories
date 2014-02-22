@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-mynameisearl'
-pkgver = '20140130'
+pkgver = '20140212'
 pkgdesc = "Fortune quotes from My Name is Earl"
 upstream = "http://en.wikiquote.org/wiki/My_Name_is_Earl"
 arch = ['any']

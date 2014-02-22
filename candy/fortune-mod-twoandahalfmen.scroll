@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '3'
 pkgname = 'fortune-mod-twoandahalfmen'
-pkgver = '20140122'
+pkgver = '20140209'
 pkgdesc = "Fortune quotes from Two and a Half Men"
 upstream = "http://en.wikiquote.org/wiki/Two_and_a_Half_Men"
 arch = ['any']

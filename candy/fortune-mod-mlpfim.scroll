@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '4'
 pkgname = 'fortune-mod-mlpfim'
-pkgver = '20140216'
+pkgver = '20140220'
 pkgdesc = "Fortune quotes from My Little Pony: Friendship is Magic"
 upstream = "http://en.wikiquote.org/wiki/My_Little_Pony:_Friendship_is_Magic"
 arch = ['any']

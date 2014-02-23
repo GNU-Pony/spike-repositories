@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '4'
 pkgname = 'fortune-mod-sherlock'
-pkgver = '20140219'
+pkgver = '20140223'
 pkgdesc = "Fortune quotes from Sherlock"
 upstream = "http://en.wikiquote.org/wiki/Sherlock"
 arch = ['any']

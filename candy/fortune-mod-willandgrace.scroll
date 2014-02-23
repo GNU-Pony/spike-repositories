@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '4'
 pkgname = 'fortune-mod-willandgrace'
-pkgver = '20140219'
+pkgver = '20140223'
 pkgdesc = "Fortune quotes from Will & Grace"
 upstream = "http://en.wikiquote.org/wiki/Will_&_Grace"
 arch = ['any']

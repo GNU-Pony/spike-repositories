@@ -7,7 +7,7 @@ from dragonsuite import *
 
 _ver = '4'
 pkgname = 'fortune-mod-torchwood'
-pkgver = '20140218'
+pkgver = '20140222'
 pkgdesc = "Fortune quotes from Torchwood"
 upstream = "http://en.wikiquote.org/wiki/Torchwood"
 arch = ['any']

@@ -1,0 +1,33 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'xmobar-does-chase-have-a-job-yet'
+pkgver = '2'
+pkgdesc = 'doeschasehaveajobyet.com as an xmobar monitor'
+upstream = 'https://github.com/maandree/%s' % pkgname
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+depends = ['wget', 'sh', 'grep', 'coreutils']
+makedepends = ['make', 'coreutils']
+extension = 'xmobar'
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['9FBCB620CC3DBFC16F85211F5F8F288BA8C72995985CEC34B03F323B837F58DD7756B8AE1E6AEA62E1D61A4BD12E65F5E69299B06DA961FA831DF4AC56979BB9DDCC95B54A324AF9']
+
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('See %s/share/doc/xmobar-does-chase-have-a-job-yet/xmobarrc-example' % _prefix(private))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/%s-%s' % (srcdir, pkgname, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'INSTALL')
+

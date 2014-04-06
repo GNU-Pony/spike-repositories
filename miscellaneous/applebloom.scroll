@@ -6,9 +6,12 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_ps   = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_dvi  = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'applebloom'
-pkgver = '1385907077'
+pkgver = '1396811847'
 pkgdesc = 'Apple Bloom the pony dictionary'
 upstream = 'https://github.com/GNU-Pony/applebloom'
 arch = ['any']
@@ -17,11 +20,10 @@ license = ['AGPL3']
 private = SUPPORTED
 depends = ['bash', 'coreutils']
 makedepends = ['make', 'coreutils', 'sed']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_ps or i_use_pvi:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A9354853A8755E47253EB484D6137D07CC9167FB6287736E4393036320F1686C990017064A0660F47CA6E486CB74EC0E6C8B259FFC0DAB3D5A44E167E6AC6D3E495E14317BFBE198']
+sha3sums = ['EF360BD42732B69A6BDA655A664C8DD12E28CAA52011FBD28FEC50F451FC8219AB5CE64B8770FB8FE22F18D919DADE04240AB0011581D2241B01DD4DFA7EBD27A2746FF763ACB6E3']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -35,16 +37,32 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/applebloom-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'applebloom')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('applebloom')
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
-    else:
-        sed([sed_script(' applebloom\\.info\\.gz', '', '^install:'), sed_script(' install -m644 applebloom\\.info\\.gz', '\\t', '&#')], 'Makefile')
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dbi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/applebloom-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dbi:
+        params.append('install-dvi')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 

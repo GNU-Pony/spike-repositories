@@ -9,6 +9,7 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'argparser'
 pkgver = '5.1'
+pkgrel = 2
 pkgdesc = 'Command line argument parser library, like getopt, except better.'
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']
@@ -42,7 +43,7 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/argparser-%s' % (srcdir, pkgver))
     makeparams += ['PREFIX=%s' % _prefix(private),
                    'PKGNAME=%s' % pkgname,
-                   'PY3VERSION=%s' % '3.3',
+                   'PY3VERSION=%s' % '3.4',
                    'DESTDIR=%s' % pkgdir]
     buildparams = globals()['scroll_argparser_build']
     if i_use_info:

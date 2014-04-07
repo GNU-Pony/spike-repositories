@@ -9,6 +9,7 @@ patches = 'argparser'
 _patch = 'Python'
 pkgname = '%s-%s' % (patches, _patch.lower())
 pkgver = '5.1'
+pkgrel = 2
 pkgdesc = '%s version of argparser' % ('%s 3' % _patch)
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']
@@ -28,12 +29,12 @@ def ride(private):
 
 
 def patch_build(startdir, srcdir, pkgdir, private):
-    globals()['scroll_%s_build' % patches].append('PY3VERSION=3.3')
+    globals()['scroll_%s_build' % patches].append('PY3VERSION=3.4')
     globals()['scroll_%s_build' % patches].append('%s' % _patch.lower())
 
 
 def patch_package(startdir, srcdir, pkgdir, private):
-    globals()['scroll_%s_package' % patches].append('PY3VERSION=3.3')
+    globals()['scroll_%s_package' % patches].append('PY3VERSION=3.4')
     globals()['scroll_%s_package' % patches].append('install-%s' % _patch.lower())
 
 

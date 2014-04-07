@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'system-configurations'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'Base system configuration files'
 upstream = 'https://github.com/GNU-Pony/system-configurations'
 arch = ['any']
@@ -16,7 +16,7 @@ private = UNSUPPORTED
 groups = ['base']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A986501ADEC603105BD00840222308E8D8B2A59689A77BF2EDF4EF932FE872FB1B1B88C5AC4DC53D9836D0E4AC91A754D3EDF4FADF387C9F2B8E1748EAA544C49CA76EAB939226B9']
+sha3sums = ['BA1D6605DE1942F4F6AA11800857B86B70CB18C7BC7FB7405D53F6952485DC04496AE269981DD33ED149AA832D6513F2E8D6221D869433A6F78367A2415D8BABE85B34445AEA1409']
 
 
 def ride(private):

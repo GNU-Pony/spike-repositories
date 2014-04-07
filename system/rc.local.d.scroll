@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'rc.local.d'
-pkgver = '1387741566'
+pkgver = '1396841433'
 pkgdesc = 'Startup-system independent startup scripts'
 upstream = 'https://github.com/GNU-Pony/rc.local.d'
 arch = ['any']
@@ -14,10 +14,10 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
 depends = ['bash']
-optdepends = ['linux', 'findutils', 'kbd']
+optdepends = ['linux', 'findutils', 'kbd', 'ntp', 'alsa-utils']
 makedepends = ['gpp', 'make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BFCA26A3F08B6E9A1ABDBC56A54DFDFBE6FB0B9A9CC78F773BE396CA8EF11C33A3A6F883351E43E35E135A86A84D935E169BC02DCDD1A07E786795AD0687B8AF2E5A2092FBD70ECF']
+sha3sums = ['BDE1BB14616FDD19EEAC563B62B0282B4E8E82B9254E9B9237971794D1FD09651BA11111D283372EEAC698350733F5AB93BCBA4FB5D3DBA4A44B5151E280475C3CA500AF4560B06E']
 
 
 def ride(private):

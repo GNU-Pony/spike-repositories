@@ -21,7 +21,7 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['sh', 'ponysay>=3.0', 'coreutils', 'python3']
 optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc',
-              'filesystem: Identification of distribution',
+              'system-configurations: Identification of distribution',
               'lsb-release: Identification of distribution']
 makedepends = ['make', 'coreutils', 'sed']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:

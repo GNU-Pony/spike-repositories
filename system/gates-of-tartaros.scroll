@@ -6,12 +6,15 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_sh = get('I_USE_SH', 'bash:bash').lower()
 if ':' not in i_use_sh:
     i_use_sh = i_use_sh + ':' + i_use_sh
 
 pkgname = 'gates-of-tartaros'
-pkgver = '1387741088'
+pkgver = '1396838411'
 pkgdesc = 'Extensible minimal replacement for agetty with SSH support'
 upstream = 'https://github.com/GNU-Pony/gates-of-tartaros'
 arch = ['any']
@@ -21,11 +24,10 @@ private = UNSUPPORTED
 depends = ['util-linux', 'coreutils',  i_use_sh.split(':')[0]]
 optdepends = ['openssh: for SSH login']
 makedepends = ['make', 'sed', 'coreutils']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D592B5B30A294974B1549A24A251D32A86E49BF181D26C50E9312FF58FD081A7DC01255C8E10811CD547CA022EEBC2D455D07511324FACFEC9B28FA2A24C3A97F751A6AFE2FE12FB']
+sha3sums = ['5C47A997E0B02703FAEBFA9DAEBCBCFE058210A0E7F401CAB622FDA60481D361EB070FD66E4D5EF5877D2B1DE10A61A6CF421E4EBD264FD60D4C84F92BEB0842941A6936B48AEBCB']
 
 _sh = i_use_sh.split(':')[1]
 
@@ -36,16 +38,30 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/gates-of-tartaros-%s' % (srcdir, pkgver))
-    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'SH=%s' % _s, 'cmd')
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'SH=%s' % _s, 'cmd']
     if i_use_info:
-        make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/gates-of-tartaros-%s' % (srcdir, pkgver))
-    make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd')
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'SH=%s' % _s, 'install-cmd']
     if i_use_info:
-        make('PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
     _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)

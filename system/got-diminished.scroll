@@ -6,10 +6,10 @@
 from dragonsuite import *
 
 pkgname = 'got-diminished'
-pkgver = '1387741134'
+pkgver = '1396890724'
 pkgdesc = 'Extension for gates-of-tartaros to minimise memory usage after logging in'
 upstream = 'https://github.com/GNU-Pony/got-diminished'
-arch = ['x86_64']
+arch = ['x86_64', 'armv6']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
@@ -18,7 +18,7 @@ optdepends = ['openssh: for SSH login']
 makedepends = ['make', 'sed', 'coreutils', 'gcc']
 extension = 'gates-of-tartaros'
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['AFEC3E93E73296C88DAB60B527B27926C993CF5A22B8C9935169969BBF71B6C3AB2BBE59ABCA25EB32B49AC8F982CD36D05C0FF50E32EC81B1BAD1CE10193A3F519A8A4A5BDEB752']
+sha3sums = ['9B4B38DA75D3863D271105DD84CF4CF68FA6A7D9C4951741AAF04F335AB1DBDDE4126A32D7EFBB73437F3DA7BE00654B251C70EB8764DF258819D5FD6BB8D0B087C8457A670445BA']
 
 
 def ride(private):

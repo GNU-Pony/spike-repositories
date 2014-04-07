@@ -6,22 +6,24 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'libpassphrase'
-pkgver = '1385512181'
+pkgver = '1396888621'
 pkgdesc = 'Personalisable library for TTY passphrase reading'
 upstream = 'https://github.com/GNU-Pony/libpassphrase'
-arch = ['x86_64']
+arch = ['x86_64', 'armv6']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['libc']
 makedepends = ['make', 'coreutils', 'gcc']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['84F368D5FA5895E2B2DEFEC256F0E6C3B3B42B93B00BA403ADE5E4DBA847649B339660356D77083E580F2B12EAEAEF6B73B42D60CD169DAB264D6C08831030726300E3B5C0B89ED6']
+sha3sums = ['CB99B345F374B8D4C38E7502D006F5B2A3811A9F66926585AC743C7017FD9686E019DA8EBB4C8E9C37C2A1C781FB296EC0D51CBDA8AC39768EB79788D71128A0A01CB1E5A43CCD36']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -59,20 +61,35 @@ _make_opts = None
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/libpassphrase-%s' % (srcdir, pkgver))
-    _make_opts = _configure() + ['AUTH=%s' % i_use_auth]
+    _make_opts = _configure()
     _make_opts += ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'PREFIX=%' % _prefix(private)]
-    
-    sed(sed_script('^.+$', 'install:', '^install:'), 'Makefile')
-    if not i_use_info:
-        sed(sed_script('^', '#', '/info'), 'Makefile')
-        sed(sed_script('info', '', '^doc:'), 'Makefile')
-    make(_make_opts + ['all'])
+    params = _make_opts[:]
+    params.append('libpassphrase')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/libpassphrase-%s' % (srcdir, pkgver))
-    make(_make_opts + ['install'])
-    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    params = _make_opts[:]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

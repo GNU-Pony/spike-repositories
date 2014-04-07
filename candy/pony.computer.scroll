@@ -6,10 +6,13 @@
 from dragonsuite import *
 
 i_use_distro = get('I_USE_DISTRO', 'GNU/Pony')
-#i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_info   = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf    = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps     = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi    = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'pony.computer'
-pkgver = '1396832181'
+pkgver = '1396836473'
 pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
@@ -21,11 +24,10 @@ optdepends = ['linux: Additional system information can be provided with Linux k
               'filesystem: Identification of distribution',
               'lsb-release: Identification of distribution']
 makedepends = ['make', 'coreutils', 'sed']
-#if i_use_info:
-#    makedepends.append('texinfo')
-#    makedepends.append('gzip')
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['98744A6696EC135363D80B03108380A5D5F97F09F8E82AFAD1952585A90C219D1F3AF7287032B1B6AE67DEA954C19C8E34344FF1F0F02989FC6478095E1FA014C258539B0EAC39F5']
+sha3sums = ['33FF0FD235584A5344B0577848C296046CBBF6D01F0E127AC54323ED15AE06D495B41280D135995BDC6A4D2B376BC4649D81F6892278D037871D21CD5BCFD7C5FEE120FC8F0C4C1A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -36,33 +38,49 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/pony.computer-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DISTRO=%s' % i_use_distro, 'pony.computer')
-    #if i_use_info:
-    #    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
-    #else:
-    #    sed([sed_script(' pony.computer\\.info\\.gz', '', '^install:'), sed_script(' install -m644 pony.computer\\.info\\.gz', '\\t', '&#')], 'Makefile')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DISTRO=%s' % i_use_distro]
+    params.append('pony.computer')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/pony.computer-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     mkdir_p(_dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 
 
-#def post_install(tmpdir, rootdir, installedfiles, private):
-#    post_install_info(rootdir, installedfiles, private, i_use_info)
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
 
 
-#def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-#    pre_upgrade_info(rootdir, installedfiles, private)
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
 
 
-#def post_upgrade(tmpdir, rootdir, installedfiles, private):
-#    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
 
 
-#def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-#    pre_uninstall_info(rootdir, installedfiles, private)
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

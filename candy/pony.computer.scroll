@@ -5,24 +5,27 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_distro = get('I_USE_DISTRO', 'GNU/Pony')
 #i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'pony.computer'
-pkgver = '1385907021'
+pkgver = '1396832181'
 pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['bash', 'ponysay', 'coreutils', 'grep', 'sed', 'python3', 'filesystem']
-optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc']
+depends = ['sh', 'ponysay>=3.0', 'coreutils', 'python3']
+optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc',
+              'filesystem: Identification of distribution',
+              'lsb-release: Identification of distribution']
 makedepends = ['make', 'coreutils', 'sed']
 #if i_use_info:
 #    makedepends.append('texinfo')
 #    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2B9BED4AAF19D2C818A863DD54B8DAA99F4D029F57756A2BD073C7329E5FA5899BB2EEF4C2757C69C3A617B4C48867FDE521511EBCE4A17208010B5BFDC354C4D1D1304146AC8152']
+sha3sums = ['98744A6696EC135363D80B03108380A5D5F97F09F8E82AFAD1952585A90C219D1F3AF7287032B1B6AE67DEA954C19C8E34344FF1F0F02989FC6478095E1FA014C258539B0EAC39F5']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -33,7 +36,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/pony.computer-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'pony.computer')
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DISTRO=%s' % i_use_distro, 'pony.computer')
     #if i_use_info:
     #    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
     #else:

@@ -5,9 +5,15 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_auth = get('I_USE_PAM', 'pam').lower()
-i_use_login = get('I_USE_LOGIN', '').lower() == 'cerberus'
+i_use_info      = get('I_USE_INFO',       'y').lower().startswith('y')
+i_use_pdf       = get('I_USE_PDF',        'n').lower().startswith('y')
+i_use_ps        = get('I_USE_PS',         'n').lower().startswith('y')
+i_use_dvi       = get('I_USE_DVI',        'n').lower().startswith('y')
+i_use_auth      = get('I_USE_AUTH',       'pam').lower()
+i_use_login     = get('I_USE_LOGIN',      '').lower() == 'cerberus'
+i_use_vcs       = get('I_USE_VCS',        'y').lower().startswith('y')
+i_use_vcsa      = get('I_USE_VCSA',       'y').lower().startswith('y')
+i_use_tty_group = get('I_USE_TTY_GROUP',  'y').lower().startswith('y')
 
 for _auth in i_use_auth.split(':') + ['crypt']:
     if _auth in ('pam', 'crypt', 'none'):
@@ -15,22 +21,25 @@ for _auth in i_use_auth.split(':') + ['crypt']:
         break
 
 pkgname = 'cerberus'
-pkgver = '1385512167'
+pkgver = '1396894918'
 pkgdesc = 'A configurable minimal login program that uses libpassphrase'
 upstream = 'https://github.com/GNU-Pony/cerberus'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
-depends = ['glibc', 'libpassphrase', 'linux'] ## 'linux' can be removed if both OWN_VCS and OWN_VCSA is removed from _configure
+depends = ['glibc', 'libpassphrase']
+if i_use_vcs or i_use_vcsa:
+    depends.append('linux')
 if i_use_auth == 'pam':
     depends.append(i_use_auth)
+else:
+    arch.append('armv6')
 makedepends = ['make', 'coreutils', 'gcc']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F253C93CDC15F43F59F5C2A348D573229512FC62B91C02214E69F7CE1420D719B9B50F2FF79D218E3D8AF72CF88D7EC06F5C3E2FB43BAF152D8C830DF5C9E0D9F80EDD57AB8FB2AA']
+sha3sums = ['ABD13477966DC6E64736FCE5B91A9DE07C21886A544348D309B2E64DD4B277CC5EF680DAB4EC24391C97929B1200A1D2E79191C90495F2A1A1182338EFD04CBA48587619EDFB07A8']
 
 # Technically you can do a private installation (provided you adapt
 # the instructiosn below), but that makes no sense because it should
@@ -51,7 +60,7 @@ def _configure():
     @return  :list<str>  Options other than AUTH pass to `make` to configure cerberus
     '''
     # General configurations
-    cpp_defs     = 'OWN_VCS OWN_VCSA USE_TTY_GROUP'.split(' ')
+    cpp_defs     = []
     make_opts    = []
     
     # PATH configurations
@@ -64,6 +73,13 @@ def _configure():
     
     path         = []
     path_root    = []
+    
+    if i_use_vcs:
+        cpp_defs.append('OWN_VCS')
+    if i_use_vcsa:
+        cpp_defs.append('OWN_VCSA')
+    if i_use_tty_group:
+        cpp_defs.append('USE_TTY_GROUP')
     
     for prefix_ in [local_, usr_, root_, local_games_, usr_games_, root_games_]:
         path.append(prefix_ + '/bin')
@@ -90,20 +106,35 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/cerberus-%s' % (srcdir, pkgver))
     _make_opts = _configure() + ['AUTH=%s' % i_use_auth]
     _make_opts += ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    
-    sed(sed_script('^.+$', 'install:', '^install:'), 'Makefile')
-    if not i_use_info:
-        sed(sed_script('^', '#', '/info'), 'Makefile')
-        sed(sed_script('info', '', '^doc:'), 'Makefile')
-    make(_make_opts + ['all'])
+    params = _make_opts[:]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/cerberus-%s' % (srcdir, pkgver))
-    make(_make_opts + ['install'])
+    params = _make_opts[:]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
     if i_use_login:
         ln('cerberus', '%s/usr/sbin/login' % pkgdir)
-    _dir = '%s/usr/share/licenses/%s' % (pkgdir, pkgname)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

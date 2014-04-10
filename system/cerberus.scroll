@@ -14,6 +14,7 @@ i_use_login     = get('I_USE_LOGIN',      '').lower() == 'cerberus'
 i_use_vcs       = get('I_USE_VCS',        'y').lower().startswith('y')
 i_use_vcsa      = get('I_USE_VCSA',       'y').lower().startswith('y')
 i_use_tty_group = get('I_USE_TTY_GROUP',  'y').lower().startswith('y')
+i_use_force     = get('I_USE_FORCE',      'n').lower().startswith('y')
 
 for _auth in i_use_auth.split(':') + ['crypt']:
     if _auth in ('pam', 'crypt', 'none'):
@@ -33,7 +34,7 @@ if i_use_vcs or i_use_vcsa:
     depends.append('linux')
 if i_use_auth == 'pam':
     depends.append(i_use_auth)
-else:
+if i_use_force or not i_use_auth == 'pam':
     arch.append('armv6')
 makedepends = ['make', 'coreutils', 'gcc']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'util-say'
-pkgver = '3.2'
+pkgver = '3.2.1'
 pkgdesc = 'Tools for creating ponies for cowsay and cowsay-like programs'
 upstream = 'https://github.com/maandree/util-say'
 arch = ['any']
@@ -23,7 +23,7 @@ if i_use_info:
 optdepends = ['imagemagick: allows imgsrcrecovery to read frames in GIF files',
               'perl: required for cowsay import support']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['99D170F26C841402EE75A39481E572B1C61BF15DB8678DF1D9FB6C25E4C897DAF47AD65B718488203EB833E0A3EED149658D0450A46FBC1245B83E85B8B81584CD68475D7631E50A']
+sha3sums = ['1547E7B645ACDF8EFFE3DACA36EE76F09ADCB24311D422D26C0109034D8F49C5457894E0C539C6ACA5D7AF2C1DF1C1823861EE09FFE0376D265FC49875B791DB4E94BD3CA58C39B2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

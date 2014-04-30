@@ -1,0 +1,100 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+
+pkgname = 'relink'
+pkgver = '1'
+pkgdesc = 'A simple utility that modifies your symlinks'
+upstream = 'https://github.com/maandree/relink'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['argparser-python', 'python3', 'coreutils']
+makedepends = ['make', 'coreutils']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_dvi or i_use_ps:
+    makedepends.append('texlive-core')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['D95E2730A9919025C8FCE2B0B20170FE0F00294DFE3ED5C4950503F65B7953494AEDF94F8A22C6FCBFEFFDDC055E167AE81C292F9179E4F5E076C89B95F3BEF834D132EAC281F993']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('info', 'relink')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/relink-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname]
+    if i_use_info:
+        makedepends.append('info')
+    if i_use_pdf:
+        makedepends.append('pdf')
+    if i_use_dvi:
+        makedepends.append('dvi')
+    if i_use_ps:
+        makedepends.append('ps')
+    if i_use_bash:
+        makedepends.append('bash')
+    if i_use_fish:
+        makedepends.append('fish')
+    if i_use_zsh:
+        makedepends.append('zsh')
+    if len(params) > 2:
+        make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/relink-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_info:
+        makedepends.append('install-info')
+    if i_use_pdf:
+        makedepends.append('install-pdf')
+    if i_use_dvi:
+        makedepends.append('install-dvi')
+    if i_use_ps:
+        makedepends.append('install-ps')
+    if i_use_bash:
+        makedepends.append('install-bash')
+    if i_use_fish:
+        makedepends.append('install-fish')
+    if i_use_zsh:
+        makedepends.append('install-zsh')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

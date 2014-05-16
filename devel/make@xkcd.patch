@@ -1,0 +1,43 @@
+From 0279f3e369ec7a065295ed79b4995dcdff08e24d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mattias=20Andr=C3=A9e?= <maandree@operamail.com>
+Date: Sat, 17 May 2014 01:28:56 +0200
+Subject: [PATCH] Add xkcd easter egg
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Mattias Andrée <maandree@operamail.com>
+---
+ main.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/main.c b/main.c
+index 3a3d016..65ce830 100644
+--- a/main.c
++++ b/main.c
+@@ -1091,6 +1091,22 @@ main (int argc, char **argv, char **envp)
+   (void)bindtextdomain (PACKAGE, LOCALEDIR);
+   (void)textdomain (PACKAGE);
+ 
++#ifndef WINDOWS32
++  if (argc == 4 &&
++      !strcmp (argv[0], "make") &&
++      !strcmp (argv[1], "me") &&
++      !strcmp (argv[2], "a") &&
++      (!strcmp (argv[3], "sandwich") ||
++       !strcmp (argv[3], "sandwich.")))
++    {
++      if (getuid ())
++	printf("%s\n", "What? Make it yourself.");
++      else
++	printf("%s\n", "Okay.");
++      return 0;
++    }
++#endif
++
+ #ifdef  POSIX
+   sigemptyset (&fatal_signal_set);
+ #define ADD_SIG(sig)    sigaddset (&fatal_signal_set, sig)
+-- 
+1.9.2
+

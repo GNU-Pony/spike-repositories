@@ -19,9 +19,10 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc', 'sh', 'guile']
 makedepends = ['findutils', 'grep', 'sh', 'gcc', 'sed', 'make', 'coreutils', 'm4', 'texinfo'] + depends
-source = ['ftp://ftp.gnu.org/gnu/make/make-%s.tar.gz' % pkgver, 'make@make-4.0-char-cast.patch']
+source = ['ftp://ftp.gnu.org/gnu/make/make-%s.tar.gz' % pkgver,
+          'make@make-4.0-char-cast.patch', 'make@xkcd.patch']
 noextract = source[1:]
-sha3sums = ['8C88A7E99D62D5CC66797822BDDBCD8EE10D415520525BDC35C050BF84FBE04107008C60852E41E748FAACA3FB3E61F5DF688AA057398715897BC3412BE48AB22FAA3D395FCE03B1', None]
+sha3sums = ['8C88A7E99D62D5CC66797822BDDBCD8EE10D415520525BDC35C050BF84FBE04107008C60852E41E748FAACA3FB3E61F5DF688AA057398715897BC3412BE48AB22FAA3D395FCE03B1', None, None]
 
 
 _prefix = lambda private : (path('~/.local') if private else '/usr')
@@ -34,6 +35,7 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/make-%s' % (srcdir, pkgver))
     patch(srcdir + '/make@make-4.0-char-cast.patch', forward = False)
+    patch(srcdir + '/make@xkcd.patch', forward = False)
     execute('./configure', '--prefix=%s' % _prefix(private), '--with-guile')
     make()
 

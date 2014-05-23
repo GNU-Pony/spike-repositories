@@ -22,14 +22,14 @@ for _auth in i_use_auth.split(':') + ['crypt']:
         break
 
 pkgname = 'cerberus'
-pkgver = '1396894918'
+pkgver = '1400850361'
 pkgdesc = 'A configurable minimal login program that uses libpassphrase'
 upstream = 'https://github.com/GNU-Pony/cerberus'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = UNSUPPORTED
-depends = ['glibc', 'libpassphrase']
+depends = ['glibc', 'libpassphrase>=1400850322']
 if i_use_vcs or i_use_vcsa:
     depends.append('linux')
 if i_use_auth == 'pam':
@@ -40,7 +40,7 @@ makedepends = ['make', 'coreutils', 'gcc']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['ABD13477966DC6E64736FCE5B91A9DE07C21886A544348D309B2E64DD4B277CC5EF680DAB4EC24391C97929B1200A1D2E79191C90495F2A1A1182338EFD04CBA48587619EDFB07A8']
+sha3sums = ['57711D3816D6D4F75AEB360CB8FE7A1B0A2CC6EF56045BDBBEEBD159DABB96B32E1DCA3B5DDEF8F5A307781B7469197AB62FD37FC0CB0B5331832EBFD00E940C71C5B389C1BDC534']
 
 # Technically you can do a private installation (provided you adapt
 # the instructiosn below), but that makes no sense because it should

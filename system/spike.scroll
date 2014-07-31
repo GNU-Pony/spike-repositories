@@ -37,7 +37,12 @@ sha3sums = []
 
 
 def ride(private):
-    echo('You have now successfully ridden Spike.')
+    #echo('You have now successfully ridden Spike.')
+    import getpass, os
+    symbol = '#' if os.getuid() == 0 else '$'
+    user = getpass.getuser()
+    comment = 'You are lucky I did not fork-bomb you with a recursive pony-ride.'
+    echo('%s ukill -HATE %s # %s' % (symbol, user, symbol))
 
 
 def package(startdir, srcdir, pkgdir, private):

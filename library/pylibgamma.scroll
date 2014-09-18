@@ -1,0 +1,45 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'pylibgamma'
+pkgver = '1.0'
+pkgdesc = 'Python 3 wrapper for libgamma'
+upstream = 'https://github.com/maandree/pylibgamma'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['python3', 'libgamma>=0.3', 'glibc']
+makedepends = ['make', 'coreutils', 'gcc', 'cython', 'pkg-config'] + depends
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['8861C4FB2ABDCD2869131780CA59515418797BEE21ED1FDF61DCD621838CF3EF45281B52E1570B36442F8560B003A98BBF71539ABEE0B2753BBEF8DAEDFCFC8A0295364CC04D3799']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a library')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pylibgamma-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    LDFLAGS = get('LDFLAGS', '')
+    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
+    export('LDFLAGS', LDFLAGS)
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pylibgamma-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    make(params + ['install'])
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

@@ -20,7 +20,7 @@ license = ['AGPL3']
 private = SUPPORTED
 depends = ['bash', 'coreutils']
 makedepends = ['make', 'coreutils', 'sed']
-if i_use_info or i_use_pdf or i_use_ps or i_use_pvi:
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['EF360BD42732B69A6BDA655A664C8DD12E28CAA52011FBD28FEC50F451FC8219AB5CE64B8770FB8FE22F18D919DADE04240AB0011581D2241B01DD4DFA7EBD27A2746FF763ACB6E3']

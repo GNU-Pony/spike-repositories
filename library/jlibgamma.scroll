@@ -1,0 +1,43 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'jlibgamma'
+pkgver = '1.0'
+pkgdesc = 'Java wrapper for libgamma'
+upstream = 'https://github.com/maandree/jlibgamma'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libgamma>=0.3', 'glibc', 'java-runtime-headless>=1.5']
+makedepends = ['libgamma>=0.3', 'glibc', 'java-environment>=1.5', 'gcc', 'make', 'coreutils', 'sed']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['FDADD7B433492C668CF9B4C031D56768C77C311EA8B480D8C7A8DCD0C25DE2CFF926D4E3EAE6E3FBF95A6F25FE26EE642A73ED6DE066745E3681BAB37C0FC9B8AA901C47BBCD12A7']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a library')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/jlibgamma-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    LDFLAGS = get('LDFLAGS', '')
+    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
+    export('LDFLAGS', LDFLAGS)
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/jlibgamma-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params + ['install'])
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

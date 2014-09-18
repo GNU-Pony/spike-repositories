@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'alarm'
+pkgver = '1'
+pkgdesc = 'Schedule an alarm for a program when starting it'
+upstream = 'https://github.com/maandree/alarm'
+arch = ['i686 x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['6F2B14E14503FBD44B2D9D9FB1CB2675B24AA40CDA84ABFE719AE508AFBD90DDDDDF0724BF22EB07C70D1DE3FDD62A221394496588F2C6641C52EADB940E586462822C7064A0E52F']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['alarm', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/alarm-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/alarm-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

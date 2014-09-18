@@ -1,0 +1,40 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'setpgrp'
+pkgver = '1'
+pkgdesc = 'Commands providing access to the setpgrp and getpgrp system calls'
+upstream = 'https://github.com/maandree/setpgrp'
+arch = ['i686 x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['6AA25ECF066B58E91E40FDFB18661BE9FF68A1BB4AC92847D7B43267DAF278FBE26B420CCF159AEECB02A4B8C951B50B7511C87BEFE49CA42485F3362A64C7625F73B1D076C9E8CD']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Type `getpgrp` to get the current process group, or')
+    echo('`setpgrp --help` for information about how to create')
+    echo('a new process group.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/setpgrp-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/setpgrp-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

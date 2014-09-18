@@ -1,0 +1,47 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'solar-python'
+pkgver = '1'
+pkgdesc = 'Solar data calculation and prediction library for Python'
+upstream = 'https://github.com/maandree/solar-python'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['AGPL3']
+private = SUPPORTED
+depends = ['python3']
+makedepends = ['make', 'coreutils', 'python3']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['B7C51884F9FE23753BE144217AB3B2D365C20B462047D68FC1EED9035564F65A626926899CFACEC7B8C6C6CD625319B1D39EFC9540AD91A0A514AC2A93A1FBF3A64C378AEFDDC2AF']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a library, all documentation is available in the source')
+    echo('and a doc strings that can be read with the help function in python.')
+    echo('')
+    echo('  python')
+    echo('  >>> import solar_python')
+    echo('  >>> help(solar_python)')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/solar-python-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/solar-python-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    make(params + ['install'])
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

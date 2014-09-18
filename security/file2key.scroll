@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'file2key'
+pkgver = '1'
+pkgdesc = 'A simple command that generates a key from a file and a passphrase'
+upstream = 'https://github.com/maandree/file2key'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'libpassphrase']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libpassphrase']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['C96CF09D5E637B54F7AA6707E6E4547FD8374AC3A0BD19A68E4CD89D679C36605A4E311D804FA326586057F6B3E14BD37D9F00A5BA68075DA64658A758E08DDDECEC1393CC743DBA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['file2key', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/file2key-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/file2key-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

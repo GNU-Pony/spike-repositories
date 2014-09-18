@@ -6,17 +6,17 @@
 from dragonsuite import *
 
 pkgname = 'pylibgamma'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Python 3 wrapper for libgamma'
 upstream = 'https://github.com/maandree/pylibgamma'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
-depends = ['python3', 'libgamma>=0.3', 'glibc']
+depends = ['python3', 'libgamma>=0.6', 'glibc']
 makedepends = ['make', 'coreutils', 'gcc', 'cython', 'pkg-config'] + depends
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['8861C4FB2ABDCD2869131780CA59515418797BEE21ED1FDF61DCD621838CF3EF45281B52E1570B36442F8560B003A98BBF71539ABEE0B2753BBEF8DAEDFCFC8A0295364CC04D3799']
+sha3sums = ['D5FCD2C8171BC469D6CA2B8C1FF6B03D23F4F3CF51EF076F7B7438DBD9243AC43C8687B486FDBD3AAB490B6D80464E561E5584F7ADD078BE6CE414559DEDDFFE3A2C9772977C3228']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

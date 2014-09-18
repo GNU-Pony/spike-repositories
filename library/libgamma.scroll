@@ -1,0 +1,119 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
+x = get('I_USE_X', 'y')
+i_use_debug       = get('I_USE_DEBUG',       'n').lower().startswith('y')
+i_use_dummy       = get('I_USE_DUMMY',       'n').lower().startswith('y')
+i_use_x_randr     = get('I_USE_X_RANDR',       x).lower().startswith('y')
+i_use_x_vidmode   = get('I_USE_X_VIDMODE',   'n').lower().startswith('y')
+i_use_drm         = get('I_USE_DRM',         'y').lower().startswith('y')
+i_use_fake_quartz = get('I_USE_FAKE_QUARTZ', 'n').lower().startswith('y')
+i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
+
+pkgname = 'libgamma'
+pkgver = '0.1'
+pkgdesc = 'Display server abstraction layer for gamma ramps'
+upstream = 'https://github.com/maandree/libgamma'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
+private = SUPPORTED
+depends = ['libc']
+if i_use_x_randr:
+    depends += ['libxcb']
+if i_use_x_vidmode:
+    depends += ['libx11', 'libxxf86vm']
+if i_use_drm:
+    depends += ['libdrm']
+makedepends = ['make', 'coreutils', 'c99', 'sh', 'make', 'grep', 'sed', 'general-preprocessor', 'python3', 'bash', 'pkg-config'] + depends
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['91EBB4DAEA12A84D063E1432F0D18E0111480B5480757F1B7F24C729102A95D06C1771CAEE61F990C3F1385420F4B352D0DB6CE3A716C664208F05FBC61217B672E5C5EAD3DECAEA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    info('libgamma')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libgamma-%s' % (srcdir, pkgver))
+    params = ['./configure']
+    if i_use_debug:
+        params.append('--debug')
+    if i_use_dummy:
+        params.append('--enable-dummy')
+    if i_use_x_randr:
+        params.append('--enable-randr')
+    if i_use_x_vidmode:
+        params.append('--enable-vidmode')
+    if i_use_drm:
+        params.append('--enable-drm')
+    if i_use_fake_quartz:
+        params.append('--enable-quartz=fake')
+    if i_use_fake_w32gdi:
+        params.append('--enable-w32gdi=fake')
+    execute(params)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('lib')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    LDFLAGS = get('LDFLAGS', '')
+    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
+    export('LDFLAGS', LDFLAGS)
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libgamma-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

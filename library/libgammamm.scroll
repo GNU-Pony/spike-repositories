@@ -26,7 +26,7 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    cd('%s/pylibgamma-%s' % (srcdir, pkgver))
+    cd('%s/libgammamm-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     LDFLAGS = get('LDFLAGS', '')
     LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
@@ -35,7 +35,7 @@ def build(startdir, srcdir, pkgdir, private):
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd('%s/pylibgamma-%s' % (srcdir, pkgver))
+    cd('%s/libgammamm-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     make(params + ['install'])
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)

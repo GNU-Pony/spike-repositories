@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'crt-calibrator'
+pkgver = '1'
+pkgdesc = 'CRT monitor calibrator utility for Linux VT'
+upstream = 'https://github.com/maandree/crt-calibrator'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['linux', 'glibc', 'libdrm']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libdrm', 'linux-api-headers']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['96541F8F0DDC367D6782140FB440F2962AD0A98860B9BEC0E2589DC2CA0F10BB65D4BD823A393CFF1F046ABF339DF1267FBE5D774DFB98F288B3116E9063AA60F1CA2639928BA110']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('crt-calibrator')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/crt-calibrator-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/crt-calibrator-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

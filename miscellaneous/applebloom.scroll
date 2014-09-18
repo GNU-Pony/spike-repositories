@@ -6,9 +6,9 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_ps   = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_dvi  = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'y').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'y').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'y').lower().startswith('y')
 
 pkgname = 'applebloom'
 pkgver = '1396811847'

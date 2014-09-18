@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'solar-python'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'Solar data calculation and prediction library for Python'
 upstream = 'https://github.com/maandree/solar-python'
 arch = ['any']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils', 'python3']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['B7C51884F9FE23753BE144217AB3B2D365C20B462047D68FC1EED9035564F65A626926899CFACEC7B8C6C6CD625319B1D39EFC9540AD91A0A514AC2A93A1FBF3A64C378AEFDDC2AF']
+sha3sums = ['6EC5C6D1764CA332DB6A80C4D1B0AD5C499A62D0918B571039E32CA5DF7A8B4D114494D6FAFFB4539D0C75E339333CA059118B54B1A55D074EB7914ED7B7C99D25CEFD1C67DA8BBD']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

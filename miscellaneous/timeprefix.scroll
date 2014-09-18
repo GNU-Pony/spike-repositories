@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'timeprefix'
+pkgver = '1'
+pkgdesc = 'Prefix each line with the time it as written'
+upstream = 'https://github.com/maandree/timeprefix'
+arch = ['i686' 'x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['33674E91729CC69AC2866A795661A5A0469D4929E5695B58A01E14FD5ED41FF4522BFA9B8203C5228D257FED20BBC2B2B4AB879572745D89CDC04EEB4194430A40E562920106E54B']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['timeprefix', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/timeprefix-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/timeprefix-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

@@ -20,7 +20,7 @@ i_use_fake_quartz = get('I_USE_FAKE_QUARTZ', 'n').lower().startswith('y')
 i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
 
 pkgname = 'libgamma'
-pkgver = '0.2'
+pkgver = '0.3'
 pkgdesc = 'Display server abstraction layer for gamma ramps'
 upstream = 'https://github.com/maandree/libgamma'
 arch = ['x86_64', 'i686']
@@ -42,7 +42,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['FF68F26899215C932DB171CFA7ACF64EB99A1226CEFD74CBD3052DD527FDE0ED8A863FF81F8E1775579CBD7782F50D91FF8F2787862D58C50849050C7D386FA9834CF78AAFA00EA6']
+sha3sums = ['C0C67701C71B2DBAFD591A158DF6719E0A87CBFEF55E1D828653FC78B62054DCC7817A04A204E753D8BD8F86D483AEA011309246F6572E0B5FFC1F3DFF2FCC08AE612DB2090E063C']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

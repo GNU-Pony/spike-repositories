@@ -1,0 +1,85 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
+pkgname = 'epkill'
+pkgver = '1.0'
+pkgdesc = 'procps utilties with environment constraints'
+upstream = 'https://github.com/maandree/epkill'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
+private = SUPPORTED
+depends = ['glibc', 'procps-ng', 'argparser-c']
+makedepends = ['make', 'coreutils', 'gcc'] + depends
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['C62DB60EF70B24E05DBC24D3BEB140D3E8F19654EC2A4CD1B247D5EDD84D308ECA2A2E698ADC7C01C05DF52AA22DC2B91D14F02BD036579D33D32A5067EA48B9BE1E48DF24A2C7A5']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    info('epkill')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/epkill-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('cmd')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dbi:
+        params.append('dvi')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/epkill-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dbi:
+        params.append('install-dvi')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

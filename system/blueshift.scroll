@@ -24,7 +24,7 @@ i_use_fake_quartz = get('I_USE_FAKE_QUARTZ', 'n').lower().startswith('y')
 i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.18'
+pkgver = '1.19'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -38,7 +38,7 @@ if i_use_x_vidmode:
     _deps += ['libx11', 'libxxf86vm']
 if i_use_drm:
     _deps += ['libdrm']
-depends = ['python3', 'libc', 'argparser-python'] + _deps
+depends = ['python3', 'libc', 'argparser-python', 'solar-python'] + _deps
 optdepends = ['linux: For backlight support via sysfs',
               'adjbacklight: For permission-hasslefree backlight adjustments via sysfs',
               'wget: For weather conditions']
@@ -50,7 +50,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['938D5A737032F7E4777E1D4FD186E9140359E87E831873E4E923F80AA0F49BC4BD098A6A2FBFF6E19E7ABB1923048F81F686776D05C008BFC7027A56F07BDDA73A1467614E70BF67']
+sha3sums = ['229B9F464199164B4186F48CFD5B2D72E5BC54BBFD3A5B9101FB64A3F0BCB16B1E52FE15053964523A91B480F5157446AD9EFA061ACC7046436B9F76D68080D40BA8A35AA0102B8F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

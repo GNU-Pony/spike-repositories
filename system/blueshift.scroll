@@ -22,7 +22,7 @@ i_use_x_icc     = get('I_USE_X_ICC',       x).lower().startswith('y')
 i_use_drm       = get('I_USE_DRM',       'y').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.13'
+pkgver = '1.14'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -38,7 +38,8 @@ if i_use_drm:
     _deps += ['libdrm']
 depends = ['python3', 'libc', 'argparser-python'] + _deps
 optdepends = ['linux: For backlight support via sysfs',
-              'adjbacklight: For permission-hasslefree backlight adjustments via sysfs']
+              'adjbacklight: For permission-hasslefree backlight adjustments via sysfs',
+              'wget: For weather conditions']
 makedepends = ['cython', 'c99', 'libc', 'python3', 'make', 'coreutils', 'sed', 'zip', 'pkg-config'] + _deps
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
@@ -47,7 +48,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['87E4600C18758C5CE6E4B08FEB16114AC1F0C9EA7B688F4A122BA077D0A1393D827463AFFDFEB743A5B4FC592C335D9CE56F9551AD00C3C62CBBC50AAA0690516E96F8781DDDDDC7']
+sha3sums = ['B835866601F26C18302200B5681EDE0FA4E7158DD67077AFD47ECCF414CA1EEABB977B685A36FB933E8190BC35B272197FAA216002A49ECF1DEFA401F864347F63735DEA4AA3FCEA']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

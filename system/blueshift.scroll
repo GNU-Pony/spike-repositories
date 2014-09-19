@@ -17,9 +17,10 @@ i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 x               = get('I_USE_X',         'y')
 i_use_x_randr   = get('I_USE_X_RANDR',     x).lower().startswith('y')
 i_use_x_vidmode = get('I_USE_X_VIDMODE', 'n').lower().startswith('y')
+i_use_x_idcrtc  = get('I_USE_X_IDCRTC',    x).lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.6'
+pkgver = '1.7'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -28,7 +29,9 @@ license = ['AGPL3']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
-_deps = ['libxcb']
+_deps = []
+if i_use_x_randr or i_use_x_idcrtc:
+    _deps += ['libxcb']
 if i_use_x_vidmode:
     _deps += ['libx11', 'libxxf86vm']
 depends = ['python3', 'libc', 'argparser-python'] + _deps
@@ -40,7 +43,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A60CE9219E505EF0059F3293E58A73871CCB3C8E883B80804239D9F29CBD4A6C812EDB86F37F76F82B71B9FC8CD636B3C33305A4068CE9B81FC4D10654967812B957F98D03BFCFCF']
+sha3sums = ['1A7C5D1717BBA1279DA219A8C12CC25A0D27B84F57BD3E8B481783053BB2DAF57051F57289D39E6B1A67D9BA45FED3D5E9254D05434135E0CDB3A2E634EAA1EF2511F97083228788']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -51,15 +54,19 @@ if i_use_x_randr:
 if i_use_x_vidmode:
     _server_bindings.append('vidmode')
 
+_execs = []
+if i_use_x_idcrtc:
+    _execs.append('idcrtc')
 
 def ride(private):
-    execute(['blueshift', '--help'])
+    info('blueshift')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
+    params.append('EXECS=%s' % ' '.join(_execs))
     params.append('command')
     if i_use_info:
         params.append('info')
@@ -85,6 +92,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
+    params.append('EXECS=%s' % ' '.join(_execs))
     params.append('install-base')
     params.append('install-examples')
     if i_use_info:

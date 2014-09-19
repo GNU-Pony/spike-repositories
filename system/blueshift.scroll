@@ -14,8 +14,12 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
+x               = get('I_USE_X',         'y')
+i_use_x_randr   = get('I_USE_X_RANDR',     x).lower().startswith('y')
+i_use_x_vidmode = get('I_USE_X_VIDMODE', 'n').lower().startswith('y')
+
 pkgname = 'blueshift'
-pkgver = '1.3'
+pkgver = '1.4'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -24,8 +28,13 @@ license = ['AGPL3']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
-depends = ['python3', 'libxcb', 'libc', 'argparser-python']
-makedepends = ['cython', 'c99', 'libc', 'python3', 'libxcb', 'make', 'coreutils', 'sed', 'zip', 'pkg-config']
+_deps = []
+if i_use_x_randr:
+    _deps += ['libxcb']
+if i_use_x_vidmode:
+    _deps += ['libx11', 'libxxf86vm']
+depends = ['python3', 'libc', 'argparser-python'] + _deps
+makedepends = ['cython', 'c99', 'libc', 'python3', 'make', 'coreutils', 'sed', 'zip', 'pkg-config'] + _deps
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 if i_use_pdf or i_use_ps or i_use_dvi:
@@ -33,9 +42,16 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['4E9575523F5709C2C8FD34B5D585AE6AD3CA7BE06AB23F44B8123E3F49CB47EC65C041C3FF156ECCA614940E9E0993EDA2A20565F670505351C5A333DCD895EB1A80FBA3E61BFF81']
+sha3sums = ['B14A21AB8A20803D46EB12D055B3B1675B2CB9514E3AA6B5AD671893C5A9B365587767D927A33F63D9D525C5F63F4C409C09A486FBD426EF8254B3938BD1C9F99EA8F3AB5376E4F9']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+_server_bindings = []
+if i_use_x_randr:
+    _server_bindings.append('randr')
+if i_use_x_vidmode:
+    _server_bindings.append('vidmode')
 
 
 def ride(private):
@@ -45,6 +61,7 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
     params.append('command')
     if i_use_info:
         params.append('info')
@@ -60,12 +77,16 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('fish')
     if i_use_zsh:
         params.append('zsh')
+    LDFLAGS = get('LDFLAGS', '')
+    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
+    export('LDFLAGS', LDFLAGS)
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
     params.append('install-base')
     params.append('install-examples')
     if i_use_info:

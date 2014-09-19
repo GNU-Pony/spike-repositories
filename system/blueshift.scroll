@@ -15,7 +15,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.2'
+pkgver = '1.3'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -33,7 +33,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['590563E3D2246DDE5BEF765223ED44581C6CEAE2BA53D34B7FD27926B2ACBEB559D567645480969626C558A0B32767FE915C945706D2B170FDB14091831751A99A787D6027936199']
+sha3sums = ['4E9575523F5709C2C8FD34B5D585AE6AD3CA7BE06AB23F44B8123E3F49CB47EC65C041C3FF156ECCA614940E9E0993EDA2A20565F670505351C5A333DCD895EB1A80FBA3E61BFF81']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

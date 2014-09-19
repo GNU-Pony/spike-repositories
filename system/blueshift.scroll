@@ -5,18 +5,29 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
 pkgname = 'blueshift'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
 license = ['AGPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
 private = SUPPORTED
 depends = ['python3', 'libxcb', 'libc', 'argparser-python']
 makedepends = ['cython', 'c99', 'libc', 'python3', 'libxcb', 'make', 'coreutils', 'sed', 'zip', 'pkg-config']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A818D8DC5EBF5DC44F89EFF9B307C14745FA64B149F85D53F7809564363833348C3CBCDE01E91C2195E19C1F531CFA738A09D6A32AEE76E0308DA6820D036837955EA81F98C9395E']
+sha3sums = ['A78684DFFCB8A95664BD9C51CF4CF3B5A7DDE5295545115A4406E718AFE68DE917C4C50C650E250FDCB884229A0BCD15CB3BDCB9B5DE4A0B0423F738FCA349D07ACE724D5203C987']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -28,15 +39,48 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install')
+    params.append('install-base')
+    params.append('install-examples')
+    if i_use_info:
+        params.append('install-info')
+    for cond, ext in [(i_use_pdf, 'pdf'), (i_use_pdf, 'ps'), (i_use_pdf, 'dvi')]:
+        if cond:
+            install('blueshift.%s' % ext,
+                    '%s%s/share/doc/%s.%s' % (pkgdir, _prefix(private), pkgname, ext),
+                    mode = 0o644, parents = True)
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

@@ -22,14 +22,12 @@ i_use_x_icc     = get('I_USE_X_ICC',       x).lower().startswith('y')
 i_use_drm       = get('I_USE_DRM',       'y').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.10'
+pkgver = '1.11'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3', 'GPL3']
-if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3')
+license = ['AGPL3', 'GPL3', 'GFDL1.3']
 private = SUPPORTED
 _deps = []
 if i_use_x_randr or i_use_x_idcrtc or i_use_x_icc:
@@ -49,7 +47,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['14762D8B36F3EA5E84791AFEF59B973E9AF82BA976279BF3111D9A4F1E954764D86E32C5FC6696CE0F565639475E10D280A457379E17A795A199E637C7181AA716FAABE39E1480FA']
+sha3sums = ['4441932C39280A202DBF0F7DCAD72F8C7B745D6FC0F8FA3B8FE14AF705CD5E8458C871188D5AC8C33DE4C95DFD2888D68A76B9E3EC13DCF6BFB1A1898DD7291A92B161D7BEB45398']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -123,8 +121,10 @@ def package(startdir, srcdir, pkgdir, private):
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE.agpl3' % _dir)
+    rm('%s/LICENSE.fdl1.3' % _dir)
     rm('%s/LICENSE.gpl3' % _dir)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE.agpl3' % _dir)
+    ln('/usr/share/licenses/common/GFDL1.3', '%s/LICENSE.fdl1.3' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir)
 
 

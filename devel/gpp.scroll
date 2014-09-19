@@ -1,0 +1,70 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+
+pkgname = 'gpp'
+pkgver = '1.2'
+pkgdesc = 'Bash based preprocessor for anything'
+upstream = 'https://github.com/maandree/gpp'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+provides = ['general-preprocessor']
+depends = ['python3']
+makedepends = ['make', 'coreutils', 'python3']
+if i_use_info:
+    makedepends.append('texinfo')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BF175445F054E27D97F09C4C3319DD91AB9B208BF0FA5B9E8BD19A978EC32D980E805CF27E4385C0BEF74783BBB3884179ECBDCCA26501DE92908BA93415F297573E161578738186']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('gpp')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/gpp-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('PY=python3')
+    params.append('gpp')
+    if i_use_info:
+        params.append('info')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/gpp-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    params.append('PY=python3')
+    params.append('install-core')
+    if i_use_info:
+        params.append('install-info')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

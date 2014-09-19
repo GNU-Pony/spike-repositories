@@ -20,7 +20,7 @@ i_use_x_vidmode = get('I_USE_X_VIDMODE', 'n').lower().startswith('y')
 i_use_x_idcrtc  = get('I_USE_X_IDCRTC',    x).lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.7'
+pkgver = '1.8'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -43,7 +43,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1A7C5D1717BBA1279DA219A8C12CC25A0D27B84F57BD3E8B481783053BB2DAF57051F57289D39E6B1A67D9BA45FED3D5E9254D05434135E0CDB3A2E634EAA1EF2511F97083228788']
+sha3sums = ['22EBBFE553E9024195DB04409EF54B7D4F2004AB6F99CCC17F3EB08B90F0D18E1089584C979FB9637C3722736FA50309DB88950B3F63A8749598CC705A80B8156576197D621A1D36']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

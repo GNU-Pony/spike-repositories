@@ -19,7 +19,7 @@ i_use_x_randr   = get('I_USE_X_RANDR',     x).lower().startswith('y')
 i_use_x_vidmode = get('I_USE_X_VIDMODE', 'n').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.5'
+pkgver = '1.6'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -28,9 +28,7 @@ license = ['AGPL3']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
-_deps = []
-if i_use_x_randr:
-    _deps += ['libxcb']
+_deps = ['libxcb']
 if i_use_x_vidmode:
     _deps += ['libx11', 'libxxf86vm']
 depends = ['python3', 'libc', 'argparser-python'] + _deps
@@ -42,7 +40,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['01E7FFCFD3802DBE111B8DC6D08C11B67F9E5AED1B753F088040CABCA9981300CFD16A693C799E5031D2E10A4514DB64C995975078F5814C3E24B190DB6C63EDA5DEA59A0880F67A']
+sha3sums = ['A60CE9219E505EF0059F3293E58A73871CCB3C8E883B80804239D9F29CBD4A6C812EDB86F37F76F82B71B9FC8CD636B3C33305A4068CE9B81FC4D10654967812B957F98D03BFCFCF']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

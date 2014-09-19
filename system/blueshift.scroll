@@ -27,7 +27,7 @@ pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3']
+license = ['AGPL3', 'GPL3']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
@@ -59,6 +59,8 @@ if i_use_x_randr:
     _server_bindings.append('randr')
 if i_use_x_vidmode:
     _server_bindings.append('vidmode')
+if i_use_drm:
+    _server_bindings.append('drm')
 
 _execs = []
 if i_use_x_idcrtc:

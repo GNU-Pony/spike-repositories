@@ -22,7 +22,7 @@ i_use_x_icc     = get('I_USE_X_ICC',       x).lower().startswith('y')
 i_use_drm       = get('I_USE_DRM',       'y').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.12'
+pkgver = '1.13'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -47,7 +47,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['777A1B967493E776D34C2C53F5BA655B59985493EE8277E924FCA23C1CE408491E968EA06EEB6396B072DACBF814F3BFF587D2552CDD2ABBEC588E74F989116A97FC32D385C33464']
+sha3sums = ['87E4600C18758C5CE6E4B08FEB16114AC1F0C9EA7B688F4A122BA077D0A1393D827463AFFDFEB743A5B4FC592C335D9CE56F9551AD00C3C62CBBC50AAA0690516E96F8781DDDDDC7']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

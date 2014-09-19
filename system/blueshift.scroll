@@ -18,9 +18,11 @@ x               = get('I_USE_X',         'y')
 i_use_x_randr   = get('I_USE_X_RANDR',     x).lower().startswith('y')
 i_use_x_vidmode = get('I_USE_X_VIDMODE', 'n').lower().startswith('y')
 i_use_x_idcrtc  = get('I_USE_X_IDCRTC',    x).lower().startswith('y')
+i_use_x_icc     = get('I_USE_X_ICC',       x).lower().startswith('y')
+i_use_drm       = get('I_USE_DRM',       'y').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.8'
+pkgver = '1.9'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
@@ -30,11 +32,15 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
 _deps = []
-if i_use_x_randr or i_use_x_idcrtc:
+if i_use_x_randr or i_use_x_idcrtc or i_use_x_icc:
     _deps += ['libxcb']
 if i_use_x_vidmode:
     _deps += ['libx11', 'libxxf86vm']
+if i_use_drm:
+    _deps += ['libdrm']
 depends = ['python3', 'libc', 'argparser-python'] + _deps
+optdepends = ['linux: For backlight support via sysfs',
+              'adjbacklight: For permission-hasslefree backlight adjustments via sysfs']
 makedepends = ['cython', 'c99', 'libc', 'python3', 'make', 'coreutils', 'sed', 'zip', 'pkg-config'] + _deps
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
@@ -43,7 +49,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['22EBBFE553E9024195DB04409EF54B7D4F2004AB6F99CCC17F3EB08B90F0D18E1089584C979FB9637C3722736FA50309DB88950B3F63A8749598CC705A80B8156576197D621A1D36']
+sha3sums = ['8BA34F5220DE5BCE00991DCE705B9E03CC2AC42B80F2DB1E24543FF55B1B34D1CA0B99C9DEE444904BE38716CF618DE93A4A587E9C6F855CD18DDA9F0E4340AFDD34B7224B50539D']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -57,6 +63,9 @@ if i_use_x_vidmode:
 _execs = []
 if i_use_x_idcrtc:
     _execs.append('idcrtc')
+if i_use_x_icc:
+    _execs.append('iccprofile')
+
 
 def ride(private):
     info('blueshift')
@@ -111,8 +120,10 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
+    rm('%s/LICENSE.agpl3' % _dir)
+    rm('%s/LICENSE.gpl3' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE.agpl3' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

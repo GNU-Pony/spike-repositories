@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'blueshift'
+pkgver = '1.0'
+pkgdesc = 'An extensible and highly configurable alternative to redshift'
+upstream = 'https://github.com/maandree/blueshift'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['AGPL3']
+private = SUPPORTED
+depends = ['python3', 'libxcb', 'libc', 'argparser-python']
+makedepends = ['cython', 'c99', 'libc', 'python3', 'libxcb', 'make', 'coreutils', 'sed', 'zip', 'pkg-config']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['A818D8DC5EBF5DC44F89EFF9B307C14745FA64B149F85D53F7809564363833348C3CBCDE01E91C2195E19C1F531CFA738A09D6A32AEE76E0308DA6820D036837955EA81F98C9395E']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['blueshift', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/blueshift-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/blueshift-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
+

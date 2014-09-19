@@ -1,0 +1,64 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+
+pkgname = 'nightshift'
+pkgver = '0.6'
+pkgdesc = 'A terminal user interface for redshift'
+upstream = 'https://github.com/maandree/nightshift'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['python3', 'redshift', 'linux']
+makedepends = ['make', 'coreutils', 'zip']
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['362F2994F8B2F6EA11BF661EB556B3D0C7D7E35C13A524DA5C698F949D67AD7066901BD4F77C760A32AE365FB1BC929258AC0342A74129D204417A5250FD66B89A3F340A5A5A3537']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('nightshift')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/nightshift-%s' % (srcdir, pkgver))
+    params = ['nightshift=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
+    LDFLAGS = get('LDFLAGS', '')
+    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
+    export('LDFLAGS', LDFLAGS)
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/nightshift-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

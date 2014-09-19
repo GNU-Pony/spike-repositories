@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'analyse-gamma'
+pkgver = '1.0'
+pkgdesc = 'Gamma adjustment analysis tool'
+upstream = 'https://github.com/maandree/analyse-gamma'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['python3', 'pylibgamma>=1.1']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['03FF3591D7F08D8379B91003C3A2A4A388D0C380C3736AF825EF85E762E0694DEAFB69D23F1B540974AD4B467404FF0B0FA40F1D55B62C6A9E4626B311413D95EDB82E85CD92C3AA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('analyse-gamma')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/blueshift-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/blueshift-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

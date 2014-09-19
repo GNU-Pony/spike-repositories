@@ -14,28 +14,35 @@ i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
-x           = get('I_USE_X',     'y')
-i_use_x_icc = get('I_USE_X_ICC',   x).lower().startswith('y')
+x                 = get('I_USE_X',           'y')
+i_use_x_randr     = get('I_USE_X_RANDR',       x).lower().startswith('y')
+i_use_x_vidmode   = get('I_USE_X_VIDMODE',   'n').lower().startswith('y')
+i_use_x_idcrtc    = get('I_USE_X_IDCRTC',      x).lower().startswith('y')
+i_use_x_icc       = get('I_USE_X_ICC',         x).lower().startswith('y')
+i_use_drm         = get('I_USE_DRM',         'y').lower().startswith('y')
+i_use_fake_quartz = get('I_USE_FAKE_QUARTZ', 'n').lower().startswith('y')
+i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
 
 pkgname = 'blueshift'
-pkgver = '1.90'
+pkgver = '1.19'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
-arch = ['any']
-if i_use_x_icc:
-    arch = ['x86_64', 'i686']
+arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
 license = ['AGPL3', 'GPL3', 'GFDL1.3']
 private = SUPPORTED
-depends = ['python3', 'argparser-python', 'solar-python', 'pylibgamma']
-if i_use_x_icc:
-    depends += ['libxcb', 'glibc']
+_deps = []
+if i_use_x_randr or i_use_x_idcrtc or i_use_x_icc or i_use_fake_quartz or i_use_fake_w32gdi:
+    _deps += ['libxcb']
+if i_use_x_vidmode:
+    _deps += ['libx11', 'libxxf86vm']
+if i_use_drm:
+    _deps += ['libdrm']
+depends = ['python3', 'libc', 'argparser-python', 'solar-python'] + _deps
 optdepends = ['linux: For backlight support via sysfs',
               'adjbacklight: For permission-hasslefree backlight adjustments via sysfs',
               'wget: For weather conditions']
-makedepends = ['python3', 'make', 'coreutils', 'sed', 'zip']
-if i_use_x_icc:
-    makedepends += ['libxcb', 'glibc', 'gcc', 'pkg-config']
+makedepends = ['cython', 'c99', 'libc', 'python3', 'make', 'coreutils', 'sed', 'zip', 'pkg-config'] + _deps
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 if i_use_pdf or i_use_ps or i_use_dvi:
@@ -43,12 +50,29 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['EE849AEB9E19E01BBF20C2E2A9716B0483587AAD45810A021D53DC076F7A6280CB230D2450D01472C10D27F5D0B7911B0C2BBC3EEED316E2C4A0E65CEF6B0CC154ADCF00A15B9557']
+sha3sums = ['229B9F464199164B4186F48CFD5B2D72E5BC54BBFD3A5B9101FB64A3F0BCB16B1E52FE15053964523A91B480F5157446AD9EFA061ACC7046436B9F76D68080D40BA8A35AA0102B8F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
+_server_bindings = []
+_fake = []
+if i_use_x_randr:
+    _server_bindings.append('randr')
+if i_use_x_vidmode:
+    _server_bindings.append('vidmode')
+if i_use_drm:
+    _server_bindings.append('drm')
+if i_use_fake_quartz:
+    _server_bindings.append('quartz')
+    _fake.append('FAKE_W32=y')
+if i_use_fake_w32gdi:
+    _server_bindings.append('w32gdi')
+    _fake.append('FAKE_MAC=y')
+
 _execs = []
+if i_use_x_idcrtc:
+    _execs.append('idcrtc')
 if i_use_x_icc:
     _execs.append('iccprofile')
 
@@ -59,7 +83,8 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir] + _fake
+    params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
     params.append('EXECS=%s' % ' '.join(_execs))
     params.append('command')
     if i_use_info:
@@ -84,7 +109,8 @@ def build(startdir, srcdir, pkgdir, private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/blueshift-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir] + _fake
+    params.append('SERVER_BINDINGS=%s' % ' '.join(_server_bindings))
     params.append('EXECS=%s' % ' '.join(_execs))
     params.append('install-base')
     params.append('install-examples')

@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'orphan-reaper'
+pkgver = '1'
+pkgdesc = 'Place subreapers in your process tree to keep it structured'
+upstream = 'https://github.com/maandree/orphan-reaper'
+arch = ['i686', 'x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'linux>=3.4']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['7F1B4EEFD8199BF487E110590FACCEFC2799DCD7D30C1EDF083A793E5EFD22FC7C90FD8947C5BF9184C5C464BE4D74254C1CF277A6F64010B190B0457EA9EBE46A8EB7501F800ABB']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['orphan-reaper', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/orphan-reaper-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/orphan-reaper-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

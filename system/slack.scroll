@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'slack'
+pkgver = '1'
+pkgdesc = 'Control your timer slack'
+upstream = 'https://github.com/maandree/slack'
+arch = ['i686', 'x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['glibc', 'linux>=2.6.28']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['D71200533B2512F3F3DE9135ABEF1FD21854A9CBAEA8F947252224FF290A29C820F2DE0E85C4F20B7DF09F618A3BD5FD81700673202C0B6BB33960DC13CC2AE92EB50250133773F3']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['slack', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/slack-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/slack-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

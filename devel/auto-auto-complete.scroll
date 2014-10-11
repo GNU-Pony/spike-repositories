@@ -5,40 +5,85 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_examples = get('I_USE_EXAMPLES', 'y').lower().startswith('y')
+i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
+i_use_pdf      = get('I_USE_PDF',      'n').lower().startswith('y')
+i_use_ps       = get('I_USE_PS',       'n').lower().startswith('y')
+i_use_dvi      = get('I_USE_DVI',      'n').lower().startswith('y')
+i_use_bash     = get('I_USE_BASH',     'y').lower().startswith('y')
+i_use_fish     = get('I_USE_FISH',     'y').lower().startswith('y')
+i_use_zsh      = get('I_USE_ZSH',      'y').lower().startswith('y')
 
 pkgname = 'auto-auto-complete'
-pkgver = '3'
+pkgver = '4'
 pkgdesc = 'Autogenerate shell auto-completion scripts'
 upstream = 'https://github.com/maandree/auto-auto-complete'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'sed', 'coreutils']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('texlive-core')
+if i_use_bash or i_use_fish or i_use_zsh:
+    license.append('python3')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['759BEDE880B963E20DA586E3E44C02D392A30DDA916E12E57482A585CDE6C63FE1A5D9DACA9C07299C1776C77BFE109B1D648CBE1201CB1272E2EEFD338531E89032F4FCCDCDCC43']
+sha3sums = ['6E50936732DA845B77401DAABF301D7B55CAD488914303FFA7B8974AF7B105C842C8CF523F042E523A25E4D907D4DFCF18731C7640363974B23695171BE87EB0B9E2939283C02803']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    echo('Example script')
-    echo('')
-    cat(_prefix(private) + '/share/doc/auto-auto-complete/example')
-    echo('')
-    echo('Use the command auto-auto-complete')
+    execute(['info', 'auto-auto-complete'])
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/auto-auto-complete-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/auto-auto-complete-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_examples:
+        params.append('install-examples')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'gpp'
-pkgver = '1.2'
+pkgver = '1.3'
 pkgdesc = 'Bash based preprocessor for anything'
 upstream = 'https://github.com/maandree/gpp'
 arch = ['any']
@@ -20,7 +20,7 @@ makedepends = ['make', 'coreutils', 'python3']
 if i_use_info:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BF175445F054E27D97F09C4C3319DD91AB9B208BF0FA5B9E8BD19A978EC32D980E805CF27E4385C0BEF74783BBB3884179ECBDCCA26501DE92908BA93415F297573E161578738186']
+sha3sums = ['003101DA33B55C02FFDC6F00D727DF06B332DD5C055CD72A9024BFC173932642113989DAA1635180118458CEB06232721FA74A4ABE8BD1DD61B0CA3DC7935908D26CBFF6B54E72A3']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -35,6 +35,7 @@ def build(startdir, srcdir, pkgdir, private):
               'PKGNAME=%s' % pkgname,
               'DESTDIR=%s' % pkgdir,
               'PY=python3',
+              'VERSION=%s' % pkgver, # Incase this is forgotten upstream.
               'gpp']
     make(params + (['info'] if i_use_info else []))
 
@@ -45,6 +46,7 @@ def package(startdir, srcdir, pkgdir, private):
               'PKGNAME=%s' % pkgname,
               'DESTDIR=%s' % pkgdir,
               'PY=python3',
+              'VERSION=%s' % pkgver,
               'install-core']
     make(params + (['installinfo'] if i_use_info else []))
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)

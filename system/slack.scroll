@@ -5,18 +5,34 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+
 pkgname = 'slack'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'Control your timer slack'
 upstream = 'https://github.com/maandree/slack'
 arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
 private = SUPPORTED
 depends = ['glibc', 'linux>=2.6.28']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texcore-live')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D71200533B2512F3F3DE9135ABEF1FD21854A9CBAEA8F947252224FF290A29C820F2DE0E85C4F20B7DF09F618A3BD5FD81700673202C0B6BB33960DC13CC2AE92EB50250133773F3']
+sha3sums = ['0EF98C224AC7F18D1A1F54F26C392DABCF7307D8C56BB70E370D23B6619D09C4BB7FD197142049DF6FF25367F5868D3D4C4DDDD471DCD47B420E01315DDA9AD9326D64F887D78607']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -28,13 +44,42 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/slack-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/slack-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install')
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

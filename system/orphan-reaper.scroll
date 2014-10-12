@@ -5,18 +5,34 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+
 pkgname = 'orphan-reaper'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'Place subreapers in your process tree to keep it structured'
 upstream = 'https://github.com/maandree/orphan-reaper'
 arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
 private = SUPPORTED
 depends = ['glibc', 'linux>=3.4']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texcore-live')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['7F1B4EEFD8199BF487E110590FACCEFC2799DCD7D30C1EDF083A793E5EFD22FC7C90FD8947C5BF9184C5C464BE4D74254C1CF277A6F64010B190B0457EA9EBE46A8EB7501F800ABB']
+sha3sums = ['E43C2B9DA8A422EA9DCF97BE9CA19B87828B1A60D31D5E338AD4C8C265C85BF74120FB111489F975AF1FECBC7E8D564ECCFF3ACE8A3CF86E487546197E814CF72C9944E8EF61FB68']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -28,13 +44,42 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/orphan-reaper-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/orphan-reaper-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install')
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

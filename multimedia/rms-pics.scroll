@@ -1,0 +1,35 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'rms-pics'
+pkgver = '1'
+pkgdesc = 'Download all photos from http://stallman.org/photos/'
+upstream = 'https://github.com/maandree/rms-pics'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GNUAllPermissive']
+private = SUPPORTED
+depends = ['bash', 'coreutils', 'wget', 'grep', 'sed']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['1139DDEA415A278F50F41ACBF32EB549898AA019AE1A33870BC0AF8F03131864A4E8D15D1746BC998E11FCA6B0B5530A0DBA560D4FDF24C65FF44578DBFB5A1273CD8CB315F80226']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['fetch-rms-pics', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/rms-pics-%s' % (srcdir, pkgver))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/rms-pics-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+

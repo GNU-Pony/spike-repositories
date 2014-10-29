@@ -43,7 +43,7 @@ source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['C1BBFACDC012504A281480FA51B36FDA31F16AFD4F37E24BC10AC7825401477A4301F1F84ADF6931BE991233A29B9F4E9FCDC52F4476FA0EC5951D99D5027D5B3A4573467ADCFE6C']
 
 # Technically you can do a private installation (provided you adapt
-# the instructiosn below), but that makes no sense because it should
+# the instructions below), but that makes no sense because it should
 # only be started from a getty program or a service. If you do a
 # private installation (for a user other than root) than root need to
 # take (group) ownership of it and forward permissions by setting the

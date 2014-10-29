@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'redshift-adjust'
+pkgver = '1'
+pkgdesc = 'Script for manually adjusting the colour temperature with hotkeys'
+upstream = 'https://github.com/maandree/redshift-adjust'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['bash', 'coreutils', 'redshift']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['82B8CA42C966072D95D34345FB26879652488890401DD27F8BDD1EFAF73A1A671F4F607BE73376D4CEDF8C8B07A7363DD5881A31A72921F00B0922CCB68471CD770184E8ECD3B00C']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['redshift-adjust', '--help'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/redshift-adjust-%s' % (srcdir, pkgver))
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/redshift-adjust-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

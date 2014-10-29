@@ -1,0 +1,122 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info    = get('I_USE_INFO',    'y').lower().startswith('y')
+i_use_pdf     = get('I_USE_PDF',     'n').lower().startswith('y')
+i_use_ps      = get('I_USE_PS',      'n').lower().startswith('y')
+i_use_dvi     = get('I_USE_DVI',     'n').lower().startswith('y')
+i_use_btmp    = get('I_USE_BTMP',    'n').lower().startswith('y')
+i_use_utmp    = get('I_USE_UTMP',    'y').lower().startswith('y')
+i_use_audit   = get('I_USE_AUDIT',   'n').lower().startswith('y')
+i_use_lastlog = get('I_USE_LASTLOG', 'n').lower().startswith('y')
+i_use_syslog  = get('I_USE_SYSLOG',  'n').lower().startswith('y')
+
+pkgname = 'cerberus-logging'
+pkgver = '1414623324'
+pkgdesc = 'Log-in logging extension for cerberus'
+upstream = 'https://github.com/GNU-Pony/cerberus-logging'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
+private = UNSUPPORTED
+depends = ['sh', 'coreutils']
+if i_use_btmp or i_use_utmp or i_use_audit or i_use_lastlog or i_use_syslog:
+    depends.append('libc')
+    optdepends = ['audit: for logging with audit']
+makedepends = ['make', 'coreutils']
+if i_use_btmp or i_use_utmp or i_use_audit or i_use_lastlog or i_use_syslog:
+    makedepends += ['libc', 'gcc']
+if i_use_audit:
+    makedepends.append('audit')
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
+extension = "cerberus>=1414618479"
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['C9A4ECDC8B4019E390A35D526C9C59CEFF628AF2F45B904C26A25C606528002A3D15C43BEF6013F60256DF1B1B85271134B79FF5FEB2554682CF7F29B6F18E61746035FE65D1BEAE']
+
+# Technically you can do a private installation (provided you adapt
+# the instructions below), but that makes no sense because it should
+# only be started from cerberus which should only be started from a
+# getty program or a service.
+
+
+def ride(private):
+    execute(['info', 'cerberus-logging'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/cerberus-logging-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('command')
+    if i_use_btmp:
+        params.append('btmp')
+    if i_use_utmp:
+        params.append('utmp')
+    if i_use_audit:
+        params.append('audit')
+    if i_use_lastlog:
+        params.append('lastlog')
+    if i_use_syslog:
+        params.append('syslog')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/cerberus-logging-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_btmp:
+        params.append('install-btmp')
+    if i_use_utmp:
+        params.append('install-utmp')
+    if i_use_audit:
+        params.append('install-audit')
+    if i_use_lastlog:
+        params.append('install-lastlog')
+    if i_use_syslog:
+        params.append('install-syslog')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -9,7 +9,7 @@ i_use_info      = get('I_USE_INFO',       'y').lower().startswith('y')
 i_use_pdf       = get('I_USE_PDF',        'n').lower().startswith('y')
 i_use_ps        = get('I_USE_PS',         'n').lower().startswith('y')
 i_use_dvi       = get('I_USE_DVI',        'n').lower().startswith('y')
-i_use_auth      = get('I_USE_AUTH',       'pam').lower()
+i_use_auth      = get('I_USE_AUTH',       'crypt').lower()
 i_use_login     = get('I_USE_LOGIN',      '').lower() == 'cerberus'
 i_use_vcs       = get('I_USE_VCS',        'y').lower().startswith('y')
 i_use_vcsa      = get('I_USE_VCSA',       'y').lower().startswith('y')

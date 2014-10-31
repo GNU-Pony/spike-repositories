@@ -1,0 +1,93 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
+pkgname = 'ponyguests'
+pkgver = '1414769619'
+pkgdesc = 'Login wrapper to enable guest accounts'
+upstream = 'https://github.com/GNU-Pony/ponyguests'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    license.append('GFDL1.3')
+private = UNSUPPORTED
+depends = ['sh', 'coreutils', 'grep', 'sed', 'bc', 'shadow', 'linux>=3.4', 'glibc']
+makedepends = ['make', 'coreutils', 'glibc', 'gcc', 'sed', 'linux-api-headers>=3.4']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['317DF8350AB9E32EC8001BEF7B4FC3374B4A41A9C0A56E98233A40EDA58F5C59806C29F3558F1F0542C5DA2B5345365707A29AB3EAAC42C15A700502B4D931C6FC59C661BEC688DC']
+
+# Technically you can do a private installation (provided you adapt
+# the instructions below), but that makes no sense because it should
+# only be started from a getty program or a service. If you do a
+# private installation (for a user other than root) than root need to
+# take (group) ownership of it and forward permissions by setting the
+# setuid (or setgid) bit and with that comes security holes inherited
+# by cerberus design to be minimal and skip use cases that should
+# never happen.
+
+
+def ride(private):
+    execute(['info', 'ponyguests'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/ponyguests-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('base')
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/ponyguests-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

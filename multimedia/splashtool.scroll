@@ -8,25 +8,23 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'splashtool'
-pkgver = '1385995298'
+pkgver = '1414962500'
 pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
 upstream = 'https://github.com/GNU-Pony/splashtool'
-arch = ['any']
+arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3']
+license = ['AGPL3+']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
+    license.append('GFDL1.3+')
 private = SUPPORTED
-depends = ['java-runtime: 1 source file is written in Java',
-           'python3: 2 source files are written in Python 3',
-           'sh: 1 source file is written in shell script',
-           'kbd: default font',
-           'nafe: read font files',
-           'gzip: decompress fonts']
-makedepends = ['make', 'coreutils', 'java-environment']
-if i_use_info:
+depends = ['gzip', 'nafe', 'kbd', 'imagemagick', 'bash', 'awk', 'grep', 'sed', 'coreutils', ' glibc']
+makedepends = ['make', 'coreutils', 'sed', 'glibc', 'gcc']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
+if i_use_pdf or i_use_dvi or i_use_ps:
+    makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C25FAD7F625927D89FCF6669C0396802EAA8AB9538ED69FA8689280FD06F33D241DB5094F87B2B6B31A4D049A3C672CBDBA2DAB3CBD05641138247CC160A4B6A4CB9D983A3E78A16']
+sha3sums = ['AC259CA09BEC531CD137EBC7B72AFE11976CE81AB5C63E1FCAAFCBB74DEB2DD5DBC5CFE913256DDBB8EDA6A7F89E9D45B62A16244E81FAC8096DE99EF747CCA0BF83789A24E0E5A2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -37,16 +35,32 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/splashtool-%s' % (srcdir, pkgver))
-    make('classes')
+    params = ['PKGNAME=' + pkgname, 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir]
+    params.append('command')
     if i_use_info:
-        make('info')
-    else:
-        sed([sed_script(' splashtool\\.info\\.gz', '', '^install:'), sed_script(' install -m644 splashtool\\.info\\.gz', '\\t', '&#')], 'Makefile')
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_ps:
+        params.append('ps')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/splashtool-%s' % (srcdir, pkgver))
-    make('PKGNAME=' + pkgname, 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir, 'install')
+    params = ['PKGNAME=' + pkgname, 'PREFIX=' + _prefix(private), 'DESTDIR=' + pkgdir]
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    make(params)
     rm('%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
     ln('/usr/share/licenses/common/AGPL3', '%s%s/share/licenses/%s/LICENSE' % (pkgdir, _prefix(private), pkgname))
 

@@ -1,0 +1,43 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'libkeccak'
+pkgver = '0.1'
+pkgdesc = 'Keccak-family hashing library'
+upstream = 'https://github.com/maandree/libkeccak'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['AGPL3']
+private = SUPPORTED
+depends = ['libc']
+checkdepends = ['libc', 'valgrind', 'make', 'coreutils']
+makedepends = ['libc', 'gcc', 'make', 'coreutils', 'binutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BFB47B09E9AC1E6717029A678F9EE93DE6A7312C027E279BA04832F6FBA69B297261E3A58F9306EED2A65CC8B5C092C3A6D78492275D000B3CE26A2B1B2CC51545338DBFC6668139']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    #info('libkeccak')
+    echo('Sorry no manual available, but you can read the header files.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libkeccak-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libkeccak-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
+

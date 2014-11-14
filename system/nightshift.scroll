@@ -41,9 +41,6 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('fish')
     if i_use_zsh:
         params.append('zsh')
-    LDFLAGS = get('LDFLAGS', '')
-    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
-    export('LDFLAGS', LDFLAGS)
     make(params)
 
 

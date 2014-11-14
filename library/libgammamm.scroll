@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'libgammamm'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'C++ wrapper for libgamma'
 upstream = 'https://github.com/maandree/libgammamm'
 arch = ['x86_64', 'i686']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['libgamma>=0.3', 'gcc', 'gcc-libs']
 makedepends = ['make', 'coreutils'] + depends
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C67D9A4531E43BB544DC3582AFB41109B349D18FAF227E90D16CBE41D96FF7FBBDC785B18237336E2A256994A4EB57FA847DE054BC5BC52AB4CF983D485078E324C92F8AECC9DD7F']
+sha3sums = ['7872631E02A8599DD2C61D3749033EAEA8694B70C1E59A60FFAB8E11665A1AC8E2E2250DA69BC4AFD64A41C33A8695FD1E8ACD8615750BE495B9E5CCFCA0777EA347592DC5324D6A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -28,9 +28,6 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/libgammamm-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    LDFLAGS = get('LDFLAGS', '')
-    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
-    export('LDFLAGS', LDFLAGS)
     make(params)
 
 

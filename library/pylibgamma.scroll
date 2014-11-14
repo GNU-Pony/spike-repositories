@@ -29,9 +29,6 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/pylibgamma-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params += ['PY_MAJOR=3', 'PY_MINOR=4']
-    LDFLAGS = get('LDFLAGS', '')
-    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
-    export('LDFLAGS', LDFLAGS)
     make(params)
 
 

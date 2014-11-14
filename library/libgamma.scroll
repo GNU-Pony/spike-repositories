@@ -19,8 +19,9 @@ i_use_drm         = get('I_USE_DRM',         'y').lower().startswith('y')
 i_use_fake_quartz = get('I_USE_FAKE_QUARTZ', 'n').lower().startswith('y')
 i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
 
+
 pkgname = 'libgamma'
-pkgver = '0.6'
+pkgver = '0.7.1'
 pkgdesc = 'Display server abstraction layer for gamma ramps'
 upstream = 'https://github.com/maandree/libgamma'
 arch = ['x86_64', 'i686']
@@ -42,7 +43,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['5E823695E9C160EA03D37084E334887CE8A6C175AD89579D8243407CA7BDC0241799317CCE77B4BBE6DF783962CCD55CEC7AD3F34ABDFD1798165C7BDB290D4F357051C25D21F99D']
+sha3sums = ['E01122ABC8ACA0F7430421AA608ABDF5520DBB0E8C2D53ACDCD745C2D1E28C8E9D870AA758531D98B175D2BA4FBDDE7A50D865FD078534CA721E3B2A2686D8A72397C88E040F68B7']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -79,9 +80,6 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('ps')
     if i_use_dvi:
         params.append('dvi')
-    LDFLAGS = get('LDFLAGS', '')
-    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
-    export('LDFLAGS', LDFLAGS)
     make(params)
 
 

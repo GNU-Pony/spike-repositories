@@ -17,8 +17,9 @@ i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 x           = get('I_USE_X',     'y')
 i_use_x_icc = get('I_USE_X_ICC',   x).lower().startswith('y')
 
+
 pkgname = 'blueshift'
-pkgver = '1.90'
+pkgver = '1.90.2'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['any']
@@ -43,7 +44,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['EE849AEB9E19E01BBF20C2E2A9716B0483587AAD45810A021D53DC076F7A6280CB230D2450D01472C10D27F5D0B7911B0C2BBC3EEED316E2C4A0E65CEF6B0CC154ADCF00A15B9557']
+sha3sums = ['95C3E6BDC83FCF724517404A0453E6160E2C0D0BDFB8B1B8DB90461DD9196A99D488DD939EE85E4CDDC25E534460CFE447E28098E728EE37D6FFD600647878BD91B5984A4D83E435']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -76,9 +77,6 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('fish')
     if i_use_zsh:
         params.append('zsh')
-    LDFLAGS = get('LDFLAGS', '')
-    LDFLAGS = LDFLAGS.replace('--as-needed', '').replace(',,', ',')
-    export('LDFLAGS', LDFLAGS)
     make(params)
 
 

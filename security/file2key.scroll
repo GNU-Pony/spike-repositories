@@ -6,17 +6,17 @@
 from dragonsuite import *
 
 pkgname = 'file2key'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'A simple command that generates a key from a file and a passphrase'
 upstream = 'https://github.com/maandree/file2key'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
-depends = ['glibc', 'libpassphrase']
-makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libpassphrase']
+depends = ['glibc', 'libpassphrase', 'libkeccak']
+makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libpassphrase', 'libkeccak']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C96CF09D5E637B54F7AA6707E6E4547FD8374AC3A0BD19A68E4CD89D679C36605A4E311D804FA326586057F6B3E14BD37D9F00A5BA68075DA64658A758E08DDDECEC1393CC743DBA']
+sha3sums = ['5E7AD8D8177D5B49687FD8857B7E0401B5A228387982E7603266306823A06555750D49F6A5BC779ABBBA98C17C1423E18CED89F744E6CEBB8B2CD456B0FA976116C7684041876DBC']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -35,5 +35,5 @@ def package(startdir, srcdir, pkgdir, private):
     make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 

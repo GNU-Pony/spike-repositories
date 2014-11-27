@@ -1,0 +1,83 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
+pkgname = 'featherweight'
+pkgver = '1417075971'
+pkgdesc = 'A lightweight news syndication aggregator for your terminal shell'
+upstream = 'https://github.com/GNU-Pony/featherweight'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['python3', 'coreutils', 'wget', 'pytagomacs', 'html2text']
+makedepends = ['make', 'coreutils', 'python3', 'zip']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['3C6B7B5D58A4C7EADCAD7DFF4E65F32444666462598362221092FED4D76AE12313826F52385F485CAFB38CF039204C6F1276AF586B79F726228A80ECCDF604B7B4729F7B7796632B']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    info('featherweight')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/featherweight-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dbi:
+        params.append('dvi')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/featherweight-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dbi:
+        params.append('install-dvi')
+    make(params + ['install'])
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

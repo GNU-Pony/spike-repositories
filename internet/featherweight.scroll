@@ -38,6 +38,7 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/featherweight-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    params.append('command')
     if i_use_info:
         params.append('info')
     if i_use_pdf:
@@ -53,6 +54,7 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/featherweight-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    params.append('install-base')
     if i_use_info:
         params.append('install-info')
     if i_use_pdf:
@@ -61,7 +63,7 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-ps')
     if i_use_dbi:
         params.append('install-dvi')
-    make(params + ['install'])
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

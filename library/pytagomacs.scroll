@@ -14,7 +14,7 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['python3', 'coreutils']
-makedepends = ['make', 'coreutils', 'python3'] + depends
+makedepends = ['make', 'coreutils', 'python3']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['F6902263695C95F8A7945F45A51BFA16022FA46AE5B1817D14C89AC94E1856D80507B43CDAB261942AB96B099F717B7A27093587A90548186D6088EB4B525D2F6699F2771CFC84BB']
 

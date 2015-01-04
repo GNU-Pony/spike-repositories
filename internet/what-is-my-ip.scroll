@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/651b5587e270afc0d1dcd0d06b6ce645f5b787c3'
+_script = 'what-is-my-ip'
+
+pkgname = _script
+pkgver = '2014.04.22'
+pkgdesc = 'Get your external IP address'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['sed', 'curl', 'grep']
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['06E26F395EA0FB57937751294975A78B6139DDBD254C6674E167431FEF8FAD190163E671608F46472CCC8D3B7A11C4BD52A3E8FFA7C4B8843568578EEF8B25F720BB77B2553747E8',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute(_script)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

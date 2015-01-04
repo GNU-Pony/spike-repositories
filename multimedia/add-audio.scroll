@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/9b1189741cbae7d86b5b8ee24a27e6f2c4ed108f'
+_script = 'add-audio'
+
+pkgname = _script
+pkgver = '2015.01.04'
+pkgdesc = 'Add an audio track to a video without audio'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['sh', 'ffmpeg']
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['98F837ACF5EEE6A82FDD44BF740F82AF99DC0C916DDBF711E58477476E6A8ECCC0F00B796525F42876E8235D2C400D4D37C51A8342821828AA29DE0790842323D8044F3E4724FC0B',
+            'BB759567D1AC1B9771DF5FFEDC0F76CB0D557791B7A2A3D87235C75B8526F7EFF8C3ED434AE681D9263D527DD7FEE20B7DAED77F74FF9CF9AD8A62271B8057EBFCA0D790C0DAEFE7']
+
+
+def ride(private):
+    execute('behead')
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

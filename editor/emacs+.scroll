@@ -23,7 +23,7 @@ sha3sums = ['33977EDA845174546EE3CBB5F4F513ABC5ECB5E97AA11E28E2EC9B7285619137669
 
 
 def ride(private):
-    execute('emacs+')
+    execute(_script)
 
 
 def package(startdir, srcdir, pkgdir, private):

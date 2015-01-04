@@ -24,7 +24,7 @@ sha3sums = ['0484D07AEED8665BBEB13F7340C5F561D216415CC387615E7C0EA5B7EDDF0EDC7A5
 
 
 def ride(private):
-    execute('purge')
+    execute(_script)
 
 
 def package(startdir, srcdir, pkgdir, private):

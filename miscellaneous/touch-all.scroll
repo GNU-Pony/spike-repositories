@@ -23,7 +23,7 @@ sha3sums = ['9F6F4744D479B77816D66B5727F92E61C1ADA4E11A951CE68A144DE5AE43A62EB56
 
 
 def ride(private):
-    execute('touch-all')
+    execute(_script)
 
 
 def package(startdir, srcdir, pkgdir, private):

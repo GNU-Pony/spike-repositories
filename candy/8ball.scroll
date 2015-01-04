@@ -23,7 +23,7 @@ sha3sums = ['5934FA2CDF81110A973075D91B0868E7193692B8C53C0C2EE2E1ED58214FD896A6F
 
 
 def ride(private):
-    execute('8-ball')
+    execute(_script)
 
 
 def package(startdir, srcdir, pkgdir, private):

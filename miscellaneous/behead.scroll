@@ -23,7 +23,7 @@ sha3sums = ['AF904F7854C547FD5083BB608B61A2FED2A122AB39C5AE5973974A08E1EC95D4097
 
 
 def ride(private):
-    execute('behead')
+    execute(_script)
 
 
 def package(startdir, srcdir, pkgdir, private):

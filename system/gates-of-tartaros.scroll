@@ -14,7 +14,7 @@ if ':' not in i_use_sh:
     i_use_sh = i_use_sh + ':' + i_use_sh
 
 pkgname = 'gates-of-tartaros'
-pkgver = '1396838411'
+pkgver = '1420718369'
 pkgdesc = 'Extensible minimal replacement for agetty with SSH support'
 upstream = 'https://github.com/GNU-Pony/gates-of-tartaros'
 arch = ['any']
@@ -27,7 +27,7 @@ makedepends = ['make', 'sed', 'coreutils']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['5C47A997E0B02703FAEBFA9DAEBCBCFE058210A0E7F401CAB622FDA60481D361EB070FD66E4D5EF5877D2B1DE10A61A6CF421E4EBD264FD60D4C84F92BEB0842941A6936B48AEBCB']
+sha3sums = ['5BE93F8B526D5829A5437626221269B237CB8D650BB1B9224C9CA56C860B3076AC63E0191F7A39E3C5982F980462CC01F1317529786FB80249371D63911DE97F6D9CE2948740E29B']
 
 _sh = i_use_sh.split(':')[1]
 

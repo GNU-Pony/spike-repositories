@@ -55,7 +55,6 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/cerberus-logging-%s' % (srcdir, pkgver))
     params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('command')
     if i_use_btmp:
         params.append('btmp')
     if i_use_utmp:

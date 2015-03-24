@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'libpassphrase'
-pkgver = '1415919473'
+pkgver = '1427220157'
 pkgdesc = 'Personalisable library for TTY passphrase reading'
 upstream = 'https://github.com/GNU-Pony/libpassphrase'
 arch = ['x86_64', 'armv6']
@@ -23,7 +23,7 @@ makedepends = ['make', 'coreutils', 'gcc']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['892B0AE946B2CE496ECB69BC4A9F1B271DF21224A6827F5660CFF267B26853D0FD1EB86E9F71EDAE51ACA30F1BFED12B28F991654062BE7FF413DC4F424692602506CC58305FB8C1']
+sha3sums = ['442D37B9B89573DFBDB2A50EA17C8F2ABC25A72575EDB942E2506AF37D4FD1AE575D57860547C73F01C01E469C1EE32B134C9DD0C7A081975137860320ADFBCEE3436135F7CFA085']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -38,7 +38,8 @@ def _configure():
     options = []
     
     #options.append('PASSPHRASE_ECHO')      # Do not hide the passphrase
-    options.append('PASSPHRASE_STAR')      # Use '*' for each character instead of no echo
+    #options.append('PASSPHRASE_STAR')      # Use '*' for each character instead of no echo
+    options.append('PASSPHRASE_TEXT')      # Use '(empty)' and not '(not empty)' instead of no echo
     #options.append('PASSPHRASE_REALLOC')   # Soften security by using `realloc`
     options.append('PASSPHRASE_MOVE')      # Enable move of point
     options.append('PASSPHRASE_INSERT')    # Enable insert mode
@@ -49,7 +50,16 @@ def _configure():
     options.append('DEFAULT_INSERT')       # Use insert mode as default
     options.append('PASSPHRASE_INVALID')   # Prevent duplication of non-initialised memory
     
-    return ['OPTIONS="%s"' % ' '.join(options)]
+    star_char = '*'
+    text_empty = '(empty)'
+    text_not_empty = '(not empty)'
+    
+    rc = ['OPTIONS="%s"' % ' '.join(options)]
+    rc.append('%s="%s"' % ('PASSPHRASE_STAR_CHAR',      star_char))
+    rc.append('%s="%s"' % ('PASSPHRASE_TEXT_EMPTY',     text_empty))
+    rc.append('%s="%s"' % ('PASSPHRASE_TEXT_NOT_EMPTY', text_not_empty))
+    
+    return rc
 
 
 

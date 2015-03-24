@@ -11,7 +11,7 @@ i_use_ps      = get('I_USE_PS',      'n').lower().startswith('y')
 i_use_dvi     = get('I_USE_DVI',     'n').lower().startswith('y')
 
 pkgname = 'cerberus-securetty'
-pkgver = '1427201094'
+pkgver = '1427203333'
 pkgdesc = 'securetty support for cerberus'
 upstream = 'https://github.com/GNU-Pony/cerberus-securetty'
 arch = ['x86_64']
@@ -26,9 +26,9 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
-extension = "cerberus>=1427201094"
+extension = "cerberus>=1427203333"
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D5279CA797D9B8E4F2C714ECC2F722456F0E0A771BB93F0682208BA8EA14AB7911F34DB2357BC689F36DA853A8FBC3759E0A427391906BEA5CFA3D4018C19DF14AE81D373297F692']
+sha3sums = ['C2C985DDAC767012F55812D031C947EF29DEA5F9EED28AF3BB61193AF675AC5E3C7C137FCF28D7120D2CCC5EA877A7C49F2206ABA243ADF2D6CBD0EE742AD169AE6A532BEACCE985']
 
 # Technically you can do a private installation (provided you adapt
 # the instructions below), but that makes no sense because it should

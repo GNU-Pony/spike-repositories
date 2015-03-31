@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'epkill'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'procps utilties with environment constraints'
 upstream = 'https://github.com/maandree/epkill'
 arch = ['x86_64', 'i686']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C62DB60EF70B24E05DBC24D3BEB140D3E8F19654EC2A4CD1B247D5EDD84D308ECA2A2E698ADC7C01C05DF52AA22DC2B91D14F02BD036579D33D32A5067EA48B9BE1E48DF24A2C7A5']
+sha3sums = ['D2F34DB6E5BDB4A5D234BEC3E3AE681DCF0C0C0BD472F5CF96AC03C43DDA73731ACB180DE14CF79B546FD299D241C6AF125B882B5B6265AAF4FDE44129068A7C82B282DA3FCA42CB']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

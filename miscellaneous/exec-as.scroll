@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'exec-as'
+pkgver = '1'
+pkgdesc = 'A command that lets you start another command with any argv[0]'
+upstream = 'https://github.com/maandree/exec-as'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['make', 'coreutils', 'c99', 'libc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['DD144F8C1D178AF970BE0579717414AF75E5D41BE0DEDBACB5AC06265B2684195680158606209CEFF0E4FD434EDDBA876BD2F7E1E8553D9492FD077FF5C6A4E3CDDDF31B5C3230C3']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('Type: [exec] exec-as COMMAND $0 $@')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/exec-as-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/exec-as-%s' % (srcdir, pkgver))
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

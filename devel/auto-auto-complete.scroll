@@ -15,7 +15,7 @@ i_use_fish     = get('I_USE_FISH',     'y').lower().startswith('y')
 i_use_zsh      = get('I_USE_ZSH',      'y').lower().startswith('y')
 
 pkgname = 'auto-auto-complete'
-pkgver = '5'
+pkgver = '6'
 pkgdesc = 'Autogenerate shell auto-completion scripts'
 upstream = 'https://github.com/maandree/auto-auto-complete'
 arch = ['any']
@@ -33,7 +33,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     license.append('python3')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['DE983FF403990765C998429DC559082613811CEAC27F25CA3C04438B47310F1650A1F72A8F21931674943931229C8373390F276D3EEBA70FC70DA8AF53324D32F072707C6507364A']
+sha3sums = ['F5629CA275331B15D2BDE7DFE534B2472FD1DCC71854F96F9834EF8FD7A71A7903FA5CCA6906705719FD9B4FF3ECD2031A2FB4CF7C38A4119A0E5738F1D227759708B0567348670C']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

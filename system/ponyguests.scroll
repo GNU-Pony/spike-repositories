@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'ponyguests'
-pkgver = '1414769619'
+pkgver = '1428445099'
 pkgdesc = 'Login wrapper to enable guest accounts'
 upstream = 'https://github.com/GNU-Pony/ponyguests'
 arch = ['x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['317DF8350AB9E32EC8001BEF7B4FC3374B4A41A9C0A56E98233A40EDA58F5C59806C29F3558F1F0542C5DA2B5345365707A29AB3EAAC42C15A700502B4D931C6FC59C661BEC688DC']
+sha3sums = ['E155A7AA44496A53B5D88DC659FA925CC843D17B0BD5AA323BA6E32D74A87D83B025D5577AFD70BE0B982A6579BDC9AE6976374DC0F5CE9677F7AED86BA23B0F30A464C7E9CCC549']
 
 # Technically you can do a private installation (provided you adapt
 # the instructions below), but that makes no sense because it should

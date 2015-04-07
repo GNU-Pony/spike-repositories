@@ -16,7 +16,7 @@ i_use_lastlog = get('I_USE_LASTLOG', 'n').lower().startswith('y')
 i_use_syslog  = get('I_USE_SYSLOG',  'n').lower().startswith('y')
 
 pkgname = 'cerberus-logging'
-pkgver = '1427201094'
+pkgver = '1428445270'
 pkgdesc = 'Log-in logging extension for cerberus'
 upstream = 'https://github.com/GNU-Pony/cerberus-logging'
 arch = ['x86_64']
@@ -40,7 +40,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 extension = "cerberus>=1414618479"
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F380E35FF7C6CFD185908996DAF75B08706ECE1245C451EC6554AFD86C967E66D02147738787B28FECCD010BEF9322FD2F6A98E4F38A1A1DFC88DDE370C6C48A09364952AAAA3497']
+sha3sums = ['5D9086ECB1EF43185C71568A7A6A7225A09166A4B768BFF10D1062A972DAB3A86656C71656CC685453BE2ABECF6FCE6D4C1AACA09E031F844BDF487214ABC5EDCC5AB667BE2FD249']
 
 # Technically you can do a private installation (provided you adapt
 # the instructions below), but that makes no sense because it should

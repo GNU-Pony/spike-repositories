@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'libpassphrase'
-pkgver = '1427220157'
+pkgver = '1428445396'
 pkgdesc = 'Personalisable library for TTY passphrase reading'
 upstream = 'https://github.com/GNU-Pony/libpassphrase'
 arch = ['x86_64', 'armv6']
@@ -23,7 +23,7 @@ makedepends = ['make', 'coreutils', 'gcc']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['442D37B9B89573DFBDB2A50EA17C8F2ABC25A72575EDB942E2506AF37D4FD1AE575D57860547C73F01C01E469C1EE32B134C9DD0C7A081975137860320ADFBCEE3436135F7CFA085']
+sha3sums = ['553FA156F214B1398A1EA978490A2DDA14CF28A4E0A9B9F18898EBA2F3A52908AE38C6A25C9BC7FEEA2F21EF9200C9D0C81F4DD4F201A447C8240B8D9AC8D81221E273B0251B8FC0']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

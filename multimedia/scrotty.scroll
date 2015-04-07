@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'scrotty'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Screenshot program for Linux\'s TTY'
 upstream = 'https://github.com/maandree/scrotty'
 arch = ['x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-code')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['8CE35C13F07C2AA0148BE5D3107834F1323C47FA77418ACCE6E16EAEE4F26D6B01B7B0FD6ED0DBB3BF2B1176274EF0D7EB4FE64C3DFD29D0700AFF09473B6056EA750F98CA7069CC']
+sha3sums = ['2CCF899AEDF2EF201AE19515DABCD28023C4E9D835812AEBACFBB61BEB9B8910CAE479AA03136D75BF338178CAB76C29F93C90D59C03626B79BE36F6A32D6105D77EF5EA8F413CD3']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

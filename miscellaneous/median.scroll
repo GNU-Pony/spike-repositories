@@ -11,7 +11,7 @@ i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 
 pkgname = 'median'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'Calculate the median values for a set of groups'
 upstream = 'https://github.com/maandree/median'
 arch = ['any']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3A408B3A9D197CAC5AAE76650FA1AE076D681A3A17C26C92C848039C9EC4850CAB7BD761CEEEE185CCCF7C2ED4ADBD954AF31F25724CD8FC41042DF34DA9381E5667DEE9AD79644F']
+sha3sums = ['2C771DA976BCB8C257830604116A83BE310740C31215E835A0E37297F61722DC483BA39A8C78ACC65634A95550BFD7B13064FDBEC71CBD2FA3A48F97C613517E6909A5572D576F46']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'socket-relay'
-pkgver = '1.0'
+pkgver = '1.1.1'
 pkgdesc = 'A framework application for host multiplexion'
 upstream = 'https://github.com/maandree/socket-relay'
 arch = ['any']
@@ -20,7 +20,7 @@ makedepends = ['make', 'coreutils']
 if i_use_info:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['68DD42AB2F15639A99D7AF0E7A63A9398D072CDCDB73241AB41FC2BDD8D21D75F331D2A183EC067DD74A0D28AF0A33A7DD496BF1D4B770F9DCE673E9E3DBBC27BF26390C2A0F5ED8']
+sha3sums = ['E5D1BC29E3DC7972132F52ED6497205F100B5D12883E03423FBE006E4F17ED0096E7598D89732CC27146380BDC8386AEA2BD7E931CBDBE56014466D6797B084D560FCEDD43231CE2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

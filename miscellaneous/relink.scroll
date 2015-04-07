@@ -14,7 +14,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'relink'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'A simple utility that modifies your symlinks'
 upstream = 'https://github.com/maandree/relink'
 arch = ['any']
@@ -30,7 +30,7 @@ if i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D95E2730A9919025C8FCE2B0B20170FE0F00294DFE3ED5C4950503F65B7953494AEDF94F8A22C6FCBFEFFDDC055E167AE81C292F9179E4F5E076C89B95F3BEF834D132EAC281F993']
+sha3sums = ['77B722599C03900619BA8CFE5C2661EA7B819A96424818170718250DD190C64D82974E8546DE673325787F477391B803C6633A5F49593988EC52B23B789DAF56E85159F0C74E5458']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

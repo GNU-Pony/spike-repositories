@@ -14,7 +14,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'slack'
-pkgver = '2'
+pkgver = '2.1'
 pkgdesc = 'Control your timer slack'
 upstream = 'https://github.com/maandree/slack'
 arch = ['i686', 'x86_64']
@@ -32,7 +32,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['0EF98C224AC7F18D1A1F54F26C392DABCF7307D8C56BB70E370D23B6619D09C4BB7FD197142049DF6FF25367F5868D3D4C4DDDD471DCD47B420E01315DDA9AD9326D64F887D78607']
+sha3sums = ['CF3F93FA1356C6C0846C6A635A77A211FCF2296FB5B77B2262002A7B679E6E9D543F49C7B64F39A3ED682E35B049B448821B5357906E70A38ADF9C9228514A8E3087FE34739C228A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

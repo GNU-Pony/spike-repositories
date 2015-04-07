@@ -11,7 +11,7 @@ i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 
 pkgname = 'krandom'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'Keccak-based userspace pseudorandom number generator'
 upstream = 'https://github.com/maandree/krandom'
 arch = ['x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3D540156179CE04A15958856490D7C2D763E03FFBCF98B1EFFF8F78F0D7B8E904A592B36EEBCA9EC85A2D4280B8AC6480F3866A159B98CF9E63FD227AC69C0A7E1C9707A30504473']
+sha3sums = ['5D9C55ED9AD8B08F22D42A70C5160AD0753A12B00483C186B74ABF5016C0C17C36AAE12075F2A23BA5D4FAD05FDE269AB0134FBA3F3BA4EBC9073C9B19987EAE4A599FCEB956F586']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

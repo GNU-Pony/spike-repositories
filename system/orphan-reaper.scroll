@@ -14,7 +14,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'orphan-reaper'
-pkgver = '2'
+pkgver = '2.1'
 pkgdesc = 'Place subreapers in your process tree to keep it structured'
 upstream = 'https://github.com/maandree/orphan-reaper'
 arch = ['i686', 'x86_64']
@@ -32,7 +32,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['E43C2B9DA8A422EA9DCF97BE9CA19B87828B1A60D31D5E338AD4C8C265C85BF74120FB111489F975AF1FECBC7E8D564ECCFF3ACE8A3CF86E487546197E814CF72C9944E8EF61FB68']
+sha3sums = ['6274F8DC4CEBFA420CE960EE401D07E57DFE1B35BB9EA6DD5F2D3FA013A94044BD1797FF87855028F991193B8062EB09EC7327BA102DB0C1391F7C1A3704B37CEA5393688ED8D2D1']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

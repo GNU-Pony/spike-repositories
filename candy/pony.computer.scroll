@@ -12,7 +12,7 @@ i_use_ps     = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi    = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'pony.computer'
-pkgver = '1413228021'
+pkgver = '1428445028'
 pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
@@ -27,7 +27,7 @@ makedepends = ['make', 'coreutils', 'sed']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1EA246224CA7D5A61ABB186E526535B1A980EACB4ADAFDB083FBE47794F9247446C9518AD0FE3C5F60AC3D25D3A4107B81B5132DAA82F24C7583E7E4C7FC34B85ED64DEAA7DA4024']
+sha3sums = ['D17EBDA1F2AB8960528A09D48EF77C2D2AA15C5A126344DA7F280CC4BAFCE497429D8746AEA80ACF178EBC80418A3E1E9E1DD371FCDE4938459BE0FBF7B105A8C044C3C34FB477BF']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'featherweight'
-pkgver = '1425524746'
+pkgver = '1428444876'
 pkgdesc = 'A lightweight news syndication aggregator for your terminal shell'
 upstream = 'https://github.com/GNU-Pony/featherweight'
 arch = ['any']
@@ -25,7 +25,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['B079EC12AD577DA13B10013C4F284D6EEDE56B8EB8BD46C1D4EDE886631455CA49C670607B29D954AD270517A84F290657AD76CA73A7A8A7E2466F2AD3225FC95260C4F0DF1E3284']
+sha3sums = ['B6351BDCB23623BF5B4C60D1B170D470398A0B765A345EE8E84565D2AC3AD1A07F5E03F637EA008ABBB6F32863F45028596C348266D6F5F5911A860F369AC3EBC52BD4F937085BA0']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'splashtool'
-pkgver = '1414962500'
+pkgver = '1428445153'
 pkgdesc = 'A simple tool for creating SYSLINUX splashes without fuss'
 upstream = 'https://github.com/GNU-Pony/splashtool'
 arch = ['x86_64']
@@ -24,7 +24,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['AC259CA09BEC531CD137EBC7B72AFE11976CE81AB5C63E1FCAAFCBB74DEB2DD5DBC5CFE913256DDBB8EDA6A7F89E9D45B62A16244E81FAC8096DE99EF747CCA0BF83789A24E0E5A2']
+sha3sums = ['2273FA92F78F688DC5DDB7F2D30E3A83E0DA00BCB9D04498B0DDEB4B2BB48207FB65A1D03CA2AE5C6AB66E07F3B56BD4DDB44A8E0863063FE26B883A2B1BC7E70003EF7602247E05']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -21,7 +21,7 @@ i_use_fake_w32gdi = get('I_USE_FAKE_W32GDI', 'n').lower().startswith('y')
 
 
 pkgname = 'libgamma'
-pkgver = '0.7.1'
+pkgver = '0.7.2'
 pkgdesc = 'Display server abstraction layer for gamma ramps'
 upstream = 'https://github.com/maandree/libgamma'
 arch = ['x86_64', 'i686']
@@ -43,7 +43,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['E01122ABC8ACA0F7430421AA608ABDF5520DBB0E8C2D53ACDCD745C2D1E28C8E9D870AA758531D98B175D2BA4FBDDE7A50D865FD078534CA721E3B2A2686D8A72397C88E040F68B7']
+sha3sums = ['B06A48BA521A2C2A19153CD0E5EB75EEC7C6EA850F25255FCB45E67DFD9F6267E9F275BD30DC3824D9759B991DFAA7CF545737784E929DE0C859F15BADB09AB04046610B3E410E79']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

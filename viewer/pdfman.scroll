@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/da130ab03025d7b3ad7731fd905589145ee93cd4'
+_script = 'pdfman'
+
+pkgname = _script
+pkgver = '2015.04.05'
+pkgdesc = 'PDF viewer-wrapper for reading man page in PDF-format'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['sh']
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['BA10FCEE92A04B7E643B8BCAF5158C5482354E64DF460DF39DD84E54BCBEEE50E65EA17E97F8B4643A05FCED51A2C3411CB0FB3DA88122734873B874B48C6106B7A32A7194ACD51E',
+            '796DB05B77B505B90A5DC5B0DAB69C8EFC485A6026CC0F9297E81C9725CA90E639C8E784942DE8B54FFFB12268F0E9BC1C0FE5D487A05979368D481E6B13754B8658A924313C39D3']
+
+
+def ride(private):
+    execute(_script)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

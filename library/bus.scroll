@@ -1,0 +1,51 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+
+pkgname = 'bus'
+pkgver = '1.0'
+pkgdesc = 'A simple daemonless system for broadcasting messages locally'
+upstream = 'https://github.com/maandree/bus'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['MIT']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['make', 'coreutils', 'make', 'gcc'] + depends
+if i_use_man:
+    makedepends.append('sed')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['A15BE0AC64A7B47E4DA33FAE752770F0836F65118244DE9DB54E424C3F303EF0A3BF2FFCBCF1B0EF6E984E3F2BB1BCAAD62498EB12C8C1012487FC50A6F4DFF16DE42D8ACA5B0723']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('man 1 bus       Manual for command line utility')
+    echo('man 5 bus       Manual for conventions')
+    echo('man 7 libbus    Manual for the library')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/bus-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('bus')
+    if i_use_man:
+        params.append('man')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/bus-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['install-bin', 'install-so', 'install-a', 'install-h', 'install-license']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+

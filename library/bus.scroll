@@ -17,7 +17,7 @@ freedom = SOFTWARE | MEDIA
 license = ['MIT']
 private = SUPPORTED
 depends = ['libc']
-makedepends = ['make', 'coreutils', 'make', 'gcc'] + depends
+makedepends = ['make', 'coreutils', 'gcc'] + depends
 if i_use_man:
     makedepends.append('sed')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]

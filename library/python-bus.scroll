@@ -1,0 +1,38 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'python-bus'
+pkgver = '1.0'
+pkgdesc = 'Python 3 module for bus'
+upstream = 'https://github.com/maandree/python-bus'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['MIT']
+private = SUPPORTED
+depends = ['python3', 'glibc']
+makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['910098AD9D33A675F44929BD50911A61A3087A0F1023E199CF36B7115987042BB59AE1F0567415B3ACE2326C7B38311E4D0B1A8463EB17203715BD07736F21263718251A74222DD9']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('In python 3, import Bus from bus. Then type `help(Bus)` for documentation.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/python-bus-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/python-bus-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
+    make(params)
+

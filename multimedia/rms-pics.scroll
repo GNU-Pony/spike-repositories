@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'rms-pics'
-pkgver = '1'
+pkgver = '2'
 pkgdesc = 'Download all photos from http://stallman.org/photos/'
 upstream = 'https://github.com/maandree/rms-pics'
 arch = ['any']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['bash', 'coreutils', 'wget', 'grep', 'sed']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1139DDEA415A278F50F41ACBF32EB549898AA019AE1A33870BC0AF8F03131864A4E8D15D1746BC998E11FCA6B0B5530A0DBA560D4FDF24C65FF44578DBFB5A1273CD8CB315F80226']
+sha3sums = ['061DE0A81183ED621B56CC0D9E2C6EA32FB4BAB9486C4D7854E8D8A105B03EF043E43C922484E1A1928CA81A4917FB95891C901B23E28BE35E3A4E5ED59D54C219347195372E0DA4']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

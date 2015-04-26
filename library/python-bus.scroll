@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'python-bus'
-pkgver = '1.0'
+pkgver = '2.0'
 pkgdesc = 'Python 3 module for bus'
 upstream = 'https://github.com/maandree/python-bus'
 arch = ['x86_64', 'i686']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['python3', 'glibc']
 makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['910098AD9D33A675F44929BD50911A61A3087A0F1023E199CF36B7115987042BB59AE1F0567415B3ACE2326C7B38311E4D0B1A8463EB17203715BD07736F21263718251A74222DD9']
+sha3sums = ['BC752559F3989E953499F2A836C7C211D3B00A8B4B2408AF958AB685D730A15FE8BF10B9BF7762E321490D23A7FCA222E618636A102DA1047FF98BCDF4F50929FB98C3202BF4EBD8']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -6,18 +6,17 @@
 from dragonsuite import *
 
 pkgname = 'python-bus'
-pkgver = '3.0'
-pkgrel = 2
+pkgver = '3.1'
 pkgdesc = 'Python 3 module for bus'
 upstream = 'https://github.com/maandree/python-bus'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
 license = ['MIT']
 private = SUPPORTED
-depends = ['python3', 'glibc', 'bus=3.0']
-makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc', 'bus=3.0']
+depends = ['python3', 'glibc', 'bus>=3.1<=4.0']
+makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc', 'bus>=3.1<4.0']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['87DF95E21404DB5B18C8C0CC708F041A1934F4FAF31146B10BECCB6B392FDDBE663EA4E246CEAE23E95D71EF3DD8D3910B7F24917E5B44B5FF620A76AF945BDFFA3C6ADA3FDA16C5']
+sha3sums = ['D2F6E7EDD4939AB3F2D15AA0846229E22F884599F11DF313900555CA72E31ED9ECBAD0CCADE666F88FAF046CA0CDF2BAE8090A53E9E3A3B5AF6871607EE1B921C46DF43693BD2383']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

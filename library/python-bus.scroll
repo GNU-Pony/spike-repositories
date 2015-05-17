@@ -15,7 +15,7 @@ freedom = SOFTWARE | MEDIA
 license = ['MIT']
 private = SUPPORTED
 depends = ['python3', 'glibc', 'bus=3.0']
-makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc', 'bus>=3.0<4.0']
+makedepends = ['make', 'coreutils', 'cython', 'python3', 'gcc', 'glibc', 'bus=3.0']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['87DF95E21404DB5B18C8C0CC708F041A1934F4FAF31146B10BECCB6B392FDDBE663EA4E246CEAE23E95D71EF3DD8D3910B7F24917E5B44B5FF620A76AF945BDFFA3C6ADA3FDA16C5']
 

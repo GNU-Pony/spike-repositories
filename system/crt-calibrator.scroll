@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'crt-calibrator'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'CRT monitor calibrator utility for Linux VT'
 upstream = 'https://github.com/maandree/crt-calibrator'
 arch = ['x86_64', 'i686']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['linux', 'glibc', 'libdrm']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libdrm', 'linux-api-headers']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['AEC90D3569ABD94B84B0961885128B03C49876588C3FC5B3D259E1F327DF6D0812952E336A8341571F2B2AB24A2E3071326204D157868DA5B0DBF52308AAE8C8C3546E2942DF5583']
+sha3sums = ['E382A2A16FD96D6C1410C19E89FC4DFF4A6FE0866C105E97402413547B13424C71DBD00C2D593026BDD00E2BAB35E30844596648A1D5A3778595E15B3BDFE20F28507CC732A9CDA0']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

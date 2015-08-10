@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'analyse-gamma'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Gamma adjustment analysis tool'
 upstream = 'https://github.com/maandree/analyse-gamma'
 arch = ['any']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['python3', 'pylibgamma>=1.1']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['03FF3591D7F08D8379B91003C3A2A4A388D0C380C3736AF825EF85E762E0694DEAFB69D23F1B540974AD4B467404FF0B0FA40F1D55B62C6A9E4626B311413D95EDB82E85CD92C3AA']
+sha3sums = ['A08412BF274E38A4DFC952288FEC9EB32B368C7904ECDB98E3591FA5683EB19C886DFD2902DA8D4E296CB74685C89604FAB0D20C8A3C46D62F572A14EB277A84D67EFA36A9807051']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

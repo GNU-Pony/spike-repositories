@@ -45,7 +45,7 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('pdf')
     if i_use_ps:
         params.append('ps')
-    if i_use_dbi:
+    if i_use_dvi:
         params.append('dvi')
     make(params)
 
@@ -61,7 +61,7 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-pdf')
     if i_use_ps:
         params.append('install-ps')
-    if i_use_dbi:
+    if i_use_dvi:
         params.append('install-dvi')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)

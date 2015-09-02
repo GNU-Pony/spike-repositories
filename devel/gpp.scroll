@@ -8,8 +8,8 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'gpp'
-pkgver = '1.2'
-pkgdesc = 'Bash based preprocessor for anything'
+pkgver = '1.4'
+pkgdesc = 'Bash-based preprocessor for anything'
 upstream = 'https://github.com/maandree/gpp'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
@@ -21,7 +21,7 @@ makedepends = ['make', 'coreutils', 'python3']
 if i_use_info:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BF175445F054E27D97F09C4C3319DD91AB9B208BF0FA5B9E8BD19A978EC32D980E805CF27E4385C0BEF74783BBB3884179ECBDCCA26501DE92908BA93415F297573E161578738186']
+sha3sums = ['D68143A4BBD31EDDB000FF67978EFB104BCE0E94309E580C9358B364ACFCB2DE1352D4AC3B28FC70215D09913F8D87BF0B54B5F146CAFEEB04D71D5DFBB923FD960057E3206FC3AC']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

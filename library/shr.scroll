@@ -1,0 +1,49 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+
+pkgname = 'shr'
+pkgver = '1.0'
+pkgdesc = 'Shared memory with n-fold bufferings zero-copy data streaming'
+upstream = 'https://github.com/maandree/shr'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['MIT']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['make', 'coreutils', 'gcc'] + depends
+if i_use_man:
+    makedepends.append('sed')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['664D541E6401DB2302C89F1E594108B2130A1D8258A3E0F22114466D55DBE0D77D7AB326A85E037A4FB0377417AE4DE556318E6BD68A13A21D42F885354A70ACAC34B6736C30C8CD']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(7 'libshr')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/shr-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('shr')
+    if i_use_man:
+        params.append('man')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/shr-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params += ['install-so', 'install-a', 'install-h', 'install-license']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+

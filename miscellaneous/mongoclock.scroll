@@ -8,20 +8,19 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'mongoclock'
-pkgver = '1.1'
+pkgver = '2'
 pkgdesc = 'Just a humongous clock for the terminal'
 upstream = 'https://github.com/maandree/mongoclock'
-arch = ['any']
+arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GNUAllPermissive']
 private = SUPPORTED
-depends = ['sh', 'python3', 'coreutils']
-makedepends = ['make', 'coreutils', 'sed']
+depends = ['glibc', 'linux']
+makedepends = ['make', 'coreutils', 'sed', 'linux-api-headers', 'glibc', 'gcc', 'gpp']
 if i_use_info:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3238A3728A11FF997E8EF390D892988761590EF72E797B03ABABCD5FE115E0244E4BE5DE2AF0676CB48C929210D99F6B492B5E9CC26A3B6F00988E04D89B398128EF3E9224B1D0EA']
+sha3sums = ['3C4BEA9D22BB397D8B1F2273A8B7615F3B8ED007F047B0022CBDE64DB839304F6375F978E703C31A53CF69599F02673E8DA22B232182AB35206BB47E3AD6C488EFF36B4AB690E72D']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -32,7 +31,7 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/mongoclock-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'mongoclock.install')
+    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'mongoclock')
     if i_use_info:
         make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
 

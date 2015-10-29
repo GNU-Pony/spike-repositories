@@ -12,11 +12,11 @@ i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'passcheck'
 pkgver = '1.3'
-pkgdesc = 'Passphrase strength evaluater'
+pkgdesc = 'Passphrase strenght evaluator'
 upstream = 'https://github.com/maandree/passcheck'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['AGPL3']
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils', 'sed']
@@ -53,7 +53,7 @@ def package(startdir, srcdir, pkgdir, private):
     make(args)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

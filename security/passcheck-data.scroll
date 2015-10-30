@@ -1,0 +1,41 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'passcheck-data'
+pkgver = '1.5'
+pkgdesc = 'Data files for the passcheck package'
+upstream = 'https://github.com/maandree/passcheck'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['public']
+private = SUPPORTED
+depends = []
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s-data.tar.gz' % (upstream, pkgver),
+          '%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['D367D522C77BFDF910EE43FDACE97D6CC06F0851B98D4F79C968ED0A01290DD55B57BA056BD4E6F5DE0E10677362AD50BAC4A87FBE3AA5A30684507639D77A343E0D43DEC23CB7DF',
+            '46C336B92C046DC98B2A94BDE165E80F4C84BB83D9D33A475B546B2CB6A129E7904B606A7AEAC3D00184C448DC9AFE6EFB0528CF2953E9C50D56BB64B8C932606509D23D51F5FA53']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a data subpackage for `passcheck`')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/passcheck-%s' % (srcdir, pkgver))
+    mv('../passcheck-%s-data/blacklist.lrz' % pkgver, '.')
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % 'passcheck', 'DESTDIR=%s' % pkgdir, 'data']
+    make(args)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/passcheck-%s' % (srcdir, pkgver))
+    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % 'passcheck', 'DESTDIR=%s' % pkgdir, 'install-data']
+    make(args)
+

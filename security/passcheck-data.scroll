@@ -15,6 +15,7 @@ license = ['public']
 private = SUPPORTED
 depends = []
 makedepends = ['make', 'coreutils']
+conflicts = ['passcheck<1.5']
 source = ['%s/archive/%s-data.tar.gz' % (upstream, pkgver),
           '%s/archive/%s.tar.gz' % (upstream, pkgver)]
 sha3sums = ['D367D522C77BFDF910EE43FDACE97D6CC06F0851B98D4F79C968ED0A01290DD55B57BA056BD4E6F5DE0E10677362AD50BAC4A87FBE3AA5A30684507639D77A343E0D43DEC23CB7DF',

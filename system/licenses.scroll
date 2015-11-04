@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'licenses'
-pkgver = '1387741380'
+pkgver = '1446645857'
 pkgdesc = 'Common license collection project for GNU systems'
 upstream = 'https://github.com/GNU-Pony/licenses'
 arch = ['any']
@@ -17,7 +17,7 @@ groups = ['base']
 depends = ['filesystem']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1A9DD3112F9BC2CD105A413EC628430860CF1500A9A9E85695E78CB3F0ED2A5053253579EDD969D579277F8E75C384EABF846301F131343C1950AF56F31AFBD65896BE44FCC6EE64']
+sha3sums = ['B705C6FD0CB58674E4856460B1884B92F3F092209BCA6BEADE2935B9033F36C170E41F235B939965308A39C7A143DFD68E500A81E8D9BDD2EB82DE1C957AB8C4D4AE29B98073DA29']
 
 
 _licensesdir = '/usr/share/licenses'

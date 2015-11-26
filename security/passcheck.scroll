@@ -11,7 +11,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'passcheck'
-pkgver = '1.5.2'
+pkgver = '1.5.3'
 pkgdesc = 'Passphrase strenght evaluator'
 upstream = 'https://github.com/maandree/passcheck'
 arch = ['any']
@@ -25,7 +25,7 @@ if i_use_info:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['F6A1A8E5ABAFE55C2E7CA11BA07476F19A78F367E087410A0AD6BA123D35E5CD64FEF73599E93E87C449721E644AFFE992046E87CC8D8096EE55F75F85FFAE19765C7D545AF58906']
+sha3sums = ['8D15626B03CA617168302A3C8976462D026CBF00EB028FF96D32AEE302802510EE76E4EE300DBFF2A7F08231B6DF6FC798CFB9C73A1D029F1BE5D2C8CEA904DB02D00C9DEDE3EDE2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

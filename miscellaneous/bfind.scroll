@@ -6,9 +6,16 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'bfind'
-pkgver = '2'
+pkgver = '2.1'
 pkgdesc = 'find replacement optimised for finding files rather then listing files'
 upstream = 'https://github.com/maandree/bfind'
 arch = ['any']
@@ -17,11 +24,12 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['python']
 makedepends = ['make', 'coreutils', 'sed']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['26962470F8E34A012F26DAEAFF429D3CFA95F15259ABCCBD41B0F78B34398497B4D11E0819B7416443DFC598780742739E5861138C906695F088197CEE889BB81E8374749EF176A7']
+sha3sums = ['D7A50EEC15570B08797E9B095E646A6270E02DE468D871B0DFF220C3D2BBDD3D85084D47D325D148C2FEA639DF56D09DA657D8804AB9CC5872B529DC901EC0902A639710B55594E9']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -32,16 +40,44 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/bfind-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd']
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/bfind-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-core')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-core']
+    make(params)
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    if i_use_man:
+        params.append('install-man')
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

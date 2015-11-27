@@ -6,10 +6,17 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'adjbacklight'
-pkgver = '7.2.1'
-pkgdesc = 'Convient method for adjusting the backlight on your portable computer'
+pkgver = '7.3'
+pkgdesc = 'Convenient method for adjusting the backlight on your portable computer'
 upstream = 'https://github.com/maandree/adjbacklight'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
@@ -17,10 +24,12 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['linux', 'glibc']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends += ['sed', 'auto-auto-complete']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2B95FD221D87A1F64E4583E332C2AC78707A5E9D1E5474C389374E6963B3968D48A70FAAB4D3CF7DEF4F1AC0A15DCAC71A3BB33B6154C35C02E74FDA5493CE7B90C3113EF34EA4B3']
+sha3sums = ['69BC944C30C1B57CE2C58647A39AB0439EBFCBFDA25411A40585879260616E4C3D651E173E29BD8DA4AE581B680848EA89DCEC3E4E72355704F085A5ED4AF78B37370B05588CC071']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -31,16 +40,44 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/adjbacklight-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'code')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'code']
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/adjbacklight-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)

@@ -15,7 +15,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'bfind'
-pkgver = '2.1'
+pkgver = '2.1.1'
 pkgdesc = 'find replacement optimised for finding files rather then listing files'
 upstream = 'https://github.com/maandree/bfind'
 arch = ['any']
@@ -29,7 +29,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D7A50EEC15570B08797E9B095E646A6270E02DE468D871B0DFF220C3D2BBDD3D85084D47D325D148C2FEA639DF56D09DA657D8804AB9CC5872B529DC901EC0902A639710B55594E9']
+sha3sums = ['B38CC8B311EC412434DECCB06588FBBE1F7EB69B3FA9020BD18D538756F61801A29D1F1BA3A10AAD0DB2276E0B1411E8729B3C7DDCA1231D0AFA23AC58A24750AA58EBC178A0BDF0']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

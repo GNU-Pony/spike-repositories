@@ -5,8 +5,14 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
 pkgname = 'alarm'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'Schedule an alarm for a program when starting it'
 upstream = 'https://github.com/maandree/alarm'
 arch = ['i686', 'x86_64']
@@ -15,24 +21,64 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['6F2B14E14503FBD44B2D9D9FB1CB2675B24AA40CDA84ABFE719AE508AFBD90DDDDDF0724BF22EB07C70D1DE3FDD62A221394496588F2C6641C52EADB940E586462822C7064A0E52F']
+sha3sums = ['C9CD26490AC18E5EAC0C3BB85BD0767661DED2F5697DEB1B23D8E49B0B8A2406E1AAAD3788C2BB14C020E39262D82D1922BD0F163D97A8B74A9BDF87DC0AA5D2D18EC1806F1F4720']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['alarm', '--help'])
+    man(1, 'alarm')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/alarm-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/alarm-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

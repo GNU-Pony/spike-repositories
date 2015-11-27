@@ -6,21 +6,25 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'mongoclock'
-pkgver = '2.1'
+pkgver = '2.2'
 pkgdesc = 'Just a humongous clock for the terminal'
 upstream = 'https://github.com/maandree/mongoclock'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GNUAllPermissive']
+license = ['GPL3']
 private = SUPPORTED
 depends = ['glibc', 'linux']
 makedepends = ['make', 'coreutils', 'sed', 'linux-api-headers', 'glibc', 'gcc', 'gpp']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['9A2673A0A66E920A4D421A765B22F2BB8A82511CDC8F7344B24D6760BF1EFCBDCF5F51DA79AE53A06BA12E48FFBB13888BC92107D765BD6C03AE4A2FD22B93511FBA88C396AB8393']
+sha3sums = ['66233916CB3A0143D7BB0C7A831D0FCEC92B2D40BE7C082F9E79B13936937680DF19FADEBD86393CF37AFB0D48E1F2E6872605209FDAFDA0A8982528D5B7C8CA317247D3B0E356AB']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -31,16 +35,32 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/mongoclock-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'mongoclock')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+        params.append("info")
+    if i_use_pdf:
+        params.append("pdf")
+    if i_use_dvi:
+        params.append("dvi")
+    if i_use_ps:
+        params.append("ps")
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/mongoclock-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
     if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-info')
+        params.append("install-info")
+    if i_use_pdf:
+        params.append("install-pdf")
+    if i_use_dvi:
+        params.append("install-dvi")
+    if i_use_ps:
+        params.append("install-ps")
+    if i_use_man:
+        params.append("install-man")
+    make(params)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

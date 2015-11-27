@@ -6,12 +6,16 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'passcheck'
-pkgver = '1.5.3'
+pkgver = '1.6'
 pkgdesc = 'Passphrase strenght evaluator'
 upstream = 'https://github.com/maandree/passcheck'
 arch = ['any']
@@ -20,12 +24,12 @@ license = ['AGPL3']
 private = SUPPORTED
 depends = ['python3', 'passcheck-data']
 makedepends = ['make', 'coreutils', 'sed']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['8D15626B03CA617168302A3C8976462D026CBF00EB028FF96D32AEE302802510EE76E4EE300DBFF2A7F08231B6DF6FC798CFB9C73A1D029F1BE5D2C8CEA904DB02D00C9DEDE3EDE2']
+sha3sums = ['FABAE744A482830AF7F45E7F3B7B23C13A9BC427418540225288F2C32FD51A06FD1D5705607D062AC8B2F74B06F61C3FD6AC31C4BB1D3AD6320889F678B677E8EE88E7C14E0EB013']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -36,20 +40,46 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/passcheck-%s' % (srcdir, pkgver))
-    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd']
-    for condition, rule in ((i_use_info, 'info'), (i_use_bash, 'bash'), (i_use_fish, 'fish'), (i_use_zsh, 'zsh')):
-        if condition:
-            args.append(rule)
-    make(args)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'cmd']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/passcheck-%s' % (srcdir, pkgver))
-    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license']
-    for condition, rule in ((i_use_info, 'info'), (i_use_bash, 'bash'), (i_use_fish, 'fish'), (i_use_zsh, 'zsh')):
-        if condition:
-            args.append('install-%s' % rule)
-    make(args)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params.append('install-cmd')
+    params.append('install-license')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)

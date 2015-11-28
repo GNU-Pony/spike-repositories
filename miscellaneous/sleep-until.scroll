@@ -83,3 +83,19 @@ def package(startdir, srcdir, pkgdir, private):
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
 
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

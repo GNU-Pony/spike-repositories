@@ -6,9 +6,15 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'gpp'
-pkgver = '1.4'
+pkgver = '1.5'
 pkgdesc = 'Bash-based preprocessor for anything'
 upstream = 'https://github.com/maandree/gpp'
 arch = ['any']
@@ -16,37 +22,65 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 provides = ['general-preprocessor']
-depends = ['python3']
-makedepends = ['make', 'coreutils', 'python3']
-if i_use_info:
+depends = ['python3', 'bash']
+makedepends = ['make', 'coreutils', 'python3', 'bash']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D68143A4BBD31EDDB000FF67978EFB104BCE0E94309E580C9358B364ACFCB2DE1352D4AC3B28FC70215D09913F8D87BF0B54B5F146CAFEEB04D71D5DFBB923FD960057E3206FC3AC']
+sha3sums = ['48A0B369EF12CBF6FD9959D33A4779F15AF2FBE82C15EC67D22402268204CD63CBEF69D2CCC2566F03990AAADD7051DB830DB8352D55862A72672A5935CADA518305B9DD754DDC3D']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute('gpp')
+    info('gpp')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/gpp-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params.append('PY=python3')
-    params.append('gpp')
+    params.append('cmd')
     if i_use_info:
         params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/gpp-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-cmd', 'install-license')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     params.append('PY=python3')
     params.append('install-core')
     if i_use_info:
         params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
+    if i_use_man:
+        params.append('install-man')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

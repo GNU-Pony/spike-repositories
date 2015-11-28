@@ -5,8 +5,13 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+
 pkgname = 'solar-python'
-pkgver = '2.1'
+pkgver = '2.2'
 pkgdesc = 'Solar data calculation and prediction library for Python'
 upstream = 'https://github.com/maandree/solar-python'
 arch = ['any']
@@ -15,33 +20,62 @@ license = ['AGPL3']
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils', 'python3']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['5C2E47B21B7A95FCA8860612EABA33C6A69158DCECF6F6072ABA97457794896578BAD07469D1A317DBA6E1BC49BA290810C433071164835CED8A8BA96E6B7F18C3BC8450148397A9']
+sha3sums = ['E9707BDDDDC756AABAD01405F54BE10434A6F83D3FA6B192A8FE91B0D138A63384C4941722310B4089887862202CCB64CFBADA0F19B47FD06542C646562C56DC3B8A122877116F26']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    echo('This is a library, all documentation is available in the source')
-    echo('and a doc strings that can be read with the help function in python.')
-    echo('')
-    echo('  python')
-    echo('  >>> import solar_python')
-    echo('  >>> help(solar_python)')
+    info('solar-python')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/solar-python-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
+    params += ['PY_MAJOR=3', 'PY_MINOR=5']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/solar-python-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params += ['PY_MAJOR=3', 'PY_MINOR=4']
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    params += ['PY_MAJOR=3', 'PY_MINOR=5']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
     make(params + ['install'])
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

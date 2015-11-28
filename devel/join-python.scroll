@@ -11,7 +11,7 @@ i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 
 pkgname = 'join-python'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'Join-calculus for Python'
 upstream = 'https://github.com/maandree/join-python'
 arch = ['any']
@@ -22,7 +22,7 @@ extension = 'python3'
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends = ['texinfo']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3DFF7316CC38F99C867D7D47D1BF875B92AF1590AC45405E6A341F1D12A9C7C517CA3F2053C82741D85CE5428EBF67EFDFBC57AB283304566970EE3DE01CE8D4B215295FF471EE75']
+sha3sums = ['84DBAE59FC8A9C76445F745DADFE0D1FBFFE6F7D904F40EE74F3311C957A3270FFE6A0BA484F799D67A9090E637BF8AD7BE23F71EFCA163C764769D0288034DA2CAC9A84D7DFADA2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -13,7 +13,7 @@ i_use_man       = get('I_USE_MAN',  'y').lower().startswith('y')
 i_use_examples  = get('I_USE_EXAMPLES',  'y').lower().startswith('y')
 
 pkgname = 'bus'
-pkgver = '3.1.5'
+pkgver = '3.1.6'
 pkgdesc = 'A simple daemonless system for broadcasting messages locally'
 upstream = 'https://github.com/maandree/bus'
 arch = ['x86_64', 'i686']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_man:
     makedepends.append('sed')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1CBBE927AB6E3FA99D31118C80CB2BD41D9D1E7D8AA2D9D32600CD3C77C30A9DE33A177189A9CAA6EECBB447CBFC73E4D587EFB448CC763108AA757D75494CC47C176640C61399C0']
+sha3sums = ['450D3731A0249C96153025AC3A87B57BB432D8D7F89A1EBF2E6B8443D9354E5B50940D548418A140E934DA3D53E3186521F079ECF2BD5A71512FB324EC077C2F6E13264FB430B537']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

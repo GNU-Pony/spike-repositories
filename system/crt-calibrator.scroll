@@ -12,7 +12,7 @@ i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'crt-calibrator'
-pkgver = '1.3'
+pkgver = '1.3.1'
 pkgdesc = 'CRT monitor calibrator utility for Linux VT'
 upstream = 'https://github.com/maandree/crt-calibrator'
 arch = ['x86_64', 'i686']
@@ -24,7 +24,7 @@ makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libdrm', 'linux-api-headers
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['57B3B66698EE0CD834F9C550118F16BC1BC79546E2364870806090D32F5CECBF11FBB829701ACBB94AB3903CEAE216A419350C26371E5B10529220967FD9953AB9B562090B91D46D']
+sha3sums = ['0F5913DBA8104F15D957503556EC540267AB7F863774C2EF8F70F5A60785C3E15B6744D27AC7F054DD434F5F662FC942617A0D3701C4B515F35B2857BD1D9A30D647AF1A378CCFE1']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

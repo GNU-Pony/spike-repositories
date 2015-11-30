@@ -15,7 +15,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'adjbacklight'
-pkgver = '7.3.1'
+pkgver = '7.3.2'
 pkgdesc = 'Convenient method for adjusting the backlight on your portable computer'
 upstream = 'https://github.com/maandree/adjbacklight'
 arch = ['x86_64', 'i686']
@@ -29,7 +29,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends += ['sed', 'auto-auto-complete']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['FCECCC0CE8E381A9E209BAADB216EE48A8A3FB8C99B58BFE3F1DC8427BDEE9CF85FF551C182AA7F1126CB436BD29BDEA2CA3DA83FCAC70A5623E03F5B70936AB8C8B042AC287C56D']
+sha3sums = ['70171ADECB88C726282FAFE9CFE479B3A62F6DEF55C49E9BD532548C117A9052F938C23572EC26C652B15A9F463A1D39A19CFBE24A595EA80806F1E997DACDBD7A408AF3A50D9248']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -9,12 +9,13 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_MAN  = get('I_USE_MAN',  'y').lower().startswith('y')
 i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'orphan-reaper'
-pkgver = '2.1'
+pkgver = '2.2'
 pkgdesc = 'Place subreapers in your process tree to keep it structured'
 upstream = 'https://github.com/maandree/orphan-reaper'
 arch = ['i686', 'x86_64']
@@ -32,7 +33,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['6274F8DC4CEBFA420CE960EE401D07E57DFE1B35BB9EA6DD5F2D3FA013A94044BD1797FF87855028F991193B8062EB09EC7327BA102DB0C1391F7C1A3704B37CEA5393688ED8D2D1']
+sha3sums = ['1B904E874F843154F95F472ADD67AE869DF9CECD4E77E1F10527696132531813C044A5445E3F80D2BA96285F0D4DB615EFAFBDD73D0980750FADC78F4173632CBCFA02A50EA2CFD9']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -80,6 +81,8 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-fish')
     if i_use_zsh:
         params.append('install-zsh')
+    if i_use_man:
+        params.append('install-man')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

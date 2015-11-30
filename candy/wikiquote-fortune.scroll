@@ -5,8 +5,14 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
 pkgname = 'wikiquote-fortune'
-pkgver = '1.4'
+pkgver = '1.5'
 pkgdesc = 'Generate fortune cookies from Wikiquote'
 upstream = 'https://github.com/maandree/wikiquote-fortune'
 arch = ['any']
@@ -14,29 +20,65 @@ freedom = SOFTWARE | MEDIA
 license = ['GPL3']
 private = SUPPORTED
 depends = ['python3', 'wget']
-makedepends = ['coreutils']
+makedepends = ['make', 'coreutils']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['4FD284F764C37B03896CCE1B3FB4BEB55B55FDC6D1120635F865AF2CB466741D4F5C73E8EE06475930FF87CD934E8000199356D3BB597E3BE12B44C90C6C0E353C20F8795BCF1945']
+sha3sums = ['99B4DB69FBF0FB5B6242F263BA906DD669B79059F18DB33F98CC7830D38225D6DC3DC3C7920BCCD6C228520923A09024F2A8ED65EB025F5CB34069426F0850F28F23B7A4833F39F6']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    echo('usage: wikiquote-fortune SHOW_NAME')
-    echo('Be sure that you do not have any file')
-    echo('named \'quotes\' or \'version\' in the')
-    echo('working directory.')
+    man(1, 'wikiquote-fortune')
+
+
+def built(startdir, srcdir, pkgdir, private):
+    cd('%s/wikiquote-fortune-%s' % (srcdir, pkgver))
+    if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+        params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+        if i_use_info:
+            params.append('info')
+        if i_use_pdf:
+            params.append('pdf')
+        if i_use_ps:
+            params.append('ps')
+        if i_use_dvi:
+            params.append('dvi')
+        make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
-    cd(srcdir)
-    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
-    
-    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
-    install('COPYING', '%s/COPYING' % _dir, parents = True, mode = 0o644)
+    cd('%s/wikiquote-fortune-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-    
-    _dir = '%s/share/doc' % (_prefix)
-    install('README', '%s/%s' % (_dir, pkgname), parents = True, mode = 0o644)
-    
-    _script = 'wikiquote-fortune'
-    install(_script, '%s/bin/%s' % (_prefix, _script), parents = True, mode = 0o755)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

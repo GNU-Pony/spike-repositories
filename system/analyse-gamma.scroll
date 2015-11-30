@@ -5,8 +5,14 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
 pkgname = 'analyse-gamma'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'Gamma adjustment analysis tool'
 upstream = 'https://github.com/maandree/analyse-gamma'
 arch = ['any']
@@ -15,8 +21,12 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['python3', 'pylibgamma>=1.1']
 makedepends = ['make', 'coreutils']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
+if i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texlive-core')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A08412BF274E38A4DFC952288FEC9EB32B368C7904ECDB98E3591FA5683EB19C886DFD2902DA8D4E296CB74685C89604FAB0D20C8A3C46D62F572A14EB277A84D67EFA36A9807051']
+sha3sums = ['EE65143ECA5E793D1BE8B0EDFF04B3AE2F9659CD03B7C765F7478F33829B188ECE4785C076CA2DCF1125052644F0AAE7BBDBF6FFBA5F51DE4E280E50E3DB093EE59FE555B020AFD6']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -26,14 +36,52 @@ def ride(private):
 
 
 def build(startdir, srcdir, pkgdir, private):
-    pass
+    cd('%s/analyse-gamma-%s' % (srcdir, pkgver))
+    if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+        params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+        if i_use_info:
+            params.append('info')
+        if i_use_pdf:
+            params.append('pdf')
+        if i_use_ps:
+            params.append('ps')
+        if i_use_dvi:
+            params.append('dvi')
+        make(params)
+
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/analyse-gamma-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install')
+    params.append('install-base')
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

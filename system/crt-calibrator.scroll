@@ -5,8 +5,14 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
 pkgname = 'crt-calibrator'
-pkgver = '1.2'
+pkgver = '1.3'
 pkgdesc = 'CRT monitor calibrator utility for Linux VT'
 upstream = 'https://github.com/maandree/crt-calibrator'
 arch = ['x86_64', 'i686']
@@ -15,8 +21,10 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['linux', 'glibc', 'libdrm']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc', 'libdrm', 'linux-api-headers']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
+    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['E382A2A16FD96D6C1410C19E89FC4DFF4A6FE0866C105E97402413547B13424C71DBD00C2D593026BDD00E2BAB35E30844596648A1D5A3778595E15B3BDFE20F28507CC732A9CDA0']
+sha3sums = ['57B3B66698EE0CD834F9C550118F16BC1BC79546E2364870806090D32F5CECBF11FBB829701ACBB94AB3903CEAE216A419350C26371E5B10529220967FD9953AB9B562090B91D46D']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -27,13 +35,49 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/crt-calibrator-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_dvi:
+        params.append('dvi')
+    make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/crt-calibrator-%s' % (srcdir, pkgver))
-    make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install')
+    poarams = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
 

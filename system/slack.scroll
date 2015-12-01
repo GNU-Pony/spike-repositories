@@ -9,12 +9,13 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'slack'
-pkgver = '2.1'
+pkgver = '2.2'
 pkgdesc = 'Control your timer slack'
 upstream = 'https://github.com/maandree/slack'
 arch = ['i686', 'x86_64']
@@ -32,7 +33,7 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['CF3F93FA1356C6C0846C6A635A77A211FCF2296FB5B77B2262002A7B679E6E9D543F49C7B64F39A3ED682E35B049B448821B5357906E70A38ADF9C9228514A8E3087FE34739C228A']
+sha3sums = ['82E450A0D5B0DAD6141A9C104399360321BF233422D129BB5431916DA4EAB60FC5C7E146F94FA711F32C02AA807870E7F17058A0EA552BF3E5BE99DEBE41A88D73666505AC38C561']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -74,6 +75,8 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-ps')
     if i_use_dvi:
         params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
     if i_use_bash:
         params.append('install-bash')
     if i_use_fish:

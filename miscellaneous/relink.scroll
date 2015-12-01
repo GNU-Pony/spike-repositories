@@ -9,12 +9,13 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
 i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'relink'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'A simple utility that modifies your symlinks'
 upstream = 'https://github.com/maandree/relink'
 arch = ['any']
@@ -30,7 +31,7 @@ if i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['77B722599C03900619BA8CFE5C2661EA7B819A96424818170718250DD190C64D82974E8546DE673325787F477391B803C6633A5F49593988EC52B23B789DAF56E85159F0C74E5458']
+sha3sums = ['9151FBBB412C7620653F33641D94F60F67F0093E589143916D771998C37286EC512C1570C95B64B1313FE4082702FEFCBE3E4E2927D117006B0E0498A06DBC1A83C26DF17E6FFE2E']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -71,6 +72,8 @@ def package(startdir, srcdir, pkgdir, private):
         makedepends.append('install-dvi')
     if i_use_ps:
         makedepends.append('install-ps')
+    if i_use_man:
+        makedepends.append('install-man')
     if i_use_bash:
         makedepends.append('install-bash')
     if i_use_fish:

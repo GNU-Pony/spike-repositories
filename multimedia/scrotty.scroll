@@ -9,9 +9,10 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'scrotty'
-pkgver = '1.0.1'
+pkgver = '1.0.2'
 pkgdesc = 'Screenshot program for Linux\'s TTY'
 upstream = 'https://github.com/maandree/scrotty'
 arch = ['x86_64']
@@ -27,7 +28,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-code')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2CCF899AEDF2EF201AE19515DABCD28023C4E9D835812AEBACFBB61BEB9B8910CAE479AA03136D75BF338178CAB76C29F93C90D59C03626B79BE36F6A32D6105D77EF5EA8F413CD3']
+sha3sums = ['38B5CC97955CA35BF7F9CC68491FE6B74A4AD861A9C89F532BB210829F7440A490DA9FF6B3D0F22B3DFF724754DDD4F133C7DAA0097F2A628A05B2732D4483158B95FA28E1ADC6D5']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -63,6 +64,8 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-ps')
     if i_use_dvi:
         params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

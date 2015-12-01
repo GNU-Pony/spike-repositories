@@ -6,9 +6,13 @@
 from dragonsuite import *
 
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'socket-relay'
-pkgver = '1.1.1'
+pkgver = '1.2'
 pkgdesc = 'A framework application for host multiplexion'
 upstream = 'https://github.com/maandree/socket-relay'
 arch = ['any']
@@ -17,30 +21,50 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils']
-if i_use_info:
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['E5D1BC29E3DC7972132F52ED6497205F100B5D12883E03423FBE006E4F17ED0096E7598D89732CC27146380BDC8386AEA2BD7E931CBDBE56014466D6797B084D560FCEDD43231CE2']
+sha3sums = ['60AF9E388166F6D814021B712CB48D78E5754FC52F499732C32E0C919E734774BE959D0EAFE46D27BD14FE6689E53580BEC26350CACAD98BD3C0F2E61596D10317CEA821E771FE10']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['info', 'socket-relay'])
+    info('socket-relay')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/socket-relay-%s' % (srcdir, pkgver))
-    if i_use_info:
-        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'info')
+    if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
+        make('PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir)
+        if i_use_info:
+            params.append('info')
+        if i_use_pdf:
+            params.append('pdf')
+        if i_use_dvi:
+            params.append('dvi')
+        if i_use_ps:
+            params.append('ps')
+        make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/socket-relay-%s' % (srcdir, pkgver))
-    args = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
     if i_use_info:
-        args.append('install-info')
-    make(args)
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

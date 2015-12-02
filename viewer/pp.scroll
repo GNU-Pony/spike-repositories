@@ -15,7 +15,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'pp'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Page pager'
 upstream = 'https://github.com/maandree/pp'
 arch = ['x86_64']
@@ -29,7 +29,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends += ['sed', 'auto-auto-complete']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D768815850DF89C2478B53E9BFFAB481AE85A1CFCB78E5829E27E9DC5AA8A255A9BF6ED2F65D63DA5F876563A0BA9612E231680E2A5715023BC80D9631D0A0A6E97F6362446D088F']
+sha3sums = ['1F3CD85264717E31901F56CB0BA45BA225EFE72B6059AC224F2C62F3901366B36A1859F708929E9AC5955756E4CAEECCC838F7A703350C8CEA28B2FC956F4E0787479C73FEB84816']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

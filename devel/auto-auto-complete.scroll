@@ -10,12 +10,13 @@ i_use_info     = get('I_USE_INFO',     'y').lower().startswith('y')
 i_use_pdf      = get('I_USE_PDF',      'n').lower().startswith('y')
 i_use_ps       = get('I_USE_PS',       'n').lower().startswith('y')
 i_use_dvi      = get('I_USE_DVI',      'n').lower().startswith('y')
+i_use_man      = get('I_USE_MAN',      'y').lower().startswith('y')
 i_use_bash     = get('I_USE_BASH',     'y').lower().startswith('y')
 i_use_fish     = get('I_USE_FISH',     'y').lower().startswith('y')
 i_use_zsh      = get('I_USE_ZSH',      'y').lower().startswith('y')
 
 pkgname = 'auto-auto-complete'
-pkgver = '7.1'
+pkgver = '7.2'
 pkgdesc = 'Autogenerate shell auto-completion scripts'
 upstream = 'https://github.com/maandree/auto-auto-complete'
 arch = ['any']
@@ -33,19 +34,19 @@ if i_use_pdf or i_use_ps or i_use_dvi:
 if i_use_bash or i_use_fish or i_use_zsh:
     license.append('python3')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['3935A8CD137C43F0ADA00C15D4F79512C0EAAAF9B916ABB5832E2B0A012CF91EF613FABE7338F91CAE2F4D91D92137787A7A31039C09357584989A18EF15869FBDBC75183AED0262']
+sha3sums = ['EC04973D52570975C0120AFB051295FACDE18529CF6EE9BBD73FF99B7243DFA240A778206DF5DE85A07A46A792FADA60775F5F1B32B0317A4B5AA9D8C5EFE6163853C137AE45882B']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['info', 'auto-auto-complete'])
+    info('auto-auto-complete')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/auto-auto-complete-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('command')
+    params.append('base')
     if i_use_info:
         params.append('info')
     if i_use_pdf:
@@ -77,6 +78,8 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-ps')
     if i_use_dvi:
         params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
     if i_use_bash:
         params.append('install-bash')
     if i_use_fish:
@@ -85,5 +88,6 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
 

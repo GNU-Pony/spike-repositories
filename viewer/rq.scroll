@@ -12,7 +12,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'rq'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = ' Read plain-text files in blazing speed'
 upstream = 'https://github.com/maandree/rq'
 arch = ['x86_64']
@@ -24,7 +24,7 @@ makedepends = ['cc', 'libc', 'make', 'coreutils']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1477CE9C2F9F5058E214BCEB8B80D0555EADFFB18C7C610ECB5EF913B5116FE5B05F2533AB2C2A983C6E6963833A0B0F7E43C389CDDC19A0D852E11945C9C3674F0634641A8E4867']
+sha3sums = ['98F4B8076AE8848FB97AE2D4232091E289083A2E4B68D6B3DD6CBB3F588222E9726E0713AA7194CCE13806AA8E925E13D4F76A7E61E9D3B902A3B9A7DC937820E71BA3F5B0B87759']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -58,6 +58,8 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-dvi')
     if i_use_ps:
         params.append('install-ps')
+    if i_use_man:
+        params.append('install-man')
     make(params)
 
 

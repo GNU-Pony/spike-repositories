@@ -9,9 +9,13 @@ i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
 i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
+i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
+i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'epkill'
-pkgver = '1.1.1'
+pkgver = '1.2'
 pkgdesc = 'procps utilties with environment constraints'
 upstream = 'https://github.com/maandree/epkill'
 arch = ['x86_64', 'i686']
@@ -20,14 +24,16 @@ license = ['GPL3']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = SUPPORTED
-depends = ['glibc', 'procps-ng', 'argparser-c']
+depends = ['glibc', 'procps-ng', 'argparser-c', 'exec-as']
 makedepends = ['make', 'coreutils', 'gcc'] + depends
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 if i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texlive-core')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['94B2741519A4C6C0EA4CD6A728621E4D688B1CBD9844CF4464B4358E8AE2681A733DF9A4E28B718D7C1988C4945D72D0728C40FF4B2640BE537A86DBFC5E31CF35D4BEE0380FAB91']
+sha3sums = ['78092F0FA47B22F398DC4475C5E5E10DA619EBE9D6FE6CDACE2AD5C6E543745CBE96F66DE80C9C0563000A15DCAF47B9BA183B7CC9C90A5B2955171055CEB78419D9E6EB38B448A2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -39,7 +45,7 @@ def ride(private):
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/epkill-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('cmd')
+    params.append('base')
     if i_use_info:
         params.append('info')
     if i_use_pdf:
@@ -48,6 +54,12 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('ps')
     if i_use_dvi:
         params.append('dvi')
+    if i_use_bash:
+        params.append('bash')
+    if i_use_fish:
+        params.append('fish')
+    if i_use_zsh:
+        params.append('zsh')
     make(params)
 
 
@@ -63,6 +75,14 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-ps')
     if i_use_dvi:
         params.append('install-dvi')
+    if i_use_man:
+        params.append('install-man')
+    if i_use_bash:
+        params.append('install-bash')
+    if i_use_fish:
+        params.append('install-fish')
+    if i_use_zsh:
+        params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)

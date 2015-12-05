@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'libpassphrase'
-pkgver = '1428445396'
+pkgver = '1449331105'
 pkgdesc = 'Personalisable library for TTY passphrase reading'
 upstream = 'https://github.com/GNU-Pony/libpassphrase'
 arch = ['x86_64', 'armv6']
@@ -20,10 +20,11 @@ license = ['GPL3']
 private = SUPPORTED
 depends = ['libc']
 makedepends = ['make', 'coreutils', 'gcc']
+optdepends = ['passcheck: for strength meter']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['553FA156F214B1398A1EA978490A2DDA14CF28A4E0A9B9F18898EBA2F3A52908AE38C6A25C9BC7FEEA2F21EF9200C9D0C81F4DD4F201A447C8240B8D9AC8D81221E273B0251B8FC0']
+sha3sums = ['BF508DFCA7CFD51B9932E44AADAFE0DA5F1A143F023D85EE52F72FF639AE1002EF5E8ACD409275D366369ED438DB747AD147A06E5529880AEE9A44EE164EB987A486FC2FC1B74882']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -49,22 +50,25 @@ def _configure():
     options.append('PASSPHRASE_DEDICATED') # Enable use of dedicated keys
     options.append('DEFAULT_INSERT')       # Use insert mode as default
     options.append('PASSPHRASE_INVALID')   # Prevent duplication of non-initialised memory
+    options.append('PASSPHRASE_METER')     # Enable strength meter for new passphrases
     
     star_char = '*'
     text_empty = '(empty)'
     text_not_empty = '(not empty)'
+    text_strength="Strength:"
     
     rc = ['OPTIONS="%s"' % ' '.join(options)]
     rc.append('%s="%s"' % ('PASSPHRASE_STAR_CHAR',      star_char))
     rc.append('%s="%s"' % ('PASSPHRASE_TEXT_EMPTY',     text_empty))
     rc.append('%s="%s"' % ('PASSPHRASE_TEXT_NOT_EMPTY', text_not_empty))
+    rc.append('%s="%s"' % ('PASSPHRASE_TEXT_STRENGTH',  text_strength))
     
     return rc
 
 
 
 def ride(private):
-    execute(['info', 'libpassphrase'])
+    info('libpassphrase')
 
 
 _make_opts = None

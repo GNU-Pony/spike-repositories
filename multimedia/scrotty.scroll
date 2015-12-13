@@ -5,15 +5,31 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
-i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_info         = get('I_USE_INFO',   'y').lower().startswith('y')
+i_use_pdf          = get('I_USE_PDF',    'n').lower().startswith('y')
+i_use_ps           = get('I_USE_PS',     'n').lower().startswith('y')
+i_use_dvi          = get('I_USE_DVI',    'n').lower().startswith('y')
+i_use_man          = get('I_USE_MAN',    'y').lower().startswith('y')
+i_use_man_sv       = get('I_USE_MAN_SV', 'n').lower().startswith('y')
+i_use_bash         = get('I_USE_BASH',   'y').lower().startswith('y')
+i_use_fish         = get('I_USE_FISH',   'y').lower().startswith('y')
+i_use_zsh          = get('I_USE_ZSH',    'y').lower().startswith('y')
+i_use_locale       = get('I_USE_LOCALE',       '').lower()
+i_use_shell_locale = get('I_USE_SHELL_LOCALE', '').lower()
+
+i_use_locale       = [x.split('_')[0] for x in i_use_locale      .split(' ') if not x == '']
+i_use_shell_locale = [x.split('_')[0] for x in i_use_shell_locale.split(' ') if not x == '']
+i_use_shell_locale += ['en']
+if i_use_shell_locale[0] == 'en':
+    i_use_shell_locale = None
+elif 'sv' in i_use_shell_locale:
+    i_use_shell_locale = 'sv'
+else:
+    i_use_shell_locale = None
 
 pkgname = 'scrotty'
-pkgver = '1.0.2'
-pkgdesc = 'Screenshot program for Linux\'s TTY'
+pkgver = '2.0'
+pkgdesc = 'Screenshot program for the framebuffer'
 upstream = 'https://github.com/maandree/scrotty'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
@@ -21,14 +37,18 @@ license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     license.append('GFDL1.3+')
 private = SUPPORTED
-depends = ['linux', 'libc', 'imagemagick']
-makedepends = ['make', 'coreutils', 'libc', 'gcc']
+depends = ['linux', 'glibc', 'libpng']
+makedepends = ['make', 'coreutils', 'glibc', 'c99', 'pkg-config', 'libpng']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
-    makedepends.append('texinfo')
+    makedepends.append('texinfo>=4.11')
 if i_use_pdf or i_use_dvi or i_use_ps:
-    makedepends.append('texlive-code')
+    makedepends.append('texlive-plainextra')
+if i_use_bash or i_use_fish or i_use_zsh:
+    makedepends.append('auto-auto-complete')
+if len(i_use_locale) > 0:
+    makedepends.append('gettext')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['38B5CC97955CA35BF7F9CC68491FE6B74A4AD861A9C89F532BB210829F7440A490DA9FF6B3D0F22B3DFF724754DDD4F133C7DAA0097F2A628A05B2732D4483158B95FA28E1ADC6D5']
+sha3sums = ['34AE2408DB5385EBA7AC08F357939971CD6A6A53EA6833F22DD083E03B3F8ED900D93760D237948E568CE9CF8012B843220A71F31F957FC18097A1D3AC03F2CE2068F9B5EE7E2FD4']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -39,8 +59,20 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/scrotty-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'PREFIX=%' % _prefix(private)]
-    params.append('cmd')
+    man_locales = []
+    if i_use_man_sv:
+        man_locales.append('sv')
+    params = ['./configure']
+    params += ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'MAN_LOCALES=%s' % ' '.join(man_locales)]
+    params.append('LOCALES=%s' % ' '.join(i_use_locale))
+    if i_use_shell_locale is not None:
+        params.append('SHELL_LOCALE=%s' % i_use_shell_locale)
+    params.append('--prefix=%s' % _prefix(private))
+    params.append('--with-bash' if i_use_bash else '--without-bash')
+    params.append('--with-fish' if i_use_fish else '--without-fish')
+    params.append('--with-zsh'  if i_use_zsh  else '--without-zsh')
+    execute(params)
+    params = ['base']
     if i_use_info:
         params.append('info')
     if i_use_pdf:
@@ -49,13 +81,14 @@ def build(startdir, srcdir, pkgdir, private):
         params.append('ps')
     if i_use_dvi:
         params.append('dvi')
+    if i_use_bash or i_use_fish or i_use_zsh:
+        params.append('shell')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/scrotty-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'PREFIX=%' % _prefix(private)]
-    params.append('install-base')
+    params = ['install-base']
     if i_use_info:
         params.append('install-info')
     if i_use_pdf:
@@ -66,10 +99,12 @@ def package(startdir, srcdir, pkgdir, private):
         params.append('install-dvi')
     if i_use_man:
         params.append('install-man')
+    if i_use_bash or i_use_fish or i_use_zsh:
+        params.append('install-shell')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+    rm('%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
 
 
 def post_install(tmpdir, rootdir, installedfiles, private):

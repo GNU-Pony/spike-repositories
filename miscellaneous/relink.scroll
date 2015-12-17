@@ -44,19 +44,19 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/relink-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname]
     if i_use_info:
-        makedepends.append('info')
+        params.append('info')
     if i_use_pdf:
-        makedepends.append('pdf')
+        params.append('pdf')
     if i_use_dvi:
-        makedepends.append('dvi')
+        params.append('dvi')
     if i_use_ps:
-        makedepends.append('ps')
+        params.append('ps')
     if i_use_bash:
-        makedepends.append('bash')
+        params.append('bash')
     if i_use_fish:
-        makedepends.append('fish')
+        params.append('fish')
     if i_use_zsh:
-        makedepends.append('zsh')
+        params.append('zsh')
     if len(params) > 2:
         make(params)
 
@@ -65,21 +65,21 @@ def package(startdir, srcdir, pkgdir, private):
     cd('%s/relink-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
     if i_use_info:
-        makedepends.append('install-info')
+        params.append('install-info')
     if i_use_pdf:
-        makedepends.append('install-pdf')
+        params.append('install-pdf')
     if i_use_dvi:
-        makedepends.append('install-dvi')
+        params.append('install-dvi')
     if i_use_ps:
-        makedepends.append('install-ps')
+        params.append('install-ps')
     if i_use_man:
-        makedepends.append('install-man')
+        params.append('install-man')
     if i_use_bash:
-        makedepends.append('install-bash')
+        params.append('install-bash')
     if i_use_fish:
-        makedepends.append('install-fish')
+        params.append('install-fish')
     if i_use_zsh:
-        makedepends.append('install-zsh')
+        params.append('install-zsh')
     make(params)
     _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
     rm('%s/LICENSE' % _dir)

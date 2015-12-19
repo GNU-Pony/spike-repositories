@@ -55,7 +55,7 @@ def build(startdir, srcdir, pkgdir, private):
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/vtchs-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'N=:', 'install-base']
     if i_use_info:
         params.append('install-info')
     if i_use_pdf:

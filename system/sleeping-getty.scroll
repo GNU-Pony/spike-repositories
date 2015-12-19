@@ -1,0 +1,91 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
+i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
+i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
+i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
+i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+
+pkgname = 'sleeping-getty'
+pkgver = '1.0'
+pkgdesc = 'Do not start a fullblown getty before it is necessary'
+upstream = 'https://github.com/maandree/sleeping-getty'
+arch = ['i686', 'x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['linux', 'libc']
+makedepends = ['make', 'coreutils', 'cc', 'libc', 'linux-api-headers']
+if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
+    makedepends.append('texinfo>=4.11')
+if i_use_pdf or i_use_dvi or i_use_ps:
+    makedepends.append('texlive-plainextra')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['2BC10E8D5BA1308AABDC2515FBB24F36B6A4CB6FB166E62F39C46313324D7955E6EEA523B52F15541D90DD2899E2E151734C12064993DC4649B25BD53E6476F5AD92F5D7F86462AA']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute('sleeping-getty')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/sleeping-getty-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private))
+    params = ['PKGNAME=%s' % pkgname, 'OPTIMISE=-Os', 'base']
+    if i_use_info:
+        params.append('info')
+    if i_use_pdf:
+        params.append('pdf')
+    if i_use_dvi:
+        params.append('dvi')
+    if i_use_ps:
+        params.append('ps')
+    if i_use_html:
+        params.append('html')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/sleeping-getty-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'N=:', 'install-base']
+    if i_use_info:
+        params.append('install-info')
+    if i_use_pdf:
+        params.append('install-pdf')
+    if i_use_dvi:
+        params.append('install-dvi')
+    if i_use_ps:
+        params.append('install-ps')
+    if i_use_html:
+        params.append('install-html')
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

@@ -13,7 +13,7 @@ i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
 i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'sleeping-getty'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Do not start a fullblown getty before it is necessary'
 upstream = 'https://github.com/maandree/sleeping-getty'
 arch = ['i686', 'x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-plainextra')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['2BC10E8D5BA1308AABDC2515FBB24F36B6A4CB6FB166E62F39C46313324D7955E6EEA523B52F15541D90DD2899E2E151734C12064993DC4649B25BD53E6476F5AD92F5D7F86462AA']
+sha3sums = ['BC197F4099C7778AC1225742A12228366396CE68F5FCD8D80DC9CF21D2FEA2DD058960F2A9105DC92F868F8F9BB59595CF1753A7AE68A2D7E4109A0E0CD8723B8DC8A48F32302971']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

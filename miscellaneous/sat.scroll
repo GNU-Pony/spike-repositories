@@ -13,7 +13,7 @@ i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
 i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'sat'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'A simple alternative to at'
 upstream = 'https://github.com/maandree/sat'
 arch = ['i686', 'x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-plainextra')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['B9FFB079A074BAAFEBD90BFBC1F458F285441B69E41F74C26E19D23BF64E8B9EA1BA924E91C7023EDED1E8C27BB90FA2D57CA0910FC5452E8511675ADA2E52419DEADF3333F5BCE3']
+sha3sums = ['CA969D1663EB0AA5D6967F7AE67E838663B5A62E1955E9464AC540917F3A8E0167A8C69568EC5FBDD50D11D7E00A1CE87437DFA9A6342542395D1D3517C3E4D3CF9190B077FF8E20']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

@@ -19,7 +19,7 @@ i_use_x_icc = get('I_USE_X_ICC',   x).lower().startswith('y')
 
 
 pkgname = 'blueshift'
-pkgver = '1.90.3'
+pkgver = '1.90.4'
 pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['any']
@@ -40,11 +40,11 @@ if i_use_x_icc:
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     makedepends.append('texinfo')
 if i_use_pdf or i_use_ps or i_use_dvi:
-    makedepends.append('texlive-core')
+    makedepends.append('texlive-plainextra')
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['DC115B90401D20F0BC751A467237BBCF33E1C4A84BE49AFD74431F481D5B0CD810D43E2D9B7FB84C9A9C4EDE1F4422202C8C9D023B3A600FBB50F146E81F8767E8B996886CF8EB6D']
+sha3sums = ['A4F5D46D1F21D7212966EA8BF74F4FC0F221DB4052E4909D47EA43216B6B6A21EFB7D60A36029CE5ABCE784CA2C75E609D57881446DC2B9336F4D587122EE89773FA0120FFDC8BA8']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

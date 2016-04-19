@@ -1,0 +1,45 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'metar'
+pkgver = '1'
+pkgdesc = 'Trivial, yet fully fledged, weather report'
+upstream = 'https://github.com/maandree/metar'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['sh', 'sed', 'curl', 'coreutils', 'python3']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['CD041282AB528849325C6508B16199EE6E9C8B962E9449273EEFADA521263FE74D81E743BCFAA60686A075E6977688F6BD6B4B46E3662F0F871BB8CC2FA8C69B4FDADFC439D06F56']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['metar', 'get'])
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/metar-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'all']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/metar-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
+    make(params)
+    if not i_use_man:
+        rm('%s%s/share/man/man1/metar.1' % (pkgdir, _prefix(private)))
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
+

@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'metar'
-pkgver = '1'
+pkgver = '1.1'
 pkgdesc = 'Trivial, yet fully fledged, weather report'
 upstream = 'https://github.com/maandree/metar'
 arch = ['any']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['sh', 'sed', 'curl', 'coreutils', 'python3']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['CD041282AB528849325C6508B16199EE6E9C8B962E9449273EEFADA521263FE74D81E743BCFAA60686A075E6977688F6BD6B4B46E3662F0F871BB8CC2FA8C69B4FDADFC439D06F56']
+sha3sums = ['D6B1035945900B93DD54FC901FFA5435560AE2AB16724844A0E82B1282995A0A7163BF15AA852785F217DB07CA14A1C40135F4669808D0D11C368FAC089B591B82857B883A3099F2']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

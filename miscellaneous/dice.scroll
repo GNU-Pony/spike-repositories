@@ -1,0 +1,36 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+_source = 'https://raw.github.com/GNU-Pony/miscellaneous/54ecc15f97a7f4b4a0303407bd2395f414b2468c'
+_script = 'dice'
+
+pkgname = _script
+pkgver = '2016.07.05'
+pkgdesc = 'A trivial, non-interactive, command line die simulator'
+upstream = 'https://github.com/GNU-Pony/miscellaneous'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['WTFPL2']
+private = SUPPORTED
+depends = ['sh', 'coreutils', 'sed', 'findutils']
+source = ['%s/scripts/%s' % (_source, _script), '%s/COPYING' % _source]
+sha3sums = ['BC3439235B614132EA258FFA666BC263BEBE4DC6D1EDCF0069C110A131442D8F06AD734A0ADFC56750B4107B0E2119CA390FAE33F01926C5E19E319C7F61A6CBD33237B508E73D43',
+            '5873FAB172E9CCC37CD9C5333C73CB4D234A099C4DD8BE5E0DEEF35014E23410424331D6CD5737929B60412D8F097672E6EF5F1B2DBE94467F0DA8F21FF3CDE56E1347DD9494EFC3']
+
+
+def ride(private):
+    execute(_script)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd(srcdir)
+    _prefix = pkgdir + ('/usr' if not private else path('~/.local'))
+    _dir = '%s/share/licenses/%s' % (_prefix, pkgname)
+    install(_script, '%s/bin/%s' % (_prefix, _script), mode = 0o755)
+    install('COPYING', '%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/WTFPL2', '%s/LICENSE' % _dir)
+

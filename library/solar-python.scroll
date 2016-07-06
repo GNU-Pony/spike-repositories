@@ -11,7 +11,7 @@ i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
 i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
 
 pkgname = 'solar-python'
-pkgver = '2.4'
+pkgver = '2.5'
 pkgdesc = 'Solar data calculation and prediction library for Python'
 upstream = 'https://github.com/maandree/solar-python'
 arch = ['any']
@@ -23,7 +23,7 @@ makedepends = ['make', 'coreutils', 'python3']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['02CFF88368CE61E8792719968277FA98DDE6B898E3409F3481E424C8CB1BA0D3CBD52D50EA6B469C95F488EADF125A8E379FA244A1BCF6C8B9600F40D6A230BCE7F5138F2CDF5B6D']
+sha3sums = ['AC5861599939F4AAE1384B99F4B39FD9999325FD637415E5E2B51EEB5DBB49ACEB24ED5410FD1E07665D83DBE9E079BD17CA95A9B15A031D517D86B5F5CE2B352C3528095B42F549']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

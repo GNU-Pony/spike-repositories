@@ -1,0 +1,39 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'metar'
+pkgver = '1'
+pkgdesc = 'Creates table of when the blue hour, the golden hour, or whatever you want occurs'
+upstream = 'https://github.com/maandree/blue'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['ISC']
+private = SUPPORTED
+depends = ['python3', 'solar-python']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['44AF6625E3ABF8E23B2C1473B7F119C3B987FC42B8CA40B693AA921709F81171F9AF6714A840B5DD2DA17B39928D093369B24FDA09FA0C58D85A08E5160476A41B14502A08B30C0D']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    execute(['blue'])
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/blue-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install', 'install-license']
+    if i_use_man:
+        params.add('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/ISC', '%s/LICENSE' % _dir)
+

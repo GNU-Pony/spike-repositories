@@ -13,7 +13,7 @@ i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
 i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
 
 pkgname = 'libhaiku'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Poetic error messages'
 upstream = 'https://github.com/maandree/libhaiku'
 arch = ['i686', 'x86_64']
@@ -27,7 +27,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
 if i_use_pdf or i_use_dvi or i_use_ps:
     makedepends.append('texlive-plainextra')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C55DC826FDC11D85BC58112E1C961651D0CBDA53AAD0FFBB1395354F14203DC392D5044C937B337F0B60DAF79A5EE47027AB5B438663B36E9240763EF939B3C6DD49BF1CF2FCB890']
+sha3sums = ['BA7E15087853DE2151830350002A933604F978612D64A87111BF8A8F76D60A8D4D454507FD4B2920A856F544D437FAC1E9FC08915631912589FCDEDA66E6C2536C83F24BD3D23D2F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

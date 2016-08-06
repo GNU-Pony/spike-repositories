@@ -1,0 +1,45 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'coopgammad'
+pkgver = '1.0'
+pkgdesc = 'Cooperative gamma server'
+upstream = 'https://github.com/maandree/coopgammad'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libgamma', 'libc']
+makedepends = ['make', 'coreutils', 'cc', 'libc', 'libgamma', 'libclut']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['BA317334A2C83B265A5C875FF47FBE18454182960C463184055C3659CDE7FA8CF549A876BA4813D45F5BBAE1EBDC97EB97C2A6E2D69EE1AF55038891B87BB17E7DBFE5209F8B654C']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('You don\'t need to start coopgammad, it is started automatically when needed.')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/coopgammad-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/coopgammad-%s' % (srcdir, pkgver))
+    poarams = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

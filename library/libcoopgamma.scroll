@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'libcoopgamma'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Cooperative gamma library'
 upstream = 'https://github.com/maandree/libcoopgamma'
 arch = ['x86_64', 'i686']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['coopgammad', 'libc']
 makedepends = ['libc', 'coreutils', 'cc', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['856FF8F610C894C4EAB61EDE4FA5F3D6847910C06B178392EC4EADC95147E357FF275CB4EDD214A3815E4D8125DA5E4230A7CDC0DDBA5A5C33A31332AF591FBEC0C4637E0798D44B']
+sha3sums = ['F54014F6ECD6CA09D58C09D469DBC74398899E5D5D7E2507C606748201E7D8EECAAC6ABBDB93DCBBCE7D64CDF78F490F4288854E14C0597BDB631FAB45C40538D993DF31CD9D9278']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

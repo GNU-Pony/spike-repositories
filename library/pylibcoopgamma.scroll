@@ -1,0 +1,41 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+pkgname = 'pylibcoopgamma'
+pkgver = '1.0'
+pkgdesc = 'Cooperative gamma Python 3 library'
+upstream = 'https://github.com/maandree/pylibcoopgamma'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['python3>=3.4', 'libcoopgamma', 'libc']
+makedepends = ['python3>=3.4', 'libcoopgamma', 'libc', 'make', 'c99', 'cython', 'coreutils', 'pkg-config', 'gpp']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['F9529DCAB683BB660419E5BAAF15E79297269C6FBFFCA9A62BB18D44D78333BD3A48C18263EDB3F3AF197901552A2670439F46CBC406641E19AE0841A5740E74F377B23E7049AD85']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    echo('This is a library')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pylibcoopgamma-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libcoopgamma-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install']
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

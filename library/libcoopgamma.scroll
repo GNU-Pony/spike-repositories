@@ -29,14 +29,14 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/libcoopgamma-%s' % (srcdir, pkgver))
-    execute('./configure', '--pkgname=%s' % pkgname)
+    execute('./configure', '--pkgname=%s' % pkgname, '--prefix=%s' % _prefix(private))
     params = ['DESTDIR=%s' % pkgdir, 'base']
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/libcoopgamma-%s' % (srcdir, pkgver))
-    poarams = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    poarams = ['DESTDIR=%s' % pkgdir, 'install-base']
     if i_use_man:
         params.append('install-man')
     make(params)

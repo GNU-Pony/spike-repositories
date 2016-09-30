@@ -1,0 +1,47 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'pdeath'
+pkgver = '1.0'
+pkgdesc = 'Run a command that is killed when its parent exits'
+upstream = 'https://github.com/maandree/pdeath'
+arch = ['i686', 'x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['ISC']
+private = SUPPORTED
+depends = ['linux>=2.1.57', 'libc']
+makedepends = ['linux>=2.1.57', 'libc', 'make', 'coreutils', 'cc']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['574E05798B38155DAF08AC650E8C848B85F91DCC990F1C8A471E4A50119F4F140668C6431DA03BCA0383B1192E36B0B3F92BBA1862182C827A5BB9BFE1E2899652E605302AF9ACEE']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(1, 'pdeath')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/pdeath-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/pdeath-%s' % (srcdir, pkgver))
+    prefix = _prefix(private)
+    params = ['PREFIX=%s' % prefix, 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
+    make(params)
+    if not i_use_man:
+        rm('%s%s/share/man/man1/pdeath.1' % (pkgdir, prefix))
+        rmdir('%s%s/share/man/man1' % (pkgdir, prefix))
+        rmdir('%s%s/share/man' % (pkgdir, prefix))
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, prefix, pkgname)
+    ln('/usr/share/licenses/common/ISC', '%s/LICENSE' % _dir)
+

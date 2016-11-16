@@ -11,7 +11,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh = get('I_USE_ZSH', 'y').lower().startswith('y')
 
 pkgname = 'rmixer'
-pkgver = '1.3'
+pkgver = '1.3.1'
 pkgdesc = 'Simple remote interface for the ALSA mixer'
 upstream = 'https://github.com/maandree/rmixer'
 arch = ['any']
@@ -26,7 +26,7 @@ if i_use_info:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['5050ED3D4F45E1144F7CB04DF1A84D2F56C2C1A8CBF402E3858AF31CB9034DDF522E4E50F75076DCE174641B613E3E5DFCE334B5AA0251E0967AD1FB9FFD4789CDE18204BB051CFF']
+sha3sums = ['A46CE199469D4FE42392D1F548C26D492F836D9D3CD15E8CF683A28C29B93D1B1661A6A308C12895ABF30B8F36423E91807889AC1A206ED762D918A12854DB162B66C561C0CC6D18']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

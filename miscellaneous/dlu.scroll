@@ -1,0 +1,42 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'dlu'
+pkgver = '1'
+pkgdesc = 'Program for quickly looking up words in scanned dictionaries'
+upstream = 'https://github.com/maandree/dlu'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['ISC']
+private = SUPPORTED
+depends = ['python3']
+makedepends = ['make', 'coreutils']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['DCDBA15DB36907C8E4040E9C4517E1F29CAD3A52342214C7EAA15F74D367436F9D60108E017D6FB5745C7419F85E76F096A1714A252AE5B5FFF311A6690B2B1AAF4D958CD59ACE5A']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(1, 'dlu')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    pass
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/dlu-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/ISC', '%s/LICENSE' % _dir)
+

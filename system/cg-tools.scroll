@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'cg-tools'
-pkgver = '1.0'
+pkgver = '1.0.1'
 pkgdesc = 'Cooperative gamma tools'
 upstream = 'https://github.com/maandree/cg-tools'
 arch = ['x86_64', 'i686']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['libcoopgamma', 'libc']
 makedepends = ['make', 'coreutils', 'cc', 'libc', 'libcoopgamma', 'libclut']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1537BFCA8C8DF4B4EC8187DB756E1D8B6E52A1E9C316FF7E53AD30FDFDD9AF13AD83213491E6684D775056054E0F1F413E23237E19AFB0316919E96DBD716853AD71C8CD48EB5D36']
+sha3sums = ['310EB64D92C64F09F4141F015032E806917CD95414F1FE6039A4632316979705E0ADD49E819131082EA9943813C88EE7EED4E71BD71F07AB0721AD95BA7D16E50D25BC69C4CC6B56']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

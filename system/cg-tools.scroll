@@ -1,0 +1,45 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'cg-tools'
+pkgver = '1.0'
+pkgdesc = 'Cooperative gamma tools'
+upstream = 'https://github.com/maandree/cg-tools'
+arch = ['x86_64', 'i686']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+depends = ['libcoopgamma', 'libc']
+makedepends = ['make', 'coreutils', 'cc', 'libc', 'libcoopgamma', 'libclut']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['1537BFCA8C8DF4B4EC8187DB756E1D8B6E52A1E9C316FF7E53AD30FDFDD9AF13AD83213491E6684D775056054E0F1F413E23237E19AFB0316919E96DBD716853AD71C8CD48EB5D36']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(7, 'cg-tools')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/cg-tools-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/cg-tools-%s' % (srcdir, pkgver))
+    poarams = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/LICENSE' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
+

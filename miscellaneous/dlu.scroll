@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'dlu'
-pkgver = '1'
+pkgver = '1.0.1'
 pkgdesc = 'Program for quickly looking up words in scanned dictionaries'
 upstream = 'https://github.com/maandree/dlu'
 arch = ['any']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['DCDBA15DB36907C8E4040E9C4517E1F29CAD3A52342214C7EAA15F74D367436F9D60108E017D6FB5745C7419F85E76F096A1714A252AE5B5FFF311A6690B2B1AAF4D958CD59ACE5A']
+sha3sums = ['5669A3C2737902CE3E4E13226E0E180BB939FC67FE914C2ECF90BE8CED79B8FDA314746307AED1DB962788B02F5E2D06EA51CF69CB61536441F042C9891BF60FFCCBD727C218EDB9']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

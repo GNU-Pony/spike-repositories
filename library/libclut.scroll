@@ -12,7 +12,7 @@ i_use_dvi  = get('I_USE_DVI',  'y').lower().startswith('n')
 i_use_html = get('I_USE_HTML', 'y').lower().startswith('n')
 
 pkgname = 'libclut'
-pkgver = '0.3'
+pkgver = '1.0'
 pkgdesc = 'C library for manipulating colour lookup table'
 upstream = 'https://github.com/maandree/libclut'
 arch = ['x86_64']
@@ -25,7 +25,7 @@ if i_use_info or i_use_pdf or i_use_ps or i_use_dvi or i_use_html
     if i_use_pdf or i_use_ps or i_use_dvi:
         makedepends.append('texlive-bin')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['6EE22901FE26C1AA0B3F3C34AA9D783BA7AA8D6F1FF53F1FD84CC4B86896F1CF72E9E910C7032146449E4B953A3D7BF87E762A8D7F679B1EBA7A147303A66BF9EEB38D828BC35F6F']
+sha3sums = ['B5B4D3CBC7E7FC3B9A2A3292C3BF2C1C8754754EAC98E33F02C3F69BFC5E858DC5B320146D8DC2E243316DF6D9A0DDE8D0AE4569EA82C60C99B86F2741178977AC652955FABC5ABA']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

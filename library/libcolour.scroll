@@ -1,0 +1,91 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
+i_use_pdf  = get('I_USE_PDF',  'y').lower().startswith('n')
+i_use_ps   = get('I_USE_PS',   'y').lower().startswith('n')
+i_use_dvi  = get('I_USE_DVI',  'y').lower().startswith('n')
+i_use_html = get('I_USE_HTML', 'y').lower().startswith('n')
+
+pkgname = 'libcolour'
+pkgver = '1.0'
+pkgdesc = 'A C colour space library'
+upstream = 'https://github.com/maandree/libcolour'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['GPL3']
+private = SUPPORTED
+makedepends = ['cc', 'libc', 'coreutils', 'make']
+if i_use_info or i_use_pdf or i_use_ps or i_use_dvi or i_use_html
+    makedepends.append('texinfo>=4.11')
+    if i_use_pdf or i_use_ps or i_use_dvi:
+        makedepends.append('texlive-bin')
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['84FF6E86C9E62B486ED86EAFB2E09780D50CCA6DB2B183E32EC792A698F8962FC5C0F5F221E8FB529189FB0B763F82F4B09FD4EC9C13EA45C67F1BE7971A8C4FB13C888025AF6F44']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    info('libcolour')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libcolour-%s' % (srcdir, pkgver))
+    execute('./configure', '--prefix=%s' % _prefix(private), 'PKGNAME=%s' % pkgname)
+    params += ['DESTDIR=%s' % pkgdir,
+               'N=:',
+               'base']
+    if i_use_info:
+        buildparams.append('info')
+    if i_use_pdf:
+        buildparams.append('dvi')
+    if i_use_ps:
+        buildparams.append('ps')
+    if i_use_dvi:
+        buildparams.append('dvi')
+    if i_use_html:
+        buildparams.append('html')
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/libcolour-%s' % (srcdir, pkgver))
+    params += ['DESTDIR=%s' % pkgdir,
+               'N=:',
+               'install-base']
+    if i_use_info:
+        buildparams.append('install-info')
+    if i_use_pdf:
+        buildparams.append('install-dvi')
+    if i_use_ps:
+        buildparams.append('install-ps')
+    if i_use_dvi:
+        buildparams.append('install-dvi')
+    if i_use_html:
+        buildparams.append('install-html')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    rm('%s/COPYING' % _dir)
+    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
+
+
+def post_install(tmpdir, rootdir, installedfiles, private):
+    post_install_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_upgrade(tmpdir, rootdir, installedfiles, private):
+    pre_upgrade_info(rootdir, installedfiles, private)
+
+
+def post_upgrade(tmpdir, rootdir, installedfiles, private):
+    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
+
+
+def pre_uninstall(tmpdir, rootdir, installedfiles, private):
+    pre_uninstall_info(rootdir, installedfiles, private)
+

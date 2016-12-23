@@ -13,9 +13,9 @@ pkgdesc = 'Run programs when somepony makes a connection to a specific port'
 upstream = 'https://github.com/maandree/port-trigger'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 if i_use_info:
-    license.append('FDL1.3')
+    license.append('FDL1.3+')
 private = SUPPORTED
 depends = ['java-runtime']
 makedepends = ['make', 'coreutils', 'sed', 'java-environment']

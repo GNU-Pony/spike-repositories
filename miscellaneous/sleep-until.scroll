@@ -20,7 +20,7 @@ pkgdesc = 'Sleep until a specified time'
 upstream = 'https://github.com/maandree/sleep-until'
 arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3']
+license = ['AGPL3+']
 private = SUPPORTED
 depends = ['linux>=2.6.25', 'glibc>=2.8']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc>=2.8', 'gpp', 'grep']

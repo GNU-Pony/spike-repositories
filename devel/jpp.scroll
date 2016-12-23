@@ -13,7 +13,7 @@ pkgdesc = 'Bash based preprocessor for Java'
 upstream = 'https://github.com/maandree/jpp'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['java-runtime>=5', 'bash']
 makedepends = ['make', 'coreutils', 'java-environment>=5']

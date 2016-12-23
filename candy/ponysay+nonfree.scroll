@@ -23,7 +23,7 @@ pkgdesc = 'Cowsay reimplementation for ponies'
 upstream = 'https://github.com/erkin/ponysay'
 arch = ['any']
 freedom = SOFTWARE
-license = ['GPL3', 'FDL1.3']
+license = ['GPL3+', 'FDL1.3+']
 private = SUPPORTED
 depends = ['python3', 'coreutils']
 optdepends = ['util-say>=3: Improved TTY support with KMS and PNG files']

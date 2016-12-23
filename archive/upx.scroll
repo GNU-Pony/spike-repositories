@@ -13,7 +13,7 @@ pkgdesc = 'High compresion ratio compressor for executable binary files'
 upstream = 'http://upx.sourceforge.net'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL2', 'public (dedication)']
+license = ['GPL2+', 'public (dedication)']
 private = SUPPORTED
 depends = ['zlib', 'ucl', 'glibc', 'gcc-libs']
 makedepends = ['gcc', 'make>=3.81', 'sed', 'coreutils'] + depends

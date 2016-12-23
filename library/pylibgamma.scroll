@@ -11,7 +11,7 @@ pkgdesc = 'Python 3 wrapper for libgamma'
 upstream = 'https://github.com/maandree/pylibgamma'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['python3', 'libgamma>=0.6', 'glibc']
 makedepends = ['make', 'coreutils', 'gcc', 'cython', 'pkg-config'] + depends

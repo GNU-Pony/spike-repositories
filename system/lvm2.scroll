@@ -14,7 +14,7 @@ pkgdesc = 'Logical Volume Manager 2 utilities'
 upstream = 'http://sourceware.org/lvm2/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL2', 'LGPL2.1']
+license = ['GPL2+', 'LGPL2.1+']
 private = SUPPORTED
 depends = ['bash', 'device-mapper>=%s' % pkgver]
 optdepends = ['thin-provisioning-tools: for thin provisioning support']

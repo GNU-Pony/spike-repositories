@@ -11,7 +11,7 @@ pkgdesc = 'Java wrapper for libgamma'
 upstream = 'https://github.com/maandree/jlibgamma'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['libgamma>=0.3', 'glibc', 'java-runtime-headless>=1.5']
 makedepends = ['libgamma>=0.3', 'glibc', 'java-environment>=1.5', 'gcc', 'make', 'coreutils', 'sed']

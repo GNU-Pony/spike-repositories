@@ -17,7 +17,7 @@ pkgdesc = 'A C colour space library'
 upstream = 'https://github.com/maandree/libcolour'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 makedepends = ['cc', 'libc', 'coreutils', 'make']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi or i_use_html

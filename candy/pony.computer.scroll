@@ -17,7 +17,7 @@ pkgdesc = 'Show computer information and a pony'
 upstream = 'https://github.com/GNU-Pony/pony.computer'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['sh', 'ponysay>=3.0', 'coreutils', 'python3']
 optdepends = ['linux: Additional system information can be provided with Linux kernel\'s procfs /proc',

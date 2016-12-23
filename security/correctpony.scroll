@@ -16,7 +16,7 @@ pkgdesc = 'Passphrase generator based on http://xkcd.com/936/'
 upstream = 'https://github.com/maandree/correctpony'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3']
+license = ['AGPL3+']
 private = SUPPORTED
 depends = ['java-runtime>=6', 'argparser-java']
 makedepends = ['make', 'coreutils', 'sed', 'argparser-java', 'java-environment>=6']

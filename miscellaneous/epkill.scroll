@@ -20,9 +20,9 @@ pkgdesc = 'procps utilties with environment constraints'
 upstream = 'https://github.com/maandree/epkill'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3')
+    license.append('FDL1.3+')
 private = SUPPORTED
 depends = ['glibc', 'procps-ng', 'argparser-c', 'exec-as']
 makedepends = ['make', 'coreutils', 'gcc'] + depends

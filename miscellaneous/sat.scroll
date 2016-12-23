@@ -20,7 +20,7 @@ arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['MIT']
 private = SUPPORTED
-depends = ['linux>==2.6.39', 'libc']
+depends = ['linux>=2.6.39', 'libc']
 makedepends = ['make', 'coreutils', 'c99', 'libc']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
     makedepends.append('texinfo>=4.11')

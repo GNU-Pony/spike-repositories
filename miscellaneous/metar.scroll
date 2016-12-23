@@ -13,7 +13,7 @@ pkgdesc = 'Trivial, yet fully fledged, weather report'
 upstream = 'https://github.com/maandree/metar'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['sh', 'sed', 'curl', 'coreutils', 'python3']
 makedepends = ['make', 'coreutils']
@@ -29,13 +29,13 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/metar-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'all']
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'all']
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/metar-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
     if not i_use_man:
         rm('%s%s/share/man/man1/metar.1' % (pkgdir, _prefix(private)))

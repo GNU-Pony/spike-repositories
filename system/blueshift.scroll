@@ -26,7 +26,7 @@ arch = ['any']
 if i_use_x_icc:
     arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3', 'GPL3', 'GFDL1.3']
+license = ['AGPL3+', 'GPL3+', 'GFDL1.3+']
 private = SUPPORTED
 depends = ['python3', 'argparser-python', 'solar-python', 'pylibgamma']
 if i_use_x_icc:

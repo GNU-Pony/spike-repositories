@@ -16,7 +16,7 @@ pkgdesc = 'Join-calculus for Python'
 upstream = 'https://github.com/maandree/join-python'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 extension = 'python3'
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:

@@ -16,9 +16,9 @@ pkgdesc = 'Login wrapper to enable guest accounts'
 upstream = 'https://github.com/GNU-Pony/ponyguests'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3')
+    license.append('GFDL1.3+')
 private = UNSUPPORTED
 depends = ['sh', 'coreutils', 'grep', 'sed', 'bc', 'shadow', 'linux>=3.4', 'glibc']
 makedepends = ['make', 'coreutils', 'glibc', 'gcc', 'sed', 'linux-api-headers>=3.4']

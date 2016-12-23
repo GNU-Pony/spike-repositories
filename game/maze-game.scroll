@@ -13,7 +13,7 @@ pkgdesc = 'Maze solving game'
 upstream = 'https://github.com/maandree/maze-game'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['java-runtime>=6', 'bash', 'coreutils']
 makedepends = ['make', 'bash', 'coreutils', 'findutils', 'grep', 'sed', 'java-environment>=6']

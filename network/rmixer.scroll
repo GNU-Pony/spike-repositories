@@ -16,7 +16,7 @@ pkgdesc = 'Simple remote interface for the ALSA mixer'
 upstream = 'https://github.com/maandree/rmixer'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['sh', 'java-runtime>=7', 'alsa-utils']
 makedepends = ['make', 'coreutils', 'java-environment>=7']

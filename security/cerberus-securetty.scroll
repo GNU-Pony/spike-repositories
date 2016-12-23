@@ -16,7 +16,7 @@ pkgdesc = 'securetty support for cerberus'
 upstream = 'https://github.com/GNU-Pony/cerberus-securetty'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
     license.append('GFDL1.3')
 private = UNSUPPORTED

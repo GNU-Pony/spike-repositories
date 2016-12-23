@@ -29,7 +29,7 @@ pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3', 'GPL3', 'GFDL1.3']
+license = ['AGPL3+', 'GPL3+', 'GFDL1.3+']
 private = SUPPORTED
 _deps = []
 if i_use_x_randr or i_use_x_idcrtc or i_use_x_icc or i_use_fake_quartz or i_use_fake_w32gdi:

@@ -27,7 +27,7 @@ pkgdesc = 'A configurable minimal login program that uses libpassphrase'
 upstream = 'https://github.com/GNU-Pony/cerberus'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = UNSUPPORTED
 depends = ['glibc', 'libpassphrase>=1400850322']
 if i_use_vcs or i_use_vcsa:

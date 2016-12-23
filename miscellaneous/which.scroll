@@ -11,16 +11,16 @@ i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 pkgname = 'which'
 pkgver = '2.20'
 pkgdesc = 'Utility to show the full path of commands'
-upstream = 'http://www.xs4all.nl/~carlo17/which'
+upstream = 'https://savannah.gnu.org/projects/which'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL2+']
 private = SUPPORTED
 depends = ['sh', 'glibc']
 makedepends = ['glibc', 'gcc', 'sh', 'make', 'sed', 'coreutils', 'm4', 'grep']
 makedepends.append('texinfo') # for info manual
 makedepends.append('gzip') # for manpage and info
-source = ['http://www.xs4all.nl/~carlo17/which/which-%s.tar.gz' % pkgver]
+source = ['https://ftp.gnu.org/gnu/which/which-%s.tar.gz' % pkgver]
 sha3sums = ['4F10908CB5996844F09FFFDAA39DE6FB4D31A377F5F768E7BD4E592A866238E9EEC139059EF1C7368463411380EC20F4A0348D54C323928E4B134FDB5E0350E51CDA7D16D48EDEBD']
 
 
@@ -43,7 +43,7 @@ def package(startdir, srcdir, pkgdir, private):
     
     _licenses = pkgdir + _prefix(private) + '/share/licenses'
     mkdir_p(_licenses)
-    ln('/usr/share/licenses/common/GPL3', '%s/%s' % (_licenses, pkgname))
+    ln('/usr/share/licenses/common/GPL2x', '%s/%s' % (_licenses, pkgname))
     
     if not man:
         rm_r(pkgdir + _prefix(private) + '/share/man')

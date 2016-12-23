@@ -17,9 +17,9 @@ pkgdesc = 'Implementation of the Stringprep, Punycode [puny, not pony, sorry] an
 upstream = 'http://www.gnu.org/software/libidn/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3', 'LGPL3']
+license = ['GPL3+', 'LGPL3+']
 if i_use_info or i_use_man:
-    license.append('FDL1.3')
+    license.append('FDL1.3+')
 # C# library and Java library (neither installed by this package) is in GPL2 or (inclusive) LGPL3
 # The author of the Java library has agreed to also distribute it under the Apache2.0
 private = SUPPORTED

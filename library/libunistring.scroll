@@ -14,7 +14,7 @@ pkgdesc = 'Library for manipulating Unicode strings and C strings.'
 upstream = 'http://www.gnu.org/software/libunistring/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['LGPL3']
+license = ['LGPL3+']
 private = SUPPORTED
 depends = ['glibc>=2.2']
 makedepends = ['glibc>=2.2', 'gcc', 'sh', 'sed', 'grep', 'm4', 'make', 'findutils', 'coreutils']

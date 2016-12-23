@@ -21,9 +21,9 @@ pkgdesc = 'Autogenerate shell auto-completion scripts'
 upstream = 'https://github.com/maandree/auto-auto-complete'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3')
+    license.append('GFDL1.3+')
 private = SUPPORTED
 depends = ['python3']
 makedepends = ['make', 'sed', 'coreutils']

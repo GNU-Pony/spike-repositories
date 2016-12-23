@@ -15,7 +15,7 @@ pkgdesc = 'An arbitrary precision calculator language'
 upstream = 'http://www.gnu.org/software/bc/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL2', 'LGPL2.1']
+license = ['GPL2+', 'LGPL2.1+']
 private = SUPPORTED
 depends = ['glibc']
 if i_use_readline:

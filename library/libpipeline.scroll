@@ -14,7 +14,7 @@ pkgdesc = 'C library for manipulating pipelines of subprocesses in a flexible an
 upstream = 'http://libpipeline.nongnu.org/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['glibc']
 if i_use_pth:

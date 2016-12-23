@@ -18,7 +18,7 @@ pkgdesc = 'GNU internationalization library'
 upstream = 'http://www.gnu.org/software/gettext/'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['libunistring', 'glib2', 'xz', 'bzip2', 'gzip', 'tar', 'git>=1.6', 'expat>=1.95', 'glibc>=2.2']
 if i_use_acl:

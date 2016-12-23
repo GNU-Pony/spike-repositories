@@ -15,7 +15,7 @@ pkgdesc = 'Portable, embeddable Scheme implementation written in C'
 upstream = 'http://www.gnu.org/software/guile'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['glibc', 'gmp', 'libltdl', 'ncurses>=5.7', 'texinfo', 'libunistring', 'gc', 'libffi']
 makedepends = ['findutils', 'grep', 'sh', 'gcc', 'sed', 'make', 'coreutils', 'm4'] + depends

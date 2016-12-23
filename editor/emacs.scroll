@@ -70,8 +70,8 @@ pkgdesc = 'The extensible, customisable, self-documenting real-time display edit
 upstream = 'http://www.gnu.org/software/emacs/emacs.html'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3 (for software)']
-if i_use_info:  license.append('FDL1.3 (for info manuals)')
+license = ['GPL3+ (for software)']
+if i_use_info:  license.append('FDL1.3+ (for info manuals)')
 if i_use_man:   license.append('custom (permissive free; for manpages)')
 private = SUPPORTED
 depends = ['glibc', 'gcc-libs', 'ncurses', 'perl']

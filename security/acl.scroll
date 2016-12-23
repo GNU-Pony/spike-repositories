@@ -14,7 +14,7 @@ pkgdesc = 'Access control list utilities, libraries and headers'
 upstream = 'http://savannah.nongnu.org/projects/acl'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['LGPL']
+license = ['LGPL2.1+']
 private = UNSUPPORTED
 depends = ['glibc', 'attr>=2.4.46']
 makedepends = ['sh', 'coreutils', 'sed', 'make', 'm4', 'glibc', 'gcc', 'attr>=2.4.46']

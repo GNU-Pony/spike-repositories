@@ -18,7 +18,7 @@ pkgdesc = 'A network utility to retrieve files from the Web'
 upstream = 'http://www.gnu.org/software/wget/wget.html'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3']
+license = ['GPL3+']
 private = SUPPORTED
 depends = ['libidn', 'glibc', 'zlib', 'pcre', 'util-linux']
 if i_use_gnutls:

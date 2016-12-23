@@ -14,7 +14,7 @@ pkgdesc = 'Command line argument parser library, like getopt, except better.'
 upstream = 'https://github.com/maandree/argparser'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3']
+license = ['AGPL3+']
 private = SUPPORTED
 makedepends = ['coreutils', 'sed', 'make']
 if i_use_info:

@@ -15,9 +15,9 @@ pkgdesc = 'A set of programs to assemble and manipulate binary and object files'
 upstream = 'http://www.gnu.org/software/binutils/'
 arch = ['any']
 freedom = SOFTWARE | MEDIA
-license = ['GPL2', 'GPL3', 'LGPL2', 'LGPL3']
+license = ['GPL2+', 'GPL3+', 'LGPL2+', 'LGPL3+']
 if i_use_info or i_use_man:
-    license.append('FDL1.3')
+    license.append('FDL1.3+')
 private = SUPPORTED
 interactive = True
 checkdepends = ['dejagnu', 'bc']

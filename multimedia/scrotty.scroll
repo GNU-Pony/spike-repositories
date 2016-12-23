@@ -35,7 +35,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
-    license.append('GFDL1.3+')
+    license.append('FDL1.3+')
 private = SUPPORTED
 depends = ['linux', 'glibc', 'libpng']
 makedepends = ['make', 'coreutils', 'glibc', 'c99', 'pkg-config', 'libpng']

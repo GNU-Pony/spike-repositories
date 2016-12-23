@@ -29,7 +29,7 @@ pkgdesc = 'An extensible and highly configurable alternative to redshift'
 upstream = 'https://github.com/maandree/blueshift'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3+', 'GPL3+', 'GFDL1.3+']
+license = ['AGPL3+', 'GPL3+', 'FDL1.3+']
 private = SUPPORTED
 _deps = []
 if i_use_x_randr or i_use_x_idcrtc or i_use_x_icc or i_use_fake_quartz or i_use_fake_w32gdi:
@@ -134,7 +134,7 @@ def package(startdir, srcdir, pkgdir, private):
     rm('%s/LICENSE.fdl1.3' % _dir)
     rm('%s/LICENSE.gpl3' % _dir)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE.agpl3' % _dir)
-    ln('/usr/share/licenses/common/GFDL1.3', '%s/LICENSE.fdl1.3' % _dir)
+    ln('/usr/share/licenses/common/FDL1.3', '%s/LICENSE.fdl1.3' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir)
 
 

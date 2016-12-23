@@ -23,7 +23,7 @@ arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3')
+    license.append('FDL1.3')
 private = UNSUPPORTED
 depends = ['sh', 'coreutils']
 if i_use_btmp or i_use_utmp or i_use_audit or i_use_lastlog or i_use_syslog:

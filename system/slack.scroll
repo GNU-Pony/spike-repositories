@@ -22,7 +22,7 @@ arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
 license = ['GPL3+']
 if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('GFDL1.3+')
+    license.append('FDL1.3+')
 private = SUPPORTED
 depends = ['glibc', 'linux>=2.6.28']
 makedepends = ['make', 'coreutils', 'gcc', 'glibc']

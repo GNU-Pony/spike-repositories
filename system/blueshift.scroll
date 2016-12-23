@@ -26,7 +26,7 @@ arch = ['any']
 if i_use_x_icc:
     arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3+', 'GPL3+', 'GFDL1.3+']
+license = ['AGPL3+', 'GPL3+', 'FDL1.3+']
 private = SUPPORTED
 depends = ['python3', 'argparser-python', 'solar-python', 'pylibgamma']
 if i_use_x_icc:
@@ -106,7 +106,7 @@ def package(startdir, srcdir, pkgdir, private):
     rm('%s/LICENSE.fdl1.3' % _dir)
     rm('%s/LICENSE.gpl3' % _dir)
     ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE.agpl3' % _dir)
-    ln('/usr/share/licenses/common/GFDL1.3', '%s/LICENSE.fdl1.3' % _dir)
+    ln('/usr/share/licenses/common/FDL1.3', '%s/LICENSE.fdl1.3' % _dir)
     ln('/usr/share/licenses/common/GPL3', '%s/LICENSE.gpl3' % _dir)
 
 

@@ -1,0 +1,44 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'xtest'
+pkgver = '1'
+pkgdesc = 'Variant of test(1) that can test multiple files from cmdline or stdin'
+upstream = 'https://github.com/maandree/xtest'
+arch = ['any']
+freedom = SOFTWARE | MEDIA
+license = ['ISC']
+private = SUPPORTED
+depends = ['libc']
+makedepends = ['make', 'coreutils', 'libc', 'c99']
+source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
+sha3sums = ['B4C6D4C7A578840EE8488FF9C6B2BC39EAAEC00CD21FB421A2722B118C31798B62551460D08323ECD82A909BA3C51089881D7B09EA415D100453562805F7752FDF0F922C20E2412F']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(1, 'xtest')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/xtest-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'all']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/xtest-%s' % (srcdir, pkgver))
+    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install-base']
+    if i_use_man:
+        params.append('install-man')
+    make(params)
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    ln('/usr/share/licenses/common/ISC', '%s/LICENSE' % _dir)
+

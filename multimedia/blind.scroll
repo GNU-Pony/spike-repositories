@@ -1,0 +1,47 @@
+# -*- python -*-
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.  [GNUAllPermissive]
+from dragonsuite import *
+
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
+pkgname = 'blind'
+pkgver = '1.0'
+pkgdesc = 'Suckless command line video editor'
+upstream = 'http://tools.suckless.org/blind/'
+arch = ['x86_64']
+freedom = SOFTWARE | MEDIA
+license = ['ISC']
+private = SUPPORTED
+depends = ['libc', 'ffmpeg']
+optdepends = ['imagemagick: support for other images formats than farbfeld and PAM']
+makedepends = ['make', 'coreutils', 'libc', 'c99', 'sed']
+source = ['http://dl.suckless.org/tools/blind-%s.tar.gz' % pkgver]
+sha3sums = ['AE1F38335F0A304AED305D2DF0A2AF8C0478DF84F7FCE98823888903FD120A146B80618652AB908CECA199128CE3AFFD0EA2A4C8C31ED74E3FB267B34A89529B3214E74B658185A9']
+
+_prefix = lambda private : '/usr' if not private else path('~/.local')
+
+
+def ride(private):
+    man(7, 'blind')
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/blind-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'all']
+    make(params)
+
+
+def package(startdir, srcdir, pkgdir, private):
+    cd('%s/blind-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'all']
+    params = ['install']
+    make(params)
+    if not i_use_man:
+        rm_r('%s%s/share/man' % (pkgdir, _prefix(private)))
+    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
+    mkdir_p(_dir)
+    cp('LICENSE', '%s/LICENSE' % _dir)
+

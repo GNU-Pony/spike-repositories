@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
 
 pkgname = 'ponypipe'
-pkgver = '1.2.3'
+pkgver = '1.2.4'
 pkgdesc = 'Ponify and deponify text'
 upstream = 'https://github.com/maandree/ponypipe'
 arch = ['any']
@@ -19,9 +19,8 @@ depends = ['java-runtime>=6', 'sh']
 makedepends = ['make', 'coreutils', 'java-environment>=6']
 if i_use_info:
     makedepends.append('texinfo')
-    makedepends.append('gzip')
 source = ['%s/archive/v%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['9B873C4135AF3F3550AE385CEAA04BCF850A8F1E21F56C2DB5CACA35FED8A3374C57661D1E1E81CF87AB3E88D68FCD014B6360B7E3D5A0C43926317CF7D9D47D9EE5EBE67D7E5A5E']
+sha3sums = ['D5B3BB0C0E04CD359C0CE34AD4319ADAE49F1DDAB475E5C381E319F6E448A5DE6DF15D88293D09AE3DFE07DED1F88440BC90C4E28304FC240AD9B8FC76320F63C9E3DBE85019BB38']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

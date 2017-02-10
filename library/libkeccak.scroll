@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'libkeccak'
-pkgver = '1.1'
+pkgver = '1.1.1'
 pkgdesc = 'Keccak-family hashing library'
 upstream = 'https://github.com/maandree/libkeccak'
 arch = ['x86_64']
@@ -17,7 +17,7 @@ depends = ['libc']
 checkdepends = ['libc', 'valgrind', 'make', 'coreutils']
 makedepends = ['libc', 'gcc', 'make', 'coreutils', 'binutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['BEDBE3C8C3D1BACDD9FB70E1CCE6A003F20827CDB40F259D34DEBA30467606DD89D55E08E0F4E1AAA2ACB810C0DBC8F7A36A909B10ACED685539B53CB9ABB322A82F1B319CC8F9B7']
+sha3sums = ['C3CEB36492A87CEB5A75F3E0612F0D40ECAC65A5EB37EEDEDBFBF875733A8AF85213960251B2113E76BBF6343B93002C6DEDD2B7420D13A6631AE38E87FF8F604DFF9179D22FD347']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

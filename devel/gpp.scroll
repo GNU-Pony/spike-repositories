@@ -14,7 +14,7 @@ i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
 i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
 
 pkgname = 'gpp'
-pkgver = '1.5'
+pkgver = '1.6'
 pkgdesc = 'Bash-based preprocessor for anything'
 upstream = 'https://github.com/maandree/gpp'
 arch = ['any']
@@ -29,7 +29,7 @@ if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
 if i_use_bash or i_use_fish or i_use_zsh:
     makedepends.append('auto-auto-complete')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['48A0B369EF12CBF6FD9959D33A4779F15AF2FBE82C15EC67D22402268204CD63CBEF69D2CCC2566F03990AAADD7051DB830DB8352D55862A72672A5935CADA518305B9DD754DDC3D']
+sha3sums = ['37BAF6909DB9EAFDA846ABFC5BBBA0249BCF23556EAC905EC1474B5FA6CE378BF7985387A3FABA428CC1191031288C1743537523FEE68E30FFCD3FA5F49D278DD2C174F951FC8746']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

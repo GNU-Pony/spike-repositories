@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'rotd'
-pkgver = '1.1'
+pkgver = '1.1.1'
 pkgdesc = 'Generate a paper with important or fun information for the day'
 upstream = 'https://github.com/maandree/rotd'
 arch = ['any']
@@ -20,7 +20,7 @@ optdepends = ['curl: for leap second announcements and xkcd comics'
 	      'solar-python>=2.5: for solar information']
 makedepends = ['make', 'coreutils', 'sed']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['D011A9CB31D4757976800AD2CE996554B0123D64A251E0A43D389AD1C932CD9DA73A959055246755437148D72A8586291D631C9CEE94BD5D9EB348EA07A344FAE70BA89DFC095E5C']
+sha3sums = ['DA6E69D8595CDD305DFD15E0ED3AD91E3F273C7F1A4A32A440ED553959519711378E9CFF608EBDBD29B2EC3FB431F6CD368FF47057BD68C92DA85FB0D8B893D530FEA6C6D740B97A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

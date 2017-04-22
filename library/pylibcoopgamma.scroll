@@ -6,7 +6,7 @@
 from dragonsuite import *
 
 pkgname = 'pylibcoopgamma'
-pkgver = '1.0.1'
+pkgver = '1.1'
 pkgdesc = 'Cooperative gamma Python 3 library'
 upstream = 'https://github.com/maandree/pylibcoopgamma'
 arch = ['x86_64', 'i686']
@@ -16,7 +16,7 @@ private = SUPPORTED
 depends = ['python3>=3.4', 'libcoopgamma', 'libc']
 makedepends = ['python3>=3.4', 'libcoopgamma', 'libc', 'make', 'c99', 'cython', 'coreutils', 'pkg-config', 'gpp']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['1BABFF79BA70FF3585352EFEAA1B1E47A5151502569322D1D72A42F258A7F7CA6E4EB163859B410411373E3EE8FB9C87EF8F56394B071A9A280B28080E1871128F7087AA2D5ADC59']
+sha3sums = ['DCF81CB8220B88D4008530982C9EE9A7AEF4CB7E0C99A8A016F79C9017C949B5BFB17C2D14850AF2CAAE44EC1D1FF50B1E3392C639E48A2CDC759E1AFF3714E007CBE9A5ED248046']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

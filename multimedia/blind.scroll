@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'blind'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Suckless command line video editor'
 upstream = 'http://tools.suckless.org/blind/'
 arch = ['x86_64']
@@ -19,7 +19,7 @@ depends = ['libc', 'ffmpeg']
 optdepends = ['imagemagick: support for other images formats than farbfeld and PAM']
 makedepends = ['make', 'coreutils', 'libc', 'c99', 'sed']
 source = ['http://dl.suckless.org/tools/blind-%s.tar.gz' % pkgver]
-sha3sums = ['AE1F38335F0A304AED305D2DF0A2AF8C0478DF84F7FCE98823888903FD120A146B80618652AB908CECA199128CE3AFFD0EA2A4C8C31ED74E3FB267B34A89529B3214E74B658185A9']
+sha3sums = ['40CE814BBB399795FD1A06CC1CB84D89080C1437C7E6A4F6992EA1BAB74BC6FB97135A99CF8F4240F9111961B9B742F17E363F87E5E7AA29883AB4A0DCA519AF61DC53D563C6DA5A']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

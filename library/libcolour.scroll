@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'libcolour'
-pkgver = '2.1'
+pkgver = '2.2'
 pkgdesc = 'A C colour space library'
 upstream = 'https://github.com/maandree/libcolour'
 arch = ['x86_64']
@@ -17,7 +17,7 @@ license = ['ISC']
 private = SUPPORTED
 makedepends = ['c11', 'libc', 'coreutils', 'make', 'sed']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['497BA5356892B0AFD3E610B83D21F132CC539E1C3F09AD21918AA53C25AC70024C54A7A729E2ADFA2B9EF465A401DE0E9C38906123AD8C34C4D74972C139867FD4100A005C8FF161']
+sha3sums = ['8FA941E57B54BB0E921E9382605F8A87222DD362674A05CB7F984D48EC195442D6BAF4D1520F23DF1ED8ED19578F9D907C49763215B035FA873B804F439DE49B14CF2F20BD48C9C5']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

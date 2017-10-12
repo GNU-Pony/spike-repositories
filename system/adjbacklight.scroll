@@ -5,31 +5,20 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
-i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
-i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
-i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
-i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'adjbacklight'
-pkgver = '7.3.2'
+pkgver = '8.0'
 pkgdesc = 'Convenient method for adjusting the backlight on your portable computer'
 upstream = 'https://github.com/maandree/adjbacklight'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3+']
+license = ['ISC']
 private = SUPPORTED
-depends = ['linux', 'glibc']
-makedepends = ['make', 'coreutils', 'gcc', 'glibc']
-if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    makedepends.append('texinfo')
-if i_use_bash or i_use_fish or i_use_zsh:
-    makedepends += ['sed', 'auto-auto-complete']
+depends = ['linux', 'libc']
+makedepends = ['make', 'coreutils', 'cc', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['70171ADECB88C726282FAFE9CFE479B3A62F6DEF55C49E9BD532548C117A9052F938C23572EC26C652B15A9F463A1D39A19CFBE24A595EA80806F1E997DACDBD7A408AF3A50D9248']
+sha3sums = ['CEB6E7E693373050EE986EF74A463C03D274FB2ED2309AA074FEA5EBB4ACAAFCA92123175CB882709350867FC226B2362947E1466624E4D6843DB3ED26544AB38478D851510BB91B']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -40,61 +29,16 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/adjbacklight-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'code']
-    if i_use_info:
-        params.append('info')
-    if i_use_pdf:
-        params.append('pdf')
-    if i_use_ps:
-        params.append('ps')
-    if i_use_dvi:
-        params.append('dvi')
-    if i_use_bash:
-        params.append('bash')
-    if i_use_fish:
-        params.append('fish')
-    if i_use_zsh:
-        params.append('zsh')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/adjbacklight-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
-    if i_use_info:
-        params.append('install-info')
-    if i_use_pdf:
-        params.append('install-pdf')
-    if i_use_ps:
-        params.append('install-ps')
-    if i_use_dvi:
-        params.append('install-dvi')
-    if i_use_man:
-        params.append('install-man')
-    if i_use_bash:
-        params.append('install-bash')
-    if i_use_fish:
-        params.append('install-fish')
-    if i_use_zsh:
-        params.append('install-zsh')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     make(params)
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-
-
-def post_install(tmpdir, rootdir, installedfiles, private):
-    post_install_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    pre_upgrade_info(rootdir, installedfiles, private)
-
-
-def post_upgrade(tmpdir, rootdir, installedfiles, private):
-    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    pre_uninstall_info(rootdir, installedfiles, private)
-
+    if not i_use_man:
+        _dir = '%s%s' % (pkgdir, _prefix(private))
+        rm('%s/share/man/man1/adjbacklight.1' % _dir)
+        rmdir('%s/share/man/man1' % _dir)
+        rmdir('%s/share/man' % _dir)

@@ -5,39 +5,46 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
+
 pkgname = 'libkeccak'
-pkgver = '1.1.1'
+pkgver = '1.1.2'
 pkgdesc = 'Keccak-family hashing library'
 upstream = 'https://github.com/maandree/libkeccak'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['AGPL3+']
+license = ['ISC']
 private = SUPPORTED
 depends = ['libc']
 checkdepends = ['libc', 'valgrind', 'make', 'coreutils']
 makedepends = ['libc', 'gcc', 'make', 'coreutils', 'binutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['C3CEB36492A87CEB5A75F3E0612F0D40ECAC65A5EB37EEDEDBFBF875733A8AF85213960251B2113E76BBF6343B93002C6DEDD2B7420D13A6631AE38E87FF8F604DFF9179D22FD347']
+sha3sums = ['F9C86B345030DB915F1235C98C41F549998F6E8E8602B229A8DFB7D3B249ED8BE4270248681925E9F098A300E5EFE4F2FEBB424561BF869AC564535F1D60D6525F4F38218A8D6665']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    #info('libkeccak')
-    echo('Sorry no manual available, but you can read the header files.')
+    man(7, 'libkeccak.7')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/libkeccak-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'CONFIGFILE=optimised.mk']
+    make(params)
+
+
+def build(startdir, srcdir, pkgdir, private):
+    cd('%s/libkeccak-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'CONFIGFILE=optimised.mk']
+    params.append('check')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/libkeccak-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'CONFIGFILE=optimised.mk']
     params.append('install')
     make(params)
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    ln('/usr/share/licenses/common/AGPL3', '%s/LICENSE' % _dir)
-
+    if not i_use_man:
+        rm_r('%s%s/share/man' % (pkgdir, _prefix(private))

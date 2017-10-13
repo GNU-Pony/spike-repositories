@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'adjbacklight'
-pkgver = '8.0'
+pkgver = '8.0.1'
 pkgdesc = 'Convenient method for adjusting the backlight on your portable computer'
 upstream = 'https://github.com/maandree/adjbacklight'
 arch = ['x86_64', 'i686']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['linux', 'libc']
 makedepends = ['make', 'coreutils', 'cc', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['CEB6E7E693373050EE986EF74A463C03D274FB2ED2309AA074FEA5EBB4ACAAFCA92123175CB882709350867FC226B2362947E1466624E4D6843DB3ED26544AB38478D851510BB91B']
+sha3sums = ['44A6582F913A66857509DB3C0CAE0897B3F683DA1644C673A049B584A2F6ABAF5A1343AB5509D33BCE0A28E7AFB436193CDA9F7DB309B5FE45C53314F53DE958E53C9FDE0ACF6BD9']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -31,6 +31,11 @@ def build(startdir, srcdir, pkgdir, private):
     cd('%s/adjbacklight-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
     make(params)
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/adjbacklight-%s' % (srcdir, pkgver))
+    make(['check'])
 
 
 def package(startdir, srcdir, pkgdir, private):

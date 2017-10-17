@@ -5,79 +5,45 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_PDF', ' n').lower().startswith('y')
-i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'exec-as'
-pkgver = '1.1'
+pkgver = '1.2'
 pkgdesc = 'A command that lets you start another command with any argv[0]'
 upstream = 'https://github.com/maandree/exec-as'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3+']
+license = ['ISC']
 private = SUPPORTED
 depends = ['libc']
+checkdepends = ['make', 'coreutils']
 makedepends = ['make', 'coreutils', 'c99', 'libc']
-if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
-    makedepends.append('texinfo')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['A5708F756D47CA042FFA9D3D3D28E7D0DF7FF09B82A0FE4B287A22A68E2E80B64B906C6B55C5E35629C24B5305D76801EDB7467E80D859E6EA05EF84DF3772306B2869575DAB1D94']
+sha3sums = ['B91D2D4D833B388E5958F809F1129CBBFC65B92762176845184B1AC7A10BA73A7F44758027881B900EF84095AC1A90399B7484F83F59091751EDDD429BD7D84F53070E6827147041']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    echo('Type: [exec] exec-as COMMAND $0 $@')
+    man(1, 'exec-as')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/exec-as-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'base']
-    if i_use_info:
-        params.append('info')
-    if i_use_pdf:
-        params.append('pdf')
-    if i_use_dvi:
-        params.append('dvi')
-    if i_use_ps:
-        params.append('ps')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
+    make(params)
+
+
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/exec-as-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'check']
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/exec-as-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install-base']
-    if i_use_info:
-        params.append('install-info')
-    if i_use_pdf:
-        params.append('install-pdf')
-    if i_use_dvi:
-        params.append('install-dvi')
-    if i_use_ps:
-        params.append('install-ps')
-    if i_use_man:
-        params.append('install-man')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-
-
-def post_install(tmpdir, rootdir, installedfiles, private):
-    post_install_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    pre_upgrade_info(rootdir, installedfiles, private)
-
-
-def post_upgrade(tmpdir, rootdir, installedfiles, private):
-    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    pre_uninstall_info(rootdir, installedfiles, private)
+    if not i_use_man:
+        rm_r('%s%s/share/licenses' % (pkgdir, _prefix(private), pkgname))
 

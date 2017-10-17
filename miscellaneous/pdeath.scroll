@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'pdeath'
-pkgver = '1.0'
+pkgver = '1.1'
 pkgdesc = 'Run a command that is killed when its parent exits'
 upstream = 'https://github.com/maandree/pdeath'
 arch = ['i686', 'x86_64']
@@ -16,9 +16,10 @@ freedom = SOFTWARE | MEDIA
 license = ['ISC']
 private = SUPPORTED
 depends = ['linux>=2.1.57', 'libc']
+checkdepends = ['linux>=2.1.57', 'libc', 'make', 'coreutils']
 makedepends = ['linux>=2.1.57', 'libc', 'make', 'coreutils', 'cc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['574E05798B38155DAF08AC650E8C848B85F91DCC990F1C8A471E4A50119F4F140668C6431DA03BCA0383B1192E36B0B3F92BBA1862182C827A5BB9BFE1E2899652E605302AF9ACEE']
+sha3sums = ['09402BBF7745F6615524DE49F24F5FED17A6A7FE93BB71C0491AE0EAFFD13682D17CA17135FE3369109F858CCC9586986E2582619F0FB05E91B8C064324A775A11E5DECCC837FF74']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -33,15 +34,16 @@ def build(startdir, srcdir, pkgdir, private):
     make(params)
 
 
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/pdeath-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'check']
+    make(params)
+
+
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/pdeath-%s' % (srcdir, pkgver))
     prefix = _prefix(private)
     params = ['PREFIX=%s' % prefix, 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
     if not i_use_man:
-        rm('%s%s/share/man/man1/pdeath.1' % (pkgdir, prefix))
-        rmdir('%s%s/share/man/man1' % (pkgdir, prefix))
-        rmdir('%s%s/share/man' % (pkgdir, prefix))
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, prefix, pkgname)
-    ln('/usr/share/licenses/common/ISC', '%s/LICENSE' % _dir)
-
+        rm_r('%s%s/share/man' % (pkgdir, prefix))

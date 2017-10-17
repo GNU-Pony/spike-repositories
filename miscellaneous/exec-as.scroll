@@ -45,5 +45,5 @@ def package(startdir, srcdir, pkgdir, private):
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
     if not i_use_man:
-        rm_r('%s%s/share/licenses' % (pkgdir, _prefix(private), pkgname))
+        rm_r('%s%s/share/man' % (pkgdir, _prefix(private)))
 

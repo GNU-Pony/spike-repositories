@@ -33,6 +33,12 @@ def build(startdir, srcdir, pkgdir, private):
     make(params)
 
 
+def check(startdir, srcdir, pkgdir, private):
+    cd('%s/slack-%s' % (srcdir, pkgver))
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'check']
+    make(params)
+
+
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/slack-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']

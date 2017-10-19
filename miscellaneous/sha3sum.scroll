@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'sha3sum'
-pkgver = '1.1.1'
+pkgver = '1.1.2'
 pkgdesc = 'Keccak-family checksum calculator, including SHA-3'
 upstream = 'https://github.com/maandree/sha3sum'
 arch = ['x86_64', 'i686']
@@ -19,7 +19,7 @@ depends = ['libc', 'libkeccak']
 checkdepends = ['make', 'coreutils', 'sh'] + depends
 makedepends = ['c99', 'make', 'coreutils', 'sed'] + depends
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['DFAE537D33A7C665757C1E16E2862C9222A3E4144B554DCED50AEB8E1068FE72A5D0F500ADB86A0476F708611BBC5CEB2536662779320FF88C63187647DD229C1B882B6410C65BBC']
+sha3sums = ['A96A6E4A9ACC276802967CF4147F8524E4CE3BAB5F2629642B795CCB6AF317F67A5F8E3DCC6B405F657A8A5843748D210E95128E215D740D3DC56AC2A54B7210F601C04AACFABFC1']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

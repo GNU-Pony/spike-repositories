@@ -5,102 +5,37 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
-i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
-i_use_bash = get('I_USE_BASH', 'y').lower().startswith('y')
-i_use_fish = get('I_USE_FISH', 'y').lower().startswith('y')
-i_use_zsh  = get('I_USE_ZSH',  'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'slack'
-pkgver = '2.2'
+pkgver = '3.0'
 pkgdesc = 'Control your timer slack'
 upstream = 'https://github.com/maandree/slack'
 arch = ['i686', 'x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3+']
-if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    license.append('FDL1.3+')
+license = ['ISC']
 private = SUPPORTED
-depends = ['glibc', 'linux>=2.6.28']
-makedepends = ['make', 'coreutils', 'gcc', 'glibc']
-if i_use_info or i_use_pdf or i_use_ps or i_use_dvi:
-    makedepends.append('texinfo')
-if i_use_pdf or i_use_ps or i_use_dvi:
-    makedepends.append('texlive-core')
-if i_use_bash or i_use_fish or i_use_zsh:
-    makedepends.append('auto-auto-complete')
+depends = ['libc', 'linux>=2.6.28']
+makedepends = ['make', 'coreutils', 'c99', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['82E450A0D5B0DAD6141A9C104399360321BF233422D129BB5431916DA4EAB60FC5C7E146F94FA711F32C02AA807870E7F17058A0EA552BF3E5BE99DEBE41A88D73666505AC38C561']
+sha3sums = ['F24633ABE5326F23E89BCDF1C688ABD46784AF8F91CC3854F3EDC2568444084626091001E82FAF1DAB4346BD569836DB3030A876688A25D6D719442B23EF7EDA8A5D5B72EE9EC467']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    execute(['slack', '--help'])
+    man(1, 'slack')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/slack-%s' % (srcdir, pkgver))
     params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('command')
-    if i_use_info:
-        params.append('info')
-    if i_use_pdf:
-        params.append('pdf')
-    if i_use_ps:
-        params.append('ps')
-    if i_use_dvi:
-        params.append('dvi')
-    if i_use_bash:
-        params.append('bash')
-    if i_use_fish:
-        params.append('fish')
-    if i_use_zsh:
-        params.append('zsh')
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/slack-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install-base')
-    if i_use_info:
-        params.append('install-info')
-    if i_use_pdf:
-        params.append('install-pdf')
-    if i_use_ps:
-        params.append('install-ps')
-    if i_use_dvi:
-        params.append('install-dvi')
-    if i_use_man:
-        params.append('install-man')
-    if i_use_bash:
-        params.append('install-bash')
-    if i_use_fish:
-        params.append('install-fish')
-    if i_use_zsh:
-        params.append('install-zsh')
+    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/LICENSE' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/LICENSE' % _dir)
-
-
-def post_install(tmpdir, rootdir, installedfiles, private):
-    post_install_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    pre_upgrade_info(rootdir, installedfiles, private)
-
-
-def post_upgrade(tmpdir, rootdir, installedfiles, private):
-    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    pre_uninstall_info(rootdir, installedfiles, private)
-
+    if i_use_man:
+        rm_r('%s%s/share/man' % (pkgdir, _prefix(private)))

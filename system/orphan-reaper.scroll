@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'orphan-reaper'
-pkgver = '2.3'
+pkgver = '2.3.1'
 pkgdesc = 'Place subreapers in your process tree to keep it structured'
 upstream = 'https://github.com/maandree/orphan-reaper'
 arch = ['i686', 'x86_64']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['libc', 'linux>=3.4']
 makedepends = ['make', 'coreutils', 'c99', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['8D86E3FA9D056589E19FA32003E6CD9596F7972E0AF1B3086A913118995145DD13098E919A7C6DD08336EC7719F0BEC847D6138DED92F7FF91958543C6D34E6D1A65984B38CE5E91']
+sha3sums = ['DED39EA57D1FC7E61C17D0A869A7A4E640D0F47F88C38E076CBC1B6C36DC69AB225AD60569B9932B93780B2C48AA7F1A2570244DD78B107AC588CEBFE3A22155EA03F5F8F8E8C49E']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

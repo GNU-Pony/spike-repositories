@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'adjbacklight'
-pkgver = '8.0.2'
+pkgver = '8.1'
 pkgdesc = 'Convenient method for adjusting the backlight on your portable computer'
 upstream = 'https://github.com/maandree/adjbacklight'
 arch = ['x86_64', 'i686']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['linux', 'libc']
 makedepends = ['make', 'coreutils', 'cc', 'libc']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['B054816F0C1B06EE5B969CA946384C354ECC8E2B8EFD1127FCF4A7982B16A4658506A59D2EE681EA94D4F7E137EFE336B97945EC43DF2B41A5815208AAC4582F15370439DEA18BD0']
+sha3sums = ['F5DDE8D239A07255F90D47F59AC6217123BABA2EADB80E409D2EEB51AE6097025D06EC2C30C62B7C19F6AA323E108D0DE2821A4D8C8699D774779FF0FCE6AED6D502D2E4FC3100AD']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 

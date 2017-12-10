@@ -5,29 +5,20 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf  = get('I_USE_PDF',  'n').lower().startswith('y')
-i_use_dvi  = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_ps   = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_html = get('I_USE_HTML', 'n').lower().startswith('y')
-i_use_man  = get('I_USE_MAN',  'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'unstickpixels'
-pkgver = '2'
+pkgver = '3'
 pkgdesc = 'Screen loop to try to unstick stuck dots'
 upstream = 'https://github.com/maandree/unstickpixels'
 arch = ['x86_64']
 freedom = SOFTWARE | MEDIA
-license = ['GPL3+']
+license = ['ISC']
 private = SUPPORTED
 depends = ['libc', 'libgamma']
 makedepends = ['make', 'coreutils', 'cc', 'libc', 'libgamma']
-if i_use_info or i_use_pdf or i_use_dvi or i_use_ps or i_use_html:
-    makedepends.append('texinfo>=4.11')
-if i_use_pdf or i_use_dvi or i_use_ps:
-    makedepends.append('texlive-plainextra')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['9278140E390E069A55920657D2C46B38CE443B3306B686D9C62944A976D67192659B815F48B2EEB0B5C0FE5AF8A548B298024031AC86F531BCE3FF8B87D711FF5969E0825ACF31F3']
+sha3sums = ['DD3FA5502E8E77D7072FA75CCCE301DD65A959D640A7AE43315ACE6F7322B09B1DE233D201A128326221A953EDF1296AC6A13E6C3AE1F53AD7B05085877687BF4EAC86B5C1CC6F2F']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -38,54 +29,14 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/unstickpixels-%s' % (srcdir, pkgver))
-    execute('./configure', '--prefix=%s' % _prefix(private))
-    params = ['PKGNAME=%s' % pkgname, 'base']
-    if i_use_info:
-        params.append('info')
-    if i_use_pdf:
-        params.append('pdf')
-    if i_use_dvi:
-        params.append('dvi')
-    if i_use_ps:
-        params.append('ps')
-    if i_use_html:
-        params.append('html')
+    params = ['PREFIX=/usr' % pkgname]
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/unstickpixels-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir, 'N=:', 'install-base']
-    if i_use_info:
-        params.append('install-info')
-    if i_use_pdf:
-        params.append('install-pdf')
-    if i_use_dvi:
-        params.append('install-dvi')
-    if i_use_ps:
-        params.append('install-ps')
-    if i_use_html:
-        params.append('install-html')
-    if i_use_man:
-        params.append('install-man')
+    params = ['PREFIX=/usr' % pkgname, 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/COPYING' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
-
-
-def post_install(tmpdir, rootdir, installedfiles, private):
-    post_install_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_upgrade(tmpdir, rootdir, installedfiles, private):
-    pre_upgrade_info(rootdir, installedfiles, private)
-
-
-def post_upgrade(tmpdir, rootdir, installedfiles, private):
-    post_upgrade_info(rootdir, installedfiles, private, i_use_info)
-
-
-def pre_uninstall(tmpdir, rootdir, installedfiles, private):
-    pre_uninstall_info(rootdir, installedfiles, private)
+    if not i_use_man:
+        rm('%s%s/share/man/man1/unstickpixel.1' % (pkgdir, _prefix(private)))
 

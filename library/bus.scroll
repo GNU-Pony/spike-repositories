@@ -5,69 +5,37 @@
 # without any warranty.  [GNUAllPermissive]
 from dragonsuite import *
 
-i_use_info      = get('I_USE_INFO', 'y').lower().startswith('y')
-i_use_pdf       = get('I_USE_PDF',  'n').lower().startswith('y')
-i_use_dvi       = get('I_USE_DVI',  'n').lower().startswith('y')
-i_use_ps        = get('I_USE_PS',   'n').lower().startswith('y')
-i_use_man       = get('I_USE_MAN',  'y').lower().startswith('y')
-i_use_examples  = get('I_USE_EXAMPLES',  'y').lower().startswith('y')
+i_use_man = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'bus'
-pkgver = '3.1.6'
+pkgver = '3.1.7'
 pkgdesc = 'A simple daemonless system for broadcasting messages locally'
 upstream = 'https://github.com/maandree/bus'
 arch = ['x86_64', 'i686']
 freedom = SOFTWARE | MEDIA
-license = ['MIT']
+license = ['ISC']
 private = SUPPORTED
 depends = ['libc']
 makedepends = ['make', 'coreutils', 'gcc'] + depends
-if i_use_info or i_use_pdf or i_use_dvi or i_use_ps:
-    makedepends.append('texinfo')
-if i_use_man:
-    makedepends.append('sed')
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['450D3731A0249C96153025AC3A87B57BB432D8D7F89A1EBF2E6B8443D9354E5B50940D548418A140E934DA3D53E3186521F079ECF2BD5A71512FB324EC077C2F6E13264FB430B537']
+sha3sums = ['2F489CD679A6A4334CC66A9DDA494593AC484E7B84036895286F41AF4C5F959AD5C06D40F927FFC8FBFCABEDECEF5A0B67D670BB00DB186289DB06D44F1D0F9DF5AE2BD805121A13']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
 
 def ride(private):
-    info('bus')
+    man(1, 'bus')
 
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/bus-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('bus')
-    if i_use_info:
-        params.append('info')
-    if i_use_pdf:
-        params.append('pdf')
-    if i_use_dvi:
-        params.append('dvi')
-    if i_use_ps:
-        params.append('ps')
-    if i_use_man:
-        params.append('man')
+    params = ['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir]
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/bus-%s' % (srcdir, pkgver))
-    params = ['PREFIX=%s' % _prefix(private), 'PKGNAME=%s' % pkgname, 'DESTDIR=%s' % pkgdir]
-    params.append('install-bus')
-    if i_use_info:
-        params.append('install-info')
-    if i_use_pdf:
-        params.append('install-pdf')
-    if i_use_dvi:
-        params.append('install-dvi')
-    if i_use_ps:
-        params.append('install-ps')
-    if i_use_man:
-        params.append('install-man')
-    if i_use_examples:
-        params.append('install-examples')
+    params = ['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
-
+    if not i_use_man:
+        rm_r('%s%s/share/man' % (pkgdir, _prefix(private))

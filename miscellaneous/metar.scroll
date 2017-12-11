@@ -8,7 +8,7 @@ from dragonsuite import *
 i_use_man  = get('I_USE_MAN', 'y').lower().startswith('y')
 
 pkgname = 'metar'
-pkgver = '1.3'
+pkgver = '1.3.1'
 pkgdesc = 'Trivial, yet fully fledged, weather report'
 upstream = 'https://github.com/maandree/metar'
 arch = ['any']
@@ -18,7 +18,7 @@ private = SUPPORTED
 depends = ['sh', 'sed', 'curl', 'coreutils', 'python3']
 makedepends = ['make', 'coreutils']
 source = ['%s/archive/%s.tar.gz' % (upstream, pkgver)]
-sha3sums = ['13C405BC2013AA288404F4A1FB870264F830E80C498A28FE6138D94844A964B18830189CED7F1836B0CCA7740C17FD78736401DEF4D4F950261B33B90FF4D8D95D56D42C4963EE6B']
+sha3sums = ['E647723C3538F9748D4E168A820F7A6BC03CF5D2B1BF7E6D3E2181E04903278BE9FB41CD72D9D1003B5B7D976D777BD991E9FC21E70C9D06AAAEDE130279F87CCAF2673CAC8F9925']
 
 _prefix = lambda private : '/usr' if not private else path('~/.local')
 
@@ -29,17 +29,14 @@ def ride(private):
 
 def build(startdir, srcdir, pkgdir, private):
     cd('%s/metar-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'all']
+    params = ['PREFIX=%s' % _prefix(private)]
     make(params)
 
 
 def package(startdir, srcdir, pkgdir, private):
     cd('%s/metar-%s' % (srcdir, pkgver))
-    params = ['PKGNAME=%s' % pkgname, 'PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install']
+    params = ['PREFIX=%s' % _prefix(private), 'DESTDIR=%s' % pkgdir, 'install']
     make(params)
     if not i_use_man:
         rm('%s%s/share/man/man1/metar.1' % (pkgdir, _prefix(private)))
-    _dir = '%s%s/share/licenses/%s' % (pkgdir, _prefix(private), pkgname)
-    rm('%s/COPYING' % _dir)
-    ln('/usr/share/licenses/common/GPL3', '%s/COPYING' % _dir)
 
